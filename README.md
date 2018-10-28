@@ -13,6 +13,9 @@
 + util-cache.js 缓存模块，为插件的其他模块提供缓存支持。
 + cache-userinfo.js 缓存用户（登录用户）信息模块。一般应用都需要在前端缓存登录用户的信息，以便在开发过程中使用，当前模块目前提供了一组将用户缓存到【localStorage|sessionStorage】的独立接口。
 
+# 文档
+[文档](http://jiiiiiin.cn/vue-viewplus/)
+
 # 例子
 
 ```bash
@@ -32,5 +35,3 @@ npm run mock
 npm run dev
 ```
 
-<!-- # 文档 -->
-<!-- [文档]() -->
