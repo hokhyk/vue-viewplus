@@ -38,9 +38,3 @@ npm run dev
 + [云南农信手机银行](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)
 
 ![云南农信手机银行](http://a.app.qq.com/o/image/microQr.png?pkgName=com.csii.mobilebank)
-
-|                                                              |                                                              |
-| ------------------------------------------------------------ | :----------------------------------------------------------: |
-| ![](https://ws2.sinaimg.cn/large/006tNbRwgy1fvu7rnokp1j30pi13mguh.jpg) | ![](https://ws2.sinaimg.cn/large/006tNbRwgy1fvu7s5hg1uj30pi13maki.jpg) |
-
-
