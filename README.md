@@ -4,7 +4,7 @@
 
 做这个插件的目的是为了：
 + 针对大多数应用都会用到的功能进行二次封装，减少样板代码，让开发人员更关注于业务本身
-+ 用**一种方式解决一个问题**，在开发时候解决问题可以有多种方式，但是我们只需要一种，这样才能保证大型项目的可维护性
++ 用**一种方式解决一个问题**，在开发时候解决问题可以有多种方式，但是我们只需要一种
 
 # 特性
 + util-http.js 模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（配合login-state-check.js模块完成代理请求）的交互，配合login-state-check.js模块进行身份认证控制。
@@ -34,4 +34,15 @@ npm run mock
 # 启动examples
 npm run dev
 ```
+
+# 案例
+
++ [云南农信手机银行](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)
+
+![云南农信手机银行](http://a.app.qq.com/o/image/microQr.png?pkgName=com.csii.mobilebank)
+
+|                                                              |                                                              |
+| ------------------------------------------------------------ | :----------------------------------------------------------: |
+| ![](https://ws2.sinaimg.cn/large/006tNbRwgy1fvu7rnokp1j30pi13mguh.jpg) | ![](https://ws2.sinaimg.cn/large/006tNbRwgy1fvu7s5hg1uj30pi13maki.jpg) |
+
 
