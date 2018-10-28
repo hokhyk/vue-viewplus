@@ -6,8 +6,8 @@
 
 * Simple and lightweight (~12kb gzipped)
 
-[GitHub](https://github.com/docsifyjs/docsify/)
-[Get Started](#quick-start)
+[GitHub](https://github.com/Jiiiiiin/vue-viewplus)
+[快速开始](quickstart.md)
 
 <!-- 背景色 -->
 

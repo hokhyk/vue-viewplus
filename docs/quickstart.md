@@ -125,8 +125,8 @@ Vue.use(ViewPlus, {
 ViewPlus.mixin(Vue, jsComponents)
 ```
 
-插件有一些[通用配置（debug|router|store|errorHandler...）]();
+插件有一些[通用配置（debug|router|store|errorHandler...）](global_configuration.md);
 
 另外根据不同的模块来划分配置，详细配置请查看各模块(util-http.js模块...)的配置文档；
 
-另外`ViewPlus.mixin(Vue, jsComponents)`为插件添加了一个[js ui componets自定义模块]()，即插件默认提供的模块如不满足或者你有更好的idea，即可使用该[ViewPlus.mixin api]()在“需要的时候（一般在main.js中）”进行安装；
+另外`ViewPlus.mixin(Vue, jsComponents)`为插件添加了一个[js ui componets自定义模块](https://github.com/Jiiiiiin/vue-viewplus/blob/8afc27d8c026ec91691517f40fec34fb11cb8356/examples/util/js-commponent.js)，即插件默认提供的模块如不满足或者你有更好的idea，即可使用该[ViewPlus.mixin api](/global_api?id=mixin-)在“需要的时候（一般在main.js中）”进行安装；
