@@ -1,0 +1,18 @@
+{
+  "LOGIN": {
+    "BSMobileDeviceId": "null",
+    "BankSeq": "1",
+    "FirstLoginState": "0",
+    "code": "1",
+    "LoginFlag": "1",
+    "msg": "",
+    "UserId": "wangshiyou",
+    "_TransDate": "2017-09-28",
+    "MobilePhoneEncrypt": "13631595469",
+    "LoginType": "K",
+    "UserPaymentFlag": "0",
+    "BankId": "9999",
+    "_dynamicViewReferer": "banks/default/kmain",
+    "_locale": "zh_CN"
+  }
+}

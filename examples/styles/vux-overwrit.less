@@ -1,0 +1,72 @@
+@import "./variable";
+@import "./mixin";
+//====本文件不要使用代码格式化命令！！！
+body {
+  .vux-header {
+    width: 100%;
+    height: 46px;
+    background-color: #24292e;
+    .border-1px(@color-border);
+  }
+
+  .vux-header .vux-header-title{
+    font-size: 16px;
+  }
+
+  i.weui-tabbar__icon, .weui-tabbar__icon > i {
+    font-size: 22px;
+  }
+
+  .weui-cells__title {
+    line-height: 25px;
+    text-indent: 14px;
+    color: @color-title;
+  }
+
+
+  .weui-dialog {
+    width: 95%;
+    max-width: 400px;
+    .weui-dialog__bd {
+      padding: 5px 10px;
+      .alert-json {
+        color: #000000;
+        text-align: left;
+      }
+    }
+  }
+  button.weui-btn{
+    font-size: 14px;
+  }
+
+
+  .desc-group {
+    .weui-cells {
+      margin-top: 0;
+      .title {
+        font-size: 16px;
+        text-indent: 35px;
+        margin-bottom: 10px;
+      }
+      .hint-title{
+        font-size: 14px;
+        font-style: italic;
+      }
+      .hint-msg {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 25px;
+        text-indent: 10px;
+        a {
+          color: @color-a;
+        }
+      }
+    }
+  }
+
+  .weui-cell{
+    font-size: 12px;
+  }
+
+}

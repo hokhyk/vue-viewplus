@@ -1,0 +1,56 @@
+@import "reset";
+@import "vux-overwrit";
+
+body,
+html {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+pre {
+  overflow-y: auto;
+}
+
+body {
+  background-color: #fbf9fe;
+  .bottom-group{
+    margin-bottom: 123px;
+  }
+  .hint-msg {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 25px;
+    text-indent: 10px;
+    a {
+      color: @color-a;
+    }
+  }
+
+  .hint-msg-warn{
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-weight: inherit;
+    color: darkred;
+    display: inline-block;
+    line-height: 25px;
+    text-indent: 10px;
+  }
+
+  pre {
+    width: 100%;
+    code {
+      font-size: 12px;
+    }
+  }
+  .code-box{
+    padding: 0px;
+  }
+
+  .fl-right{
+    float: right;
+  }
+
+}

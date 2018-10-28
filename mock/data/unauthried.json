@@ -1,0 +1,9 @@
+{
+  "UNAUTHORIZED": {
+    "msg": "你没有权限访问该资源！",
+    "BankId": "9999",
+    "LoginType": "K",
+    "code": "core_error_unauthorized",
+    "_TransDate": "2017-06-07"
+  }
+}

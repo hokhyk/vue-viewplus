@@ -1,0 +1,9 @@
+{
+  "FORCEDWITHDRAWAL": {
+    "msg": "你已经被强制签退！",
+    "BankId": "9999",
+    "LoginType": "K",
+    "code": "validation.user.force.logout.exception",
+    "_TransDate": "2017-06-07"
+  }
+}
