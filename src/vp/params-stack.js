@@ -12,6 +12,7 @@ const _utilObjHasVal = function (tempParams) {
   return _.isObject(tempParams) && !_.isEmpty(tempParams)
 }
 /**
+ * 参数栈模块
  * 1. 如果是栈底需要设置对应的路由，meta.subRoot为true
  * @type {Object}
  */

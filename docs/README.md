@@ -16,7 +16,6 @@
 # 例子
 
 ```bash
-.
 ├── examples 插件demo
 ├── mock 插件demo mock服务器接口
 ├── src 插件源码

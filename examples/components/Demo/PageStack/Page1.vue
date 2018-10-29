@@ -1,8 +1,8 @@
 <template>
-<group title="堆栈底-第一页" label-width="15em">
+<group title="堆栈底-第一页" label-width="15em" class="bottom-group">
   <box gap="10px 10px">
-    <h2 v-if="this.$vp.utilObjHasVal(params)">初始化页面参数【params】: {{ params}}</h2>
-    <h2 v-if="this.$vp.utilObjHasVal(backParams)">是个页面回传的参数【backParams】: {{backParams}}</h2>
+    <h2 v-if="!isEmpty(params)">初始化页面参数【params】: {{ params}}</h2>
+    <h2 v-if="!isEmpty(backParams)">是个页面回传的参数【backParams】: {{backParams}}</h2>
     <x-button @click.native="next()">传递参数{{dataParams}}到下一个页面</x-button>
   </box>
   <cell-box>
@@ -55,6 +55,7 @@ import {
 import {
   paramsStack
 } from 'vue-viewplus'
+import _ from 'lodash'
 
 export default {
   mixins: [paramsStack],
@@ -77,6 +78,9 @@ export default {
       this.$vp.psPageNext('/Demo/PageStack/Page2', {
         params: this.dataParams
       })
+    },
+    isEmpty(params) {
+      return _.isEmpty(params)
     }
   },
   created() {

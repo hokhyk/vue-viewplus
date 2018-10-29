@@ -29,6 +29,14 @@ export default new Router({
           component: (resolve) => import('../components/EmptyTmpl').then(module => resolve(module)),
           children: [
             {
+              path: 'PageStack',
+              component: (resolve) => import('../components/Demo/PageStack').then(module => resolve(module)),
+              meta: {
+                title: 'params-stack',
+                subRoot: true
+              }
+            },
+            {
               path: 'Page1',
               component: (resolve) => import('../components/Demo/PageStack/Page1').then(module => resolve(module)),
               meta: {
