@@ -26,7 +26,184 @@ util-http.js 针对axios进行了二次封装的ajax模块。
 }
 ```
 
+## 示例
 
++ ajax所发接口返回数据请查看，[源码mock目录对应json数据](https://github.com/Jiiiiiin/vue-viewplus/tree/master/mock/data)
+
+```html
+<template>
+  <div id="UtilHttp">
+    <group title="ajaxMixin - GET请求" label-width="15em">
+      <box gap="10px 10px">
+        <x-button @click.native="doGet" :disabled="doGetBtnState">使用$vp#ajaxMixin发送GET请求</x-button>
+      </box>
+    </group>
+
+    <group title="ajaxMixin - POST请求" label-width="15em">
+      <box gap="10px 10px">
+        <x-button @click.native="doPost" :disabled="doPostBtnState">使用$vp#ajaxMixin发送POST请求</x-button>
+      </box>
+    </group>
+
+    <group title="ajaxAll请求" label-width="15em">
+      <box gap="10px 10px">
+        <p class="hint-msg">针对这个方法插件没有帮应用进行业务成功与否的判断，但是应用可以调用`$vp#$vp.onParseServerResp(response)`来调用统一业务级别错误接口来根据自己的需求对判断进行后续处理</p>
+        <x-button @click.native.stop="doAjaxAll" :disabled="ajaxAllBtnState">使用$vp#ajaxAll发送请求</x-button>
+      </box>
+    </group>
+    
+    <group title="ajaxMixin - NATIVE请求" label-width="15em">
+      <box gap="10px 10px">
+        <span class="hint-msg-warn">该功能需要客户端JsBridge能力，如没有修改，请别点了 ；）</span><br/>
+        <x-button @click.native="doHttpNative" :disabled="doHttpNativeBtnState">原生请求测试</x-button>
+      </box>
+    </group>
+
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+import demoMixin from './demo-mixin'
+import _ from 'lodash'
+
+export default {
+  mixins: [demoMixin],
+  data() {
+    return {
+      ajaxAllBtnState: false,
+      doGetBtnState: false,
+      doPostBtnState: false,
+      doCORSBtnState: false,
+      doHttpNativeBtnState: false
+    }
+  },
+  methods: {
+    doGet() {
+      this.doGetBtnState = true
+      this.$vp
+        .ajaxMixin('TIMESTAMP', {
+          mode: 'GET'
+        })
+        .then(data => {
+          this.doGetBtnState = false
+          this.$vp.uiDialog(
+            data,
+            {
+              title: '请求成功，响应结果',
+              showCode: true
+            }
+          )
+        })
+        .catch(resp => {
+          console.log(resp)
+          this.doGetBtnState = false
+        })
+    },
+    doPost() {
+      this.doPostBtnState = true
+      this.$vp
+        .ajaxMixin('LOGIN')
+        .then(data => {
+          this.doPostBtnState = false
+          this.$vp.uiDialog(
+            data,
+            {
+              title: '请求成功，响应结果',
+              showCode: true
+            }
+          )
+        })
+        .catch(resp => {
+          this.doPostBtnState = false
+        })
+    },
+    doAjaxAll() {
+      this.ajaxAllBtnState = true
+      this.$vp
+        .ajaxAll([
+          {
+            url: 'ALL1',
+            mode: 'GET'
+          }, {
+            url: 'ALL2',
+            mode: 'GET'
+          }
+        ])
+        .then(resArr => {
+          this.ajaxAllBtnState = false
+          // 这里需要应用手动把axios的data属性解析掉
+          const res = _.map(resArr, (item) => {
+            return item.data
+          })
+          this.$vp.uiDialog(res, {
+            title: '请求成功，响应结果',
+            showCode: true
+          })
+        })
+    },
+    doHttpNative() {
+      this.doHttpNativeBtnState = true
+      this.$vp
+        .ajaxMixin('TIMESTAMP', { mode: 'NATIVE' })
+        .then(res => {
+          this.$vp.uiDialog(res, {
+            title: '请求成功，响应结果',
+            showCode: true
+          })
+          this.doHttpNativeBtnState = false
+        })
+        .catch((err) => {
+          this.$vp.uiDialog(err, {
+            title: '请求失败，响应结果',
+            showCode: true
+          })
+          this.doHttpNativeBtnState = false
+        })
+    }
+}
+</script>
+```
+
+示例所需配置：
+
+```js
+Vue.use(ViewPlus, {
+  //...
+  utilHttp: {
+    baseURL: 'http://localhost:7000',
+    // 这里的data key，请查看mock server的jsonp输出配置
+    dataKey: 'data',
+    statusCodeKey: 'code',
+    statusCode: '1',
+    msgKey: 'msg',
+    needBase64DecodeMsg: false,
+    loading(loadingHintText) {
+      this.uiLoading(loadingHintText)
+    },
+    hideLoading() {
+      this.uiHideLoading()
+    },
+    errDialog(content = '错误消息未定义') {
+      this.dialog(content)
+      return this
+    },
+    accessRules: {
+      sessionTimeOut: ['role.invalid_user', 'validation.user.force.logout.exception'],
+      onSessionTimeOut(response) {
+        this.dialog(`onSessionTimeOut回调：${response.msg}`, {
+          title: '回调通知'
+        })
+      },
+      unauthorized: ['core_error_unauthorized'],
+      onUnauthorized(response) {
+        this.dialog(`onUnauthorized回调应用处理：${response.msg}`, {
+          title: '回调通知'
+        })
+      }
+    }
+  }
+})
+```
 
 ## 配置
 

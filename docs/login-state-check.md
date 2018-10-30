@@ -24,6 +24,101 @@ loginStateCheck: {
 + 这个状态建议配合`UtilHttp#accessRules.sessionTimeOut`和`UtilHttp#accessRules.onSessionTimeOut`，来使用，也就是一般应用都是后台来控制登录状态或者说会话的时长，你需要在`sessionTimeOut`中配置后台会话超时返回的错误码，这样插件就会自动将当期模块的`vplus#loginState`设置为false，这样就帮我们管理了这个**不可控**状态；
 + 如果没有配置在改列表里面的都被视为**公共交易**，即不需要身份认证就可以访问；
 
+## 示例
+
+### 模拟一个身份认证访问控制例子
+
+个人管理页面`/Demo/Manage/User`是一个需要进行身份认证才能访问的router页面，需要首先登陆才能进行访问，如果后台返回强制签退的结果，那么登陆状态将会被设置为`false`，接着要访问之前可以进入的个人管理页面也会被自动拦截；
+
+示例代码：
+
+```html
+<template>
+  <div id="LoginStateCheck">
+    <group title="模拟一个简单的身份认证控制流程" label-width="15em" class="bottom-group">
+      <box gap="10px 10px">
+        <cell title="点击测试访问一个需要登录之后才能访问的页面" link="/Demo/Manage/User"></cell>
+      </box>
+      <box gap="10px 10px">
+        <x-button @click.native="doLogin">登录</x-button>
+      </box>
+      <box gap="10px 10px">
+        <x-button @click.native="doLogout">退出登录</x-button>
+      </box>
+      <box gap="10px 10px">
+        <x-button @click.native="doForcedWithdrawal">模拟强制签退</x-button>
+      </box>
+    </group>
+  </div>
+</template>
+
+
+<script type="text/ecmascript-6">
+  import demoMixin from './demo-mixin'
+  import { Cell } from 'vux'
+
+  export default {
+    mixins: [demoMixin],
+    components: {
+      Cell
+    },
+    methods: {
+      doLogin() {
+        this.$vp.ajaxMixin('LOGIN').then(data => {
+          this.doLoginBtnState = false
+          this.$vp.modifyLoginState(true)
+          console.log(`登录后状态为： ${this.$vp.isLogin()}`)
+          this.$vp.uiToast('模拟登录成功')
+        })
+      },
+      doLogout() {
+        console.log(`登出前状态为： ${this.$vp.isLogin()}`)
+        this.$vp.modifyLoginState(false)
+        console.log(`登录后状态为： ${this.$vp.isLogin()}`)
+        this.$vp.uiToast('退出登录完成')
+      },
+      doForcedWithdrawal() {
+        this.$vp
+          .ajaxMixin('FORCEDWITHDRAWAL', {
+            mode: 'GET'
+          })
+          .catch(resp => {
+            console.error(`模拟强制签退完成：${resp}`)
+            this.$vp.uiToast('模拟强制签退完成')
+          })
+      }
+    },
+    created() {
+      console.log(
+        `登录前状态为： ${this.$vp.isLogin()}`
+      )
+    }
+  }
+</script>
+```
+
+示例所需配置：
+```js
+
+Vue.use(ViewPlus, {
+  // ...
+  loginStateCheck: {
+    checkPaths: [
+      /Manage/
+    ],
+    onLoginStateCheckFail(to, from, next) {
+      this.dialog(`onLoginStateCheckFail被回调：待访问资源【${to.path}】是需要登录才能访问，请先登录`, {
+        action() {
+          next(false)
+        }
+      })
+      // 更新状态进度条
+      store.commit('updateLoadingStatus', false)
+    }
+  }
+})
+```
+
 ## 配置
 
 ### checkPaths

@@ -53,6 +53,8 @@ session storage 参数栈二级存储示例：
 
 ![image-20181030180125629](https://ws1.sinaimg.cn/large/006tNbRwgy1fwqem1fyr9j31kw0w715u.jpg)
 
+图 详见源码`example`项目中当前模块示例
+
 + 表单录入页面(简称：Page1)
 
 ```html
