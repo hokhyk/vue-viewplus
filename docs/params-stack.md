@@ -1,4 +1,4 @@
-# params-stack.js
+params-stack.js
 
 params-stack.js 参数栈模块。
 
@@ -28,11 +28,23 @@ this.$vp.psPageNext('/Demo/PageStack/Page2', {
 这一点和vue router给我们提供的传递方式类似，并且目前还不支持`query: { plan: 'private' }`传递url参数，但是我们为什么还要做这个模块：
 
 + 提供一个**栈**来管理栈内所有页面的参数，方便页面在回退的时候，拿到对应页面的**缓存参数**；即一般我们使用vue router的时候每个页面的参数（除了使用url参数），在做统一返回键处理的时候，都不太方便进行页面状态恢复，而如果我们提供了一个栈，在页面入栈的时候，将当前页面的参数存储，在下一个页面点击返回按钮回到当前页面的时候我们再从参数栈恢复参数，这样就能实现客户端开发中具有的这一特性；
++ 该参数栈也支持缓存->自动恢复，vuex state和session storage两级存储保证参数栈不会被页面刷新而导致页面参数丢失
 + 也为了统一编程方式
 
 并且，当前模块提供的参数传递方式，和vue router给我们提供了两种页面间传递参数的方式，**并不冲突**，可以互补使用。
 
 只不过目前插件的参数栈并没有管理vue router帮我们传递的参数；
+
+
+
+vuex state 参数栈存储示例：
+
+![image-20181030213140848](https://ws4.sinaimg.cn/large/006tNbRwgy1fwqkos2ekdj30lu0jgwgk.jpg)
+
+session storage 参数栈二级存储示例：
+
+![image-20181030213007933](https://ws1.sinaimg.cn/large/006tNbRwgy1fwqkn5kcp8j31k20b8jwx.jpg)
+
 
 
 ## 示例
@@ -395,5 +407,94 @@ export const paramsStackMixin = {
 ```
 
 
+
+## 配置
+
+没有个性化配置，可以查看全局通用配置
+
 ## API接口
 
+### restoreParamsStack
+
+```js
+/**
+   * $vp.restoreParamsStack()
+   * 恢复插件中`vuex#$vp.paramsStack` && vuex#$vp.backParams` && vuex#$vp.backState`参数栈所用状态
+   * <p>
+   * 在当前模块重新安装的时候，一般对应就是插件初始化和页面刷新的时候
+   */
+  restoreParamsStack()
+```
+
+### psModifyBackState
+
+```js
+/**
+   * $vp.psModifyBackState(bckState)
+   * <p>
+   * 设置`vuex#vplus.backState`返回状态
+   * @param {Boolean} [backState=false]
+   */
+  psModifyBackState(bckState)
+```
+
+### psClearParamsStack
+
+```js
+/**
+   * $vp.psClearParamsStack()
+   * <p>
+   * 清空参数栈
+   */
+  psClearParamsStack()
+```
+
+### psPageNext
+
+```js
+/**
+   * $vp.(location[, {params = {}, clearParamsStack = false, backState = false} = {}])
+   * <p>
+   * 页面导航
+   * @param location router location对象
+   * @param {Object} [params={}] 向下一个页面需要传递的参数
+   * @param {Boolean} [clearParamsStack=false] 在进行页面导航的时候，是否清空参数栈，默认为false
+   * @param {Boolean} [backState=false] 设置`vuex#vplus.backState`返回状态，默认为false
+   */
+  psPageNext(location, {params = {}, clearParamsStack = false, backState = false} = {})
+```
+
+### psPageReplace
+
+```js
+/**
+   * $vp.(location[, {params = {}, isPop = true} = {}])
+   * <p>
+   * 页面导航(基于Router)，移除上一个页面
+   * <p>
+   *   将会出栈顶对象，并重新设置`params`为参数栈的栈顶参数
+   *   注：在调用该方法的页面，必须是要调用`ParamsStack#psPageNext`导航的页面，因为需要保证“弹栈”操作无误，
+   *   又或者设置`isPop`为false
+   * @param location router location对象
+   * @param {Object} [params={}] 向下一个页面需要传递的参数
+   * @param {Boolean} [isPop=false] 是否pop当前页面的参数后在进行页面跳转，默认为true，防止当前页面
+   * 不是通过`ParamsStack#psPageNext`导航过来的，但是由需要使用当前方法
+   */
+  psPageReplace(location, {params = {}, isPop = true} = {})
+```
+
+### psPageGoBack
+
+```js
+/**
+   * $vp.psPageGoBack({backParams = {}, clearParamsStack = false, backPopPageNumbs = -1} = {})
+   * <p>
+   * 页面回退
+   * @param {Object} backParams 设置回传参数
+   * @param {Boolean} clearParamsStack 是否清空参数栈
+   * @param {Number} backPopPageNumbs 出栈页面数
+   */
+  psPageGoBack({backParams = {}, clearParamsStack = false, backPopPageNumbs = -1} = {})
+```
+
+### 
