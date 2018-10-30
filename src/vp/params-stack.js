@@ -89,6 +89,9 @@ const plugin = {
   },
   /**
    * $vp.restoreParamsStack()
+   * 恢复插件中`vuex#$vp.paramsStack` && vuex#$vp.backParams` && vuex#$vp.backState`参数栈所用状态
+   * <p>
+   * 在当前模块重新安装的时候，一般对应就是插件初始化和页面刷新的时候
    */
   restoreParamsStack() {
     _store.commit('setBackParams', cache.cacheLoadFromSessionStore('__BACK_PARAMS__', {}))

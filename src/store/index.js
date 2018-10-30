@@ -28,7 +28,6 @@ export default (store) => {
     getters: {
       /**
        * 查看栈顶参数
-       * 注意如果调用`state.commit('modifyParams', {})`修改参数栈，因为vue2针对
        * @param state
        * @returns {*}
        */
@@ -98,7 +97,7 @@ export default (store) => {
        */
       'modifyParams': (state, params) => {
         store.commit('popParams')
-        store.commit('pushParamsStack', params)
+        store.commit('pushParams', params)
       },
       /**
        * 清空参数栈

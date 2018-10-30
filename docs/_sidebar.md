@@ -12,6 +12,7 @@
 
   * [util-http.js](util-http.md)
   * [login-state-check.js](login-state-check.md)
+  * [params-stack.js](params-stack.md)
   * [js-bridge-context.js](js-bridge-context.md)
   * [util-cache.js](util-cache.md)
   * [cache-userinfo.js](cache-userinfo.md)

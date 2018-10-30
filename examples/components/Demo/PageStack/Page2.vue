@@ -62,9 +62,6 @@ export default {
      * 如果需要下一个页面点击返回，任然要回显当前页面，就调用该方法
      * /
     next() {
-      // 不推荐
-      // this.setParams(this.dataParams)
-      // this.$vp.pageNext('/Demo/PageStack/Page3')
       // 推荐
       this.$vp.psPageNext('/Demo/PageStack/Page4', { params: this.dataParams })
     },
