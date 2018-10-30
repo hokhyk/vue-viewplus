@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<p align="center">vue-viewplus <small>0.9.0</small></p>
+<p align="center">vue-viewplus <small>0.9.1</small></p>
 <p align="center">一个简化Vue应用构建的工具库</p>
 
 做这个插件的目的是为了：
