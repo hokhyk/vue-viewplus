@@ -1,4 +1,5 @@
 import { PLUGIN_VUEX_DEF_MODULE_NAME } from '../gloabl-dict'
+import cache from '../vp/util-cache'
 
 export default (store) => {
   store.registerModule(PLUGIN_VUEX_DEF_MODULE_NAME, {
@@ -59,6 +60,7 @@ export default (store) => {
        */
       'setBackParams': (state, params) => {
         state.backParams = params
+        cache.cacheSaveToSessionStore('__BACK_PARAMS__', params)
       },
       /**
        * 入栈
@@ -67,6 +69,24 @@ export default (store) => {
        */
       'pushParams': (state, params) => {
         state.paramsStack.push(params)
+        cache.cacheSaveToSessionStore('__PARAMS_STACK__', state.paramsStack)
+      },
+      /**
+       * 设置参数栈
+       * @param state
+       * @param {Array} [paramsArr=[]]
+       */
+      'pushParamsStack': (state, paramsArr) => {
+        state.paramsStack = paramsArr
+        cache.cacheSaveToSessionStore('__PARAMS_STACK__', paramsArr)
+      },
+      /**
+       * 出栈
+       * @param state
+       */
+      'popParams': (state) => {
+        state.paramsStack.pop()
+        cache.cacheSaveToSessionStore('__PARAMS_STACK__', state.paramsStack)
       },
       /**
        * 修改栈顶参数
@@ -77,15 +97,8 @@ export default (store) => {
        * @param {Object} [params={}]
        */
       'modifyParams': (state, params) => {
-        state.paramsStack.pop()
-        state.paramsStack.push(params)
-      },
-      /**
-       * 出栈
-       * @param state
-       */
-      'popParams': (state) => {
-        state.paramsStack.pop()
+        store.commit('popParams')
+        store.commit('pushParamsStack', params)
       },
       /**
        * 清空参数栈
@@ -93,6 +106,7 @@ export default (store) => {
        */
       'clearParamsStack': (state) => {
         state.paramsStack = []
+        cache.cacheDeleteToSessionStore('__PARAMS_STACK__')
         // state.backParams = {}
       },
       /**
@@ -102,18 +116,19 @@ export default (store) => {
        */
       'setBackState': (state, bckState) => {
         state.backState = bckState
+        cache.cacheSaveToSessionStore('__BACK_STATE__', bckState)
       },
       'navigation/FORWARD': (state, { to }) => {
-        state.backState = false
+        store.commit('setBackState', false)
       },
       'navigation/REPLACE': (state, { to }) => {
-        state.backState = false
+        store.commit('setBackState', false)
       },
       'navigation/BACK': (state, { to, from }) => {
-        state.backState = true
+        store.commit('setBackState', true)
       },
       'navigation/REFRESH': (state, { to }) => {
-        state.backState = false
+        store.commit('setBackState', false)
       }
     }
   })

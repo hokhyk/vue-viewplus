@@ -3,6 +3,7 @@ import MixinPlugin from '../util/mixin-plugin'
 import _utilHttp from '../vp/util-http'
 import _ from 'lodash'
 import { PLUGIN_VUEX_DEF_MODULE_NAME as MODULE_NAME } from '../gloabl-dict'
+import cache from './util-cache'
 
 export const modelName = 'params-stack'
 
@@ -84,6 +85,14 @@ const plugin = {
     if (_.isFunction(_installed)) {
       this::_installed()
     }
+    this.restoreParamsStack()
+  },
+  /**
+   * $vp.restoreParamsStack()
+   */
+  restoreParamsStack() {
+    _store.commit('setBackParams', cache.cacheLoadFromSessionStore('__BACK_PARAMS__', {}))
+    _store.commit('pushParamsStack', cache.cacheLoadFromSessionStore('__PARAMS_STACK__', []))
   },
   /**
    * $vp.psModifyBackState(bckState)

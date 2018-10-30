@@ -12,12 +12,12 @@
 + 用**一种方式解决一个问题**，在开发时候解决问题可以有多种方式，但是我们只需要一种
 
 # 特性
-+ util-http.js 模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（配合login-state-check.js模块完成代理请求）的交互，配合login-state-check.js模块进行身份认证控制。
++ util-http.js 针对axios进行了二次封装的ajax模块。
 + login-state-check.js 身份认证控制模块。
 + params-stack.js 参数栈模块。
 + js-bridge-context.js JSBridge桥接模块，用于简化前端和客户端（Android && IOS）直接的交互，配合[Jiiiiiin/android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)可以让hybrid开发易如反掌 ：）
-+ util-cache.js 缓存模块，为插件的其他模块提供缓存支持。
-+ cache-userinfo.js 缓存用户（登录用户）信息模块。一般应用都需要在前端缓存登录用户的信息，以便在开发过程中使用，当前模块目前提供了一组将用户缓存到【localStorage|sessionStorage】的独立接口。
++ util-cache.js 缓存模块。
++ cache-userinfo.js 缓存用户（登录用户）信息模块。
 + 支持[自定义模块混合](http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-)
 
 # 文档
