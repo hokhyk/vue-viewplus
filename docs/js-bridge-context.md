@@ -78,6 +78,58 @@ android,模块调用的是`global[name].event(JSON.stringify(command))`，这里
 
 哈哈哈，强行安利一波；
 
+
+
+## 示例
+
+模拟前端调用客户端`toast`打印一个`'hello vplus'`
+
+```html
+<template>
+  <div id="JsBridgeContext">
+
+    <group title="使用$vp#fireEvent请求客户端弹出一个toast：" label-width="15em" class="bottom-group">
+      <box gap="10px 10px">
+        <x-button mini plain @click.native="doFireEvent" class="fl-right">运行</x-button>
+      </box>
+    </group>
+
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  import demoMixin from './demo-mixin'
+
+  export default {
+    mixins: [demoMixin],
+    methods: {
+      doFireEvent() {
+        try {
+          this.$vp.fireEvent({
+            event: 'UIEvent',
+            action: 'toast',
+            params: {
+              msg: 'hello vplus'
+            }
+          }).then(res => {
+            this.$vp.uiDialog(res, {
+              title: '桥接调用成功',
+              showCode: true
+            })
+          }).catch(err => {
+            this.$vp.uiDialog(`桥接调用失败 ${err.message}`)
+          })
+        } catch (e) {
+          this.$vp.uiDialog(`桥接调用失败 ${e.message}`)
+        }
+      }
+    }
+  }
+</script>
+```
+
+
+
 ## 配置
 
 ### onParseClientResp[*]
