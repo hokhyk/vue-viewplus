@@ -1,8 +1,5 @@
 import Navigation from 'vue-navigation'
-import {
-  PLUGIN_VM_PREFIX_VIEWPLUS,
-  PLUGIN_VUEX_DEF_MODULE_NAME
-} from './gloabl-dict'
+import { PLUGIN_VM_PREFIX_VIEWPLUS } from './gloabl-dict'
 import MixinPlugin from './util/mixin-plugin'
 import {
   install as utilCacheInstall
@@ -23,13 +20,11 @@ import {
   install as paramsStackInstall,
   paramsStackMixin
 } from './vp/params-stack'
-import {
-  emitErr,
-  init as registErrorHandlerConfigMethod
-} from './util/warn'
+import { emitErr, init as registErrorHandlerConfigMethod } from './util/warn'
 import EventBus from './vp/event-bus.js'
 import device from './util/device'
 import _ from 'lodash'
+import registerCustomModule from './store'
 
 const install = function (Vue, opts = {}) {
   /* istanbul ignore if */
@@ -51,31 +46,8 @@ const install = function (Vue, opts = {}) {
   }
   Vue.use(Navigation, {router, store})
   registErrorHandlerConfigMethod(Vue, debug, errorHandler)
-  store.registerModule(PLUGIN_VUEX_DEF_MODULE_NAME, {
-    state: {
-      /**
-       * 用户登录状态
-       */
-      loginState: false,
-      /**
-       * 存储登录用户信息
-       */
-      loginUserInfo: {}
-    },
-    mutations: {
-      /**
-       * 修改用户登录状态
-       * @param state
-       * @param {Boolean} [stateVal=false] 状态
-       */
-      'modifyLoginState': (state, stateVal = false) => {
-        state.loginState = stateVal
-      },
-      'setLoginUserInfo': (state, user = {}) => {
-        state.loginUserInfo = user
-      }
-    }
-  })
+  registerCustomModule(store)
+
   const defPlugin = new class {
     constructor(options) {
       this.options = options

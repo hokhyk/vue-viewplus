@@ -32,8 +32,7 @@ export default new Router({
               path: 'PageStack',
               component: (resolve) => import('../components/Demo/PageStack').then(module => resolve(module)),
               meta: {
-                title: 'params-stack',
-                subRoot: true
+                title: 'params-stack'
               }
             },
             {
@@ -49,13 +48,6 @@ export default new Router({
               component: (resolve) => import('../components/Demo/PageStack/Page2').then(module => resolve(module)),
               meta: {
                 title: 'Page2'
-              }
-            },
-            {
-              path: 'Page3',
-              component: (resolve) => import('../components/Demo/PageStack/Page3').then(module => resolve(module)),
-              meta: {
-                title: 'Page3'
               }
             },
             {

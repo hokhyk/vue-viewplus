@@ -559,7 +559,7 @@ util-http.js模块对axios进行了一次封装，目的是为了减少开发人
   pageHref(url)
 ```
 
-### pageTo
+### pageTo(n = -1)
 ```js
   /**
    * n个页面回退(基于Router)
@@ -570,7 +570,7 @@ util-http.js模块对axios进行了一次封装，目的是为了减少开发人
   pageTo(n)
 ```
 
-### pageTo
+### pageGoBack()
 ```js
   /**
    * 单个页面回退(基于Router)
@@ -581,7 +581,7 @@ util-http.js模块对axios进行了一次封装，目的是为了减少开发人
   pageGoBack()
 ```
 
-### pageNext
+### pageNext(location = {path: '/'})
 ```js
   /**
    * 页面导航(基于Router)
@@ -602,5 +602,5 @@ util-http.js模块对axios进行了一次封装，目的是为了减少开发人
    * @param location
    * @returns {plugin}
    */
-  pageReplace(location)
+  pageReplace(location = {path: '/'})
 ```

@@ -34,6 +34,7 @@
 import { vueTopprogress } from 'vue-top-progress'
 import { mapState, mapMutations } from 'vuex'
 import { Loading, XHeader, Tabbar, TabbarItem, Icon, ViewBox } from 'vux'
+import { PLUGIN_VUEX_DEF_MODULE_NAME as MODULE_NAME } from '../src/gloabl-dict'
 
 export default {
   name: 'app',
@@ -53,7 +54,7 @@ export default {
   },
   computed: {
     backState() {
-      return this.$store.state['pageStack'].backState
+      return this.$store.state[MODULE_NAME].backState
     },
     ...mapState({
       route: state => state.route,
@@ -109,7 +110,7 @@ export default {
       }
     },
     onHeaderBarTapBck() {
-      this.$vp.psGoBack()
+      this.$vp.psPageGoBack()
     },
     onDemoBarClick() {
       this.updateBackStatus(false)

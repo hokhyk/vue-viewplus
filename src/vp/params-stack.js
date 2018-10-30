@@ -1,114 +1,75 @@
-import { mapMutations } from 'vuex'
-import { warn, emitErr } from '../util/warn'
+import { mapMutations, mapGetters } from 'vuex'
 import MixinPlugin from '../util/mixin-plugin'
 import _utilHttp from '../vp/util-http'
 import _ from 'lodash'
+import { PLUGIN_VUEX_DEF_MODULE_NAME as MODULE_NAME } from '../gloabl-dict'
 
 export const modelName = 'params-stack'
 
-let _store, _moduleName, _backPopPageNumbs, _installed
+let _store, _installed
 
-const _utilObjHasVal = function (tempParams) {
-  return _.isObject(tempParams) && !_.isEmpty(tempParams)
-}
 /**
- * 参数栈模块
- * 1. 如果是栈底需要设置对应的路由，meta.subRoot为true
+ * 参数栈mixin对象
+ * <p>
+ *   方便页面组件继承之后操作参数栈
  * @type {Object}
  */
 export const paramsStackMixin = {
   data() {
     return {
-      bckNumbs: -1,
-      stackBootom: false
+      /**
+       * 声明该页面是栈底部
+       */
+      isStackBottom: false
     }
   },
   computed: {
-    tempParams() {
-      return this.$store.state[_moduleName].tempParams
-    },
-    params() {
-      return this.$store.state[_moduleName].params
-    },
+    ...mapGetters([
+      /**
+       * 查看`vuex#vplus.paramsStack[top-length]`栈顶参数
+       */
+      'params'
+    ]),
+    /**
+     * 查看`vuex#vplus.backParams`回传参数
+     */
     backParams() {
-      return this.$store.state[_moduleName].backParams
+      return this.$store.state[MODULE_NAME].backParams
     },
-    backPopPageNumbs() {
-      return this.$store.state[_moduleName].backPopPageNumbs
-    },
+    /**
+     * 查看`vuex#vplus.backState`是否是出栈|是否是返回状态
+     */
     backState() {
-      return this.$store.state[_moduleName].backState
-    }
-  },
-  watch: {
-    bckNumbs(newNumbs) {
-      this.setBackPopPageNumbs(newNumbs)
-    },
-    '$route'(to, from) {
-      this.update({bckState: this.backState, clearPath: from.path, rollbackPath: to.path})
+      return this.$store.state[MODULE_NAME].backState
     }
   },
   methods: {
     ...mapMutations([
-      'setParams',
-      'setParams2Stack',
-      'rollbackParamsOnBack',
-      'setBackPopPageNumbs',
+      /**
+       * 入栈
+       */
+      'pushParams',
+      /**
+       * 修改栈顶参数
+       */
+      'modifyParams',
+      /**
+       * 出栈
+       */
+      'popParams',
+      /**
+       * 清空参数栈
+       */
       'clearParamsStack',
-      'setBackState',
-      'deleteParamByName'
-    ]),
-    update({bckState = false, rollbackPath = '', clearPath = ''} = {}) {
-      if (bckState) {
-        this.$store.commit('setParams', {})
-        if (!_.isEmpty(clearPath)) {
-          this.deleteParamByName(clearPath)
-        }
-        if (!_.isEmpty(rollbackPath)) {
-          this.rollbackParamsOnBack(rollbackPath)
-        }
-        if (_utilObjHasVal(this.tempParams)) {
-          this.$store.commit('setBackParams', this.tempParams)
-          this.$store.commit('setTempParams', {})
-        }
-      } else {
-        let data = null
-        if (_.isObject(this.params) && !_.isEmpty(this.params)) {
-          data = this.params
-        }
-        const tempParams = this.$store.state[_moduleName].tempParams
-        if (_utilObjHasVal(tempParams)) {
-          // 推荐使用 this.$vp.psPageNext('/Demo/PageStack/Page2', {params: this.dataParams}) 方式向下传递参数
-          data = {...data, ...tempParams}
-          this.$store.commit('setTempParams', {})
-        }
-        if (_utilObjHasVal(data)) {
-          this.setParams(data)
-          this.setParams2Stack({name: this.$route.path, params: data})
-        }
-      }
-    }
+      /**
+       * 设置是否是出栈|是否是返回状态（点击返回页面）
+       */
+      'setBackState'
+    ])
   },
-  created() {
-    this.$navigation.once('back', (to, from) => {
-      this.update({bckState: true, clearPath: from.route.path, rollbackPath: to.route.path})
-    })
-    if (!this.backState) {
-      this.update({bckState: this.backState})
-    }
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.$store.commit('setToPath', to.path)
-      vm.$store.commit('setFromPath', from.path)
-    })
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.update({bckState: this.backState})
-    next()
-  },
+  // 导航离开该组件的对应路由时调用
   beforeRouteLeave(to, from, next) {
-    if (this.backState && this.stackBootom) {
+    if (this.backState && this.isStackBottom) {
       this.clearParamsStack()
     }
     next()
@@ -116,7 +77,7 @@ export const paramsStackMixin = {
 }
 
 /**
- * 和参数栈相关的工具方法
+ * 参数栈模块
  */
 const plugin = {
   installed() {
@@ -124,50 +85,84 @@ const plugin = {
       this::_installed()
     }
   },
+  /**
+   * $vp.psModifyBackState(bckState)
+   * <p>
+   * 设置`vuex#vplus.backState`返回状态
+   * @param {Boolean} [backState=false]
+   */
   psModifyBackState(bckState) {
     _store.commit('setBackState', bckState)
   },
-  psModifyParams(params) {
-    _store.commit('setParams', params)
-  },
-  psModifyBackPopPageNumbs(numbs) {
-    _store.commit('setBackPopPageNumbs', numbs)
-  },
+  /**
+   * $vp.psClearParamsStack()
+   * <p>
+   * 清空参数栈
+   */
   psClearParamsStack() {
     _store.commit('clearParamsStack')
   },
-  psPageNext(location, {params = null, backPopPageNumbs = _backPopPageNumbs} = {}) {
-    if (_utilObjHasVal(params)) {
-      _store.commit('setTempParams', params)
-    }
-    this.psModifyBackPopPageNumbs(_backPopPageNumbs)
-    this.psModifyBackState(false)
+  /**
+   * $vp.(location[, {params = {}, clearParamsStack = false, backState = false} = {}])
+   * <p>
+   * 页面导航
+   * @param location router location对象
+   * @param {Object} [params={}] 向下一个页面需要传递的参数
+   * @param {Boolean} [clearParamsStack=false] 在进行页面导航的时候，是否清空参数栈，默认为false
+   * @param {Boolean} [backState=false] 设置`vuex#vplus.backState`返回状态，默认为false
+   */
+  psPageNext(location, {params = {}, clearParamsStack = false, backState = false} = {}) {
+    _store.commit('pushParams', params)
     _store.commit('setBackParams', {})
-    _utilHttp.pageNext(location)
-  },
-  psPageReplace(location, {params = null, backPopPageNumbs = _backPopPageNumbs} = {}) {
-    if (_utilObjHasVal(params)) {
-      _store.commit('setTempParams', params)
-    }
-    this.psModifyBackPopPageNumbs(_backPopPageNumbs)
-    this.psModifyBackState(false)
-    _store.commit('setBackParams', {})
-    _utilHttp.pageReplace(location)
-    _store.commit('deleteParamByName', _store.state[_moduleName].toPath)
-  },
-  psGoBack({backParams = {}, backPopPageNumbs = NaN} = {}) {
-    if (_utilObjHasVal(backParams)) {
-      _store.commit('setTempParams', backParams)
-    }
-    this.psModifyBackState(true)
-    if (!isNaN(backPopPageNumbs)) {
-      this.psModifyBackPopPageNumbs(backPopPageNumbs)
-    }
-    _utilHttp.pageTo(_store.state[_moduleName].backPopPageNumbs)
-    this.psModifyBackPopPageNumbs(_backPopPageNumbs)
-    if (this.bckNumbs) {
+    this.psModifyBackState(backState)
+    if (clearParamsStack) {
       this.psClearParamsStack()
     }
+    _utilHttp.pageNext(location)
+  },
+  /**
+   * $vp.(location[, {params = {}, isPop = true} = {}])
+   * <p>
+   * 页面导航(基于Router)，移除上一个页面
+   * <p>
+   *   将会出栈顶对象，并重新设置`params`为参数栈的栈顶参数
+   *   注：在调用该方法的页面，必须是要调用`ParamsStack#psPageNext`导航的页面，因为需要保证“弹栈”操作无误，
+   *   又或者设置`isPop`为false
+   * @param location router location对象
+   * @param {Object} [params={}] 向下一个页面需要传递的参数
+   * @param {Boolean} [isPop=false] 是否pop当前页面的参数后在进行页面跳转，默认为true，防止当前页面
+   * 不是通过`ParamsStack#psPageNext`导航过来的，但是由需要使用当前方法
+   */
+  psPageReplace(location, {params = {}, isPop = true} = {}) {
+    if (isPop) {
+      _store.commit('modifyParams', params)
+    } else {
+      _store.commit('pushParams', params)
+    }
+    _store.commit('setBackParams', {})
+    this.psModifyBackState(false)
+    _utilHttp.pageReplace(location)
+  },
+  /**
+   * $vp.psPageGoBack({backParams = {}, clearParamsStack = false, backPopPageNumbs = -1} = {})
+   * <p>
+   * 页面回退
+   * @param {Object} backParams 设置回传参数
+   * @param {Boolean} clearParamsStack 是否清空参数栈
+   * @param {Number} backPopPageNumbs 出栈页面数
+   */
+  psPageGoBack({backParams = {}, clearParamsStack = false, backPopPageNumbs = -1} = {}) {
+    if (_.gt(backPopPageNumbs, 0)) {
+      throw new Error('backPopPageNumbs参数设置错误，出栈页面数必须是负数')
+    }
+    _store.commit('setBackParams', backParams)
+    if (this.isStackBottom || clearParamsStack) {
+      this.psClearParamsStack()
+    } else {
+      _store.commit('popParams')
+    }
+    this.psModifyBackState(true)
+    _utilHttp.pageTo(backPopPageNumbs)
   }
 }
 
@@ -176,102 +171,10 @@ export default plugin
 export const install = function (Vue, {
   store = null,
   paramsStack: {
-    moduleName = 'pageStack',
-    backPopPageNumbs = -1,
     installed = null
   } = {}
 } = {}) {
-  let pluginCanUse = true
-  if (!store) {
-    emitErr(new Error(`store配置参数未传递，无法添加${modelName}模块！`), null, true)
-    pluginCanUse = false
-  }
-  if (!Vue.prototype.hasOwnProperty('$navigation')) {
-    emitErr(new Error(`需要依赖vue-navigation，请看插件info->peerDependencies描述，无法添加${modelName}模块！`), null, true)
-    pluginCanUse = false
-  }
-  if (pluginCanUse) {
-    _store = store
-    _moduleName = moduleName
-    _backPopPageNumbs = backPopPageNumbs
-    _store.registerModule(moduleName, {
-      state: {
-        toPath: '',
-        fromPath: '',
-        params: {},
-        tempParams: {},
-        paramsStack: {},
-        backParams: {},
-        // 返回按钮返回的页面数
-        backPopPageNumbs: _backPopPageNumbs,
-        backState: false
-      },
-      mutations: {
-        'setToPath': (state, toPath) => {
-          state.toPath = toPath
-        },
-        'setFromPath': (state, fromPath) => {
-          state.fromPath = fromPath
-        },
-        'setTempParams': (state, params) => {
-          state.tempParams = params
-        },
-        'setParams': (state, params) => {
-          state.params = params
-        },
-        'setBackParams': (state, params) => {
-          state.backParams = params
-        },
-        'setBackPopPageNumbs': (state, numb) => {
-          state.backPopPageNumbs = numb
-        },
-        /**
-         * 通过页面id（路由path），将页面和页面所需参数缓存到参数栈
-         * @type {[type]}
-         */
-        'setParams2Stack': (state, { name, params }) => {
-          if (name && name.trim().length > 0 && _utilObjHasVal(params)) {
-            state.paramsStack[name] = params
-          } else {
-            warn(`setParams2Stack设置的参数不是一个对象或者没有值 ${params}`)
-          }
-        },
-        /**
-         * 如果返回状态为真，则从paramsStack存储容器中读取页面之前设置到其中的参数到params状态
-         */
-        'rollbackParamsOnBack': (state, name) => {
-          const temp = state.paramsStack[name]
-          if (temp) {
-            state.params = temp
-          }
-        },
-        'deleteParamByName': (state, name) => {
-          delete state.paramsStack[name]
-        },
-        'clearParamsStack': (state) => {
-          state.paramsStack = {}
-          state.backParams = {}
-          state.params = {}
-        },
-        'setBackState': (state, bckState) => {
-          state.backState = bckState
-        },
-        'navigation/FORWARD': (state, { to }) => {
-          state.backState = false
-        },
-        'navigation/REPLACE': (state, { to }) => {
-          state.backState = false
-        },
-        'navigation/BACK': (state, { to, from }) => {
-          state.backState = true
-        },
-        'navigation/REFRESH': (state, { to }) => {
-          state.backState = false
-        }
-      }
-    })
-
-    _installed = installed
-    MixinPlugin.mixin(Vue, plugin, modelName)
-  }
+  _store = store
+  _installed = installed
+  MixinPlugin.mixin(Vue, plugin, modelName)
 }

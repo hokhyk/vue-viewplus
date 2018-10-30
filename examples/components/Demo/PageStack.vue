@@ -15,13 +15,12 @@
 
     <group title="模拟一个简单表单提交流程" label-width="15em" class="bottom-group">
       <box gap="10px 10px">
-        <cell title="点击" link="/Demo/PageStack/Page1"></cell>
+        <cell title="点击 手机充值" @click.native="next()" link="/Demo/PageStack/Page1"></cell>
       </box>
     </group>
 
   </div>
 </template>
-
 
 <script type="text/ecmascript-6">
   import demoMixin from './demo-mixin'
@@ -32,30 +31,14 @@
     components: {
       Cell
     },
+    data() {
+      return {
+        isStackBottom: true
+      }
+    },
     methods: {
-      doLogin() {
-        this.$vp.ajaxMixin('LOGIN').then(data => {
-          this.doLoginBtnState = false
-          this.$vp.modifyLoginState(true)
-          console.log(`登录后状态为： ${this.$vp.isLogin()}`)
-          this.$vp.uiToast('模拟登录成功')
-        })
-      },
-      doLogout() {
-        console.log(`登出前状态为： ${this.$vp.isLogin()}`)
-        this.$vp.modifyLoginState(false)
-        console.log(`登录后状态为： ${this.$vp.isLogin()}`)
-        this.$vp.uiToast('退出登录完成')
-      },
-      doForcedWithdrawal() {
-        this.$vp
-          .ajaxMixin('FORCEDWITHDRAWAL', {
-            mode: 'GET'
-          })
-          .catch(resp => {
-            console.error(`模拟强制签退完成：${resp}`)
-            this.$vp.uiToast('模拟强制签退完成')
-          })
+      next() {
+        this.$vp.psPageNext('/Demo/PageStack/Page1', {params: {phoneNumb: 13111111111}})
       }
     },
     created() {

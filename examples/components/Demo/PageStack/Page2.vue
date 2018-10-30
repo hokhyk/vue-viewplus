@@ -1,94 +1,174 @@
 <template>
-<group title="堆栈-第二页" label-width="15em">
-  <box gap="10px 10px">
-    <h2 v-if="this.$vp.utilObjHasVal(params)">初始化页面参数【params】: {{ params}}</h2>
-    <h2 v-if="this.$vp.utilObjHasVal(backParams)">是个页面回传的参数【backParams】: {{backParams}}</h2>
-    <x-button @click.native="next()">传递参数{{dataParams}}到下一个页面</x-button>
-    <x-button @click.native="bck()">返回Page1页面并回传参数</x-button>
-  </box>
-  <cell-box>
-    <pre v-highlightjs><code class="javascript">
-import {
-paramsStack
-} from 'vue-viewplus'
+  <group label-width="15em" class="bottom-group">
+    <form-preview header-label="请确认订单信息" :body-items="list" ></form-preview>
+    <x-input title="请输出充值金额" v-model="dataParams.amount" style="margin-top: 10px"></x-input>
+    <box gap="10px 10px">
+      <flexbox>
+        <flexbox-item>
+          <x-button type="default" @click.native="replace()">确认</x-button>
+        </flexbox-item>
+        <flexbox-item>
+          <x-button type="default" @click.native="bck()">返回(回传参数)</x-button>
+        </flexbox-item>
+      </flexbox>
+    </box>
+    <form-preview header-label="参数栈回显" :body-items="stackList" ></form-preview>
+    <cell-box>
+      <pre v-highlightjs><code class="javascript">
+import demoMixin from '../demo-mixin'
+import { paramsStack } from 'vue-viewplus'
+import { XInput, FormPreview, Flexbox, FlexboxItem } from 'vux'
 
-  export default {
-  mixins: [paramsStack],
+export default {
+  mixins: [paramsStack, demoMixin],
   components: {
-    Group,
-    XButton,
-    Box
+    FormPreview,
+    Flexbox,
+    FlexboxItem,
+    XInput
   },
   data() {
     return {
+      list: [
+        {
+          label: '手机号',
+          value: ''
+        }
+      ],
+      stackList: [
+        {
+          label: 'params',
+          value: {}
+        },
+        {
+          label: 'backParams',
+          value: {}
+        }
+      ],
       dataParams: {
-        from: 'Page2'
+        phoneNumb: '',
+        amount: '50元'
       }
     }
   },
   methods: {
+    showStackList() {
+      console.log('this.params', this.params)
+      console.log('this.backParams', JSON.stringify(this.backParams))
+      this.stackList[0].value = this.params
+      this.stackList[1].value = this.backParams
+    },
+    /**
+     * 如果需要下一个页面点击返回，任然要回显当前页面，就调用该方法
+     * /
     next() {
       // 不推荐
       // this.setParams(this.dataParams)
       // this.$vp.pageNext('/Demo/PageStack/Page3')
       // 推荐
-      this.$vp.psPageNext('/Demo/PageStack/Page3', {params: this.dataParams})
+      this.$vp.psPageNext('/Demo/PageStack/Page4', { params: this.dataParams })
+    },
+    /**
+     * 一般确认页面都无需被“保留”，故这里使用`this.$vp.psPageReplace`接口完成跳转，底层将会使用
+     * `router.replace({location})`完成跳转
+     */
+    replace() {
+      console.log('充值确认数据：', JSON.stringify(this.dataParams))
+      this.$vp.psPageReplace('/Demo/PageStack/Page4', {params: this.dataParams})
     },
     bck() {
-      this.$vp.psGoBack({
+      this.$vp.psPageGoBack({
         backParams: {
-          from: '这个参数是Page2模拟拦截返回事件设置返回给Page1使用的'
+          phoneNumb: '13222222222'
         }
       })
     }
+  },
+  created() {
+    this.showStackList()
+    this.list[0].value = this.params.phoneNumb
+    this.dataParams.phoneNumb = this.params.phoneNumb
   }
 }
-    </code></pre>
-  </cell-box>
-</group>
+      </code></pre>
+    </cell-box>
+  </group>
 </template>
 
 <script type="text/ecmascript-6">
-import {
-  Group,
-  XButton,
-  Box,
-  CellBox
-} from 'vux'
-import {
-  paramsStack
-} from 'vue-viewplus'
+import demoMixin from '../demo-mixin'
+import { paramsStack } from 'vue-viewplus'
+import { XInput, FormPreview, Flexbox, FlexboxItem } from 'vux'
 
 export default {
-  mixins: [paramsStack],
+  mixins: [paramsStack, demoMixin],
   components: {
-    Group,
-    XButton,
-    Box,
-    CellBox
+    FormPreview,
+    Flexbox,
+    FlexboxItem,
+    XInput
   },
   data() {
     return {
+      list: [
+        {
+          label: '手机号',
+          value: ''
+        }
+      ],
+      stackList: [
+        {
+          label: 'params',
+          value: {}
+        },
+        {
+          label: 'backParams',
+          value: {}
+        }
+      ],
       dataParams: {
-        from: 'Page2'
+        phoneNumb: '',
+        amount: '50元'
       }
     }
   },
   methods: {
+    showStackList() {
+      console.log('this.params', this.params)
+      console.log('this.backParams', JSON.stringify(this.backParams))
+      this.stackList[0].value = this.params
+      this.stackList[1].value = this.backParams
+    },
+    /**
+     * 如果需要下一个页面点击返回，任然要回显当前页面，就调用该方法
+     * /
     next() {
       // 不推荐
       // this.setParams(this.dataParams)
       // this.$vp.pageNext('/Demo/PageStack/Page3')
       // 推荐
-      this.$vp.psPageNext('/Demo/PageStack/Page3', {params: this.dataParams})
+      this.$vp.psPageNext('/Demo/PageStack/Page4', { params: this.dataParams })
+    },
+    /**
+     * 一般确认页面都无需被“保留”，故这里使用`this.$vp.psPageReplace`接口完成跳转，底层将会使用
+     * `router.replace({location})`完成跳转
+     */
+    replace() {
+      console.log('充值确认数据：', JSON.stringify(this.dataParams))
+      this.$vp.psPageReplace('/Demo/PageStack/Page4', {params: this.dataParams})
     },
     bck() {
-      this.$vp.psGoBack({
+      this.$vp.psPageGoBack({
         backParams: {
-          from: '这个参数是Page2模拟拦截返回事件设置返回给Page1使用的'
+          phoneNumb: '13222222222'
         }
       })
     }
+  },
+  created() {
+    this.showStackList()
+    this.list[0].value = this.params.phoneNumb
+    this.dataParams.phoneNumb = this.params.phoneNumb
   }
 }
 </script>

@@ -39,8 +39,7 @@
     "vue-navigation": "^1.1.4",
     "web-storage-cache": "^1.0.3"
   },
-  "peerDependencies": {
-  },
+  "peerDependencies": {},
   "devDependencies": {
     "autoprefixer": "^8.1.0",
     "babel-core": "^6.26.3",

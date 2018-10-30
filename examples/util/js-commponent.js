@@ -7,7 +7,7 @@ let _Vue, /* 计时器 */_t
  * 常用工具函数模块
  */
 const plugin = {
-  toast(msg = '默认消息！', {position = 'bottom', time = 2000, width = '7.6em', type = 'text'} = {}) {
+  toast(msg = '默认消息！', {position = 'bottom', time = 3000, width = '7.6em', type = 'text'} = {}) {
     _Vue.$vux.toast.show({
       text: msg,
       time,

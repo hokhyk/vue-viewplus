@@ -560,7 +560,7 @@ const plugin = {
    * 跳转前会通知`utilHttpInstall#onPageTo(n, router)`钩子函数，如果配置
    * @returns {$vp}
    */
-  pageTo(n) {
+  pageTo(n = -1) {
     this::callFunc(_onPageTo, n, _router)
     if (_router) {
       _router.go(n)
@@ -591,7 +591,7 @@ const plugin = {
    * @param location
    * @returns {plugin}
    */
-  pageNext(location) {
+  pageNext(location = {path: '/'}) {
     this::callFunc(_onPageNext, location, _router)
     if (_.isString(location)) {
       location = {path: location}
@@ -614,7 +614,7 @@ const plugin = {
    * @param location
    * @returns {plugin}
    */
-  pageReplace(location) {
+  pageReplace(location = {path: '/'}) {
     this::callFunc(_onPageReplace, location, _router)
     if (_router) {
       _router.replace(location)
