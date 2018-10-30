@@ -47,6 +47,8 @@ npm run dev
 
 # 模块简介
 
+[更多模块详见文档](http://jiiiiiin.cn/vue-viewplus/#/)
+
 ## util-http.js
 
 util-http.js 针对axios进行了二次封装的ajax模块。
