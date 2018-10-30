@@ -1,6 +1,6 @@
 ![logo](_media/logo.svg)
 
-# vue-viewplus <small>0.8.0</small>
+# vue-viewplus <small>0.9.0</small>
 
 > 一个简化Vue应用构建的工具库
 
