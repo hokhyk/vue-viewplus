@@ -18,9 +18,10 @@
 + js-bridge-context.js JSBridge桥接模块，用于简化前端和客户端（Android && IOS）直接的交互，配合[Jiiiiiin/android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)可以让hybrid开发易如反掌 ：）
 + util-cache.js 缓存模块，为插件的其他模块提供缓存支持。
 + cache-userinfo.js 缓存用户（登录用户）信息模块。一般应用都需要在前端缓存登录用户的信息，以便在开发过程中使用，当前模块目前提供了一组将用户缓存到【localStorage|sessionStorage】的独立接口。
++ 支持[自定义模块混合](http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-)
 
 # 文档
-[文档](http://jiiiiiin.cn/vue-viewplus/)
+[点击查看文档](http://jiiiiiin.cn/vue-viewplus/)
 
 # 例子
 
@@ -43,5 +44,3 @@ npm run dev
 # 案例
 
 + [云南农信手机银行](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)
-
-![云南农信手机银行](http://a.app.qq.com/o/image/microQr.png?pkgName=com.csii.mobilebank)
