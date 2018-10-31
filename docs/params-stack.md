@@ -253,6 +253,10 @@ export default {
 </script>
 ```
 
+
+
+## paramsStack mixin
+
 以上3个页面都集成了`paramsStack mixin`，定义如下：
 
 ```js
