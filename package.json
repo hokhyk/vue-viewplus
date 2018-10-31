@@ -1,7 +1,7 @@
 {
   "name": "vue-viewplus",
   "version": "0.9.1",
-  "description": "一个简化Vue应用构建的工具库",
+  "description": "一个简化Vue应用开发的工具库",
   "author": "z.jiiiiiin <“jiiiiiin@yeah.net”>",
   "license": "MIT",
   "private": false,

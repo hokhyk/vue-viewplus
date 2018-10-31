@@ -2,7 +2,7 @@
 
 # vue-viewplus <small>0.9.1</small>
 
-> 一个简化Vue应用构建的工具库
+> 一个简化Vue应用开发的工具库
 
 * Simple and lightweight (~12kb gzipped)
 
