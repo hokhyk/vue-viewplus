@@ -4,7 +4,7 @@
 
 > 一个简化Vue应用开发的工具库
 
-* Simple and lightweight (~12kb gzipped)
+<!-- * Simple and lightweight (~12kb gzipped) -->
 
 [GitHub](https://github.com/Jiiiiiin/vue-viewplus)
 [快速开始](quickstart.md)
