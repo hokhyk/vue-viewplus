@@ -7,7 +7,7 @@
 
   * [全局配置](global_configuration.md)
   * [全局API](global_api.md)
-  * 
+  * [Vuex](vuex_store.md)
 
 * 模块
 

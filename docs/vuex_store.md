@@ -1,49 +1,146 @@
 # Vuex
 
-关于配置，右边标注为`*`号的配置为必须配置项，`[*]`为二选一配置项或建议配置项，`【可选】`为可选配置项，一些钩子配置，建议先有一个概念，在项目正真需要的时候在进行配置即可。
-提出了大量钩子，就是为了满足不同应用的不同控制需求。
+插件维护了一个vuex模块：`vplus`。
+
++ 其中`loginState`为[login-state-check.js 身份认证控制模块使用](login-state-check.md)，来持有用户登录状态，在页面刷新的时候也通过缓存数据来对其进行恢复；
++ `loginUserInfo`为[cache-userinfo.js 缓存用户（登录用户）信息模块](cache-userinfo.md)使用，来持有用户登录信息，在页面刷新的时候也通过缓存数据来对其进行恢复；
++ `paramsStack`、`backParams`、`backState`为[params-stack.js 参数栈模块](params-stack.md)使用，来控制参数栈相关功能
+
+**了解插件的vuex模块为的是大家在使用的是否方便调试，一般不需要应用手动去控制这些模块的状态，各个状态自会有各个插件模块的对应配置或方法去提供大家设置；**
+
+**或者更多的是插件自动控制；**
 
 ```js
- /**
-   * [*] $vp.errorHandler(err)
-   * 插件全局错误回调函数，插件中捕获的异常都将会调用该方法，并传递`Error`类型错误消息；
-   */
-  errorHandler = false
+ export default (store) => {
+  store.registerModule('vplus', {
+    state: {
+      /**
+       * 用户登录状态
+       */
+      loginState: false,
+      /**
+       * 存储登录用户信息
+       */
+      loginUserInfo: {},
+      /**
+       * 参数栈
+       */
+      paramsStack: [],
+      /**
+       * 回传参数
+       */
+      backParams: {},
+      /**
+       * 是否是出栈|是否是返回状态（点击返回页面）
+       */
+      backState: false
+    },
+    getters: {
+      /**
+       * 查看栈顶参数
+       * @param state
+       * @returns {*}
+       */
+      params: state => {
+        return state.paramsStack[state.paramsStack.length - 1]
+      }
+    },
+    mutations: {
+      /**
+       * 修改用户登录状态
+       * @param state
+       * @param {Boolean} [stateVal=false] 状态
+       */
+      'modifyLoginState': (state, stateVal = false) => {
+        state.loginState = stateVal
+      },
+      /**
+       * 设置（登录）用户信息对象
+       * @param state
+       * @param {Object} [user={}]
+       */
+      'setLoginUserInfo': (state, user = {}) => {
+        state.loginUserInfo = user
+      },
+      /**
+       * 设置回传参数
+       * @param state
+       * @param {Object} [params={}]
+       */
+      'setBackParams': (state, params) => {
+        state.backParams = params
+        cache.cacheSaveToSessionStore('__BACK_PARAMS__', params)
+      },
+      /**
+       * 入栈
+       * @param state
+       * @param {Object} [params={}]
+       */
+      'pushParams': (state, params) => {
+        state.paramsStack.push(params)
+        cache.cacheSaveToSessionStore('__PARAMS_STACK__', state.paramsStack)
+      },
+      /**
+       * 设置参数栈
+       * @param state
+       * @param {Array} [paramsArr=[]]
+       */
+      'pushParamsStack': (state, paramsArr) => {
+        state.paramsStack = paramsArr
+        cache.cacheSaveToSessionStore('__PARAMS_STACK__', paramsArr)
+      },
+      /**
+       * 出栈
+       * @param state
+       */
+      'popParams': (state) => {
+        state.paramsStack.pop()
+        cache.cacheSaveToSessionStore('__PARAMS_STACK__', state.paramsStack)
+      },
+      /**
+       * 修改栈顶参数
+       * <p>
+       * https://cn.vuejs.org/v2/guide/list.html#%E5%8F%98%E5%BC%82%E6%96%B9%E6%B3%95
+       * 注: 当前方法修改并会触发`getters#params`的重新更新
+       * @param state
+       * @param {Object} [params={}]
+       */
+      'modifyParams': (state, params) => {
+        store.commit('popParams')
+        store.commit('pushParams', params)
+      },
+      /**
+       * 清空参数栈
+       * @param state
+       */
+      'clearParamsStack': (state) => {
+        state.paramsStack = []
+        cache.cacheDeleteToSessionStore('__PARAMS_STACK__')
+        // state.backParams = {}
+      },
+      /**
+       * 设置是否是出栈|是否是返回状态（点击返回页面）
+       * @param state
+       * @param bckState
+       */
+      'setBackState': (state, bckState) => {
+        state.backState = bckState
+        cache.cacheSaveToSessionStore('__BACK_STATE__', bckState)
+      },
+      'navigation/FORWARD': (state, { to }) => {
+        store.commit('setBackState', false)
+      },
+      'navigation/REPLACE': (state, { to }) => {
+        store.commit('setBackState', false)
+      },
+      'navigation/BACK': (state, { to, from }) => {
+        store.commit('setBackState', true)
+      },
+      'navigation/REFRESH': (state, { to }) => {
+        store.commit('setBackState', false)
+      }
+    }
+  })
+}
 ```
 
-### debug [*]
-
-```js
- /**
-   * [*] $vp.debug
-   * 用于控制插件是否打印一些调试日志
-   */
-  debug = false
-```
-
-### runNative [*]
-
-移动开发需要关注；
-
-```js
- /**
-   * [*] $vp.runNative
-   * 标识当前是否运行在客户端环境，一般都是订制的客户端环境，可以进行JSBridge交互的环境，而非微信客户端这样的意思
-   * <p>
-   * + 方便应用手动控制是否加载当前模块，如果插件直接检测客户端运行环境，那么交互mock势必更加困难
-   * + runNative属性将会被注入到`$vp`对象上，方便应用在开发过程中根据`$vp.runNative`去区别运行环境
-   */
-  runNative = false
-```
-
-### installed
-
-**每个模块**都可以配置一个`installed`方法
-
-```js
-  /**
-   * 【可选】$vp#installed()
-   * 当前模块安装完毕之后会被回调一次
-   */
-  installed()
-```
