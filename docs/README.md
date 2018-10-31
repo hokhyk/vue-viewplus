@@ -14,8 +14,7 @@
 + cache-userinfo.js 缓存用户（登录用户）信息模块。
 + 支持[自定义模块混合](http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-)
 
-# 文档
-[点击查看文档](http://jiiiiiin.cn/vue-viewplus/)
+
 
 # 例子
 
@@ -35,6 +34,8 @@ npm run mock
 npm run dev
 ```
 
+
+
 # 案例
 
 + [云南农信手机银行](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)
@@ -44,9 +45,7 @@ npm run dev
 # 计划
 
 + 变打包插件方式为rollup
-
 + 计划做一个RBAC权限控制，目前login-state-check.js 身份认证控制模块不足以满足后台管理端的RBAC权限控制
-
 + 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个管理端模板
   <a href="https://github.com/d2-projects/d2-admin" target="_blank"><img src="https://raw.githubusercontent.com/FairyEver/d2-admin/master/doc/image/d2-admin@2x.png" width="200"></a>
 
