@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://vux.li">
+  <a href="https://github.com/Jiiiiiin/vue-viewplus">
     <img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwq8xk9nh9j305k05kdfs.jpg" width="175">
   </a>
 </p>
@@ -114,7 +114,7 @@ util-http.js 针对axios进行了二次封装的ajax模块。
         <x-button @click.native.stop="doAjaxAll" :disabled="ajaxAllBtnState">使用$vp#ajaxAll发送请求</x-button>
       </box>
     </group>
-    
+
     <group title="ajaxMixin - NATIVE请求" label-width="15em">
       <box gap="10px 10px">
         <span class="hint-msg-warn">该功能需要客户端JsBridge能力，如没有修改，请别点了 ；）</span><br/>
