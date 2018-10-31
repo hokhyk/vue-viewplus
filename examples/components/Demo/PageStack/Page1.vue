@@ -93,7 +93,8 @@ export default {
   },
   data() {
     return {
-      isStackBottom: true,
+      // 3.【可选】`paramsStack mixin`中定义的`data`属性，声明当前页面组件是参数栈的栈底，当当前页面被点击返回弹出的时候，插件会检测这个属性，如果为true，就清空参数栈
+      // isStackBottom: true,
       stackList: [
         {
           label: 'params',
@@ -147,8 +148,8 @@ export default {
   created() {
     console.log('this.params', this.params)
     this.showStackList()
-    // 声明该页面是栈底部
-    this.isStackBottom = true
+    // 【可选】类似第三步
+    // this.isStackBottom = true
   }
 }
 </script>

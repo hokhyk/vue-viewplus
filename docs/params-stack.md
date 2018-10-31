@@ -84,8 +84,8 @@ export default {
   },
   data() {
     return {
-      // 3.`paramsStack mixin`中定义的`data`属性，声明当前页面组件是参数栈的栈底，当当前页面被点击返回弹出的时候，插件会检测这个属性，如果为true，就清空参数栈
-      isStackBottom: true,
+      // 3.【可选】`paramsStack mixin`中定义的`data`属性，声明当前页面组件是参数栈的栈底，当当前页面被点击返回弹出的时候，插件会检测这个属性，如果为true，就清空参数栈
+      // isStackBottom: true,
       // 4.自定义需要传递到下一个页面的参数
       dataParams: {
         phoneNumb: ''
@@ -100,7 +100,7 @@ export default {
     }
   },
   created() {
-    // 类似第三部
+    // 【可选】类似第三步
     // this.isStackBottom = true
     // 5.解析回传参数
     if (!_.isEmpty(this.backParams)) {
