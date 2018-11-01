@@ -2,6 +2,11 @@
 
 js-bridge-context.js JSBridge桥接模块，用于简化前端和客户端（Android && IOS）直接的交互，配合[Jiiiiiin/android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)可以让hybrid开发易如反掌 ：）
 
+为什么到了今天，还要提hybrid开发，就我所在团队从中获得的好处有：
+
++ 团队较小、业务较重、迭代频繁、需要紧急响应的团队和项目比较适合用
++ 使用单页应用技术团队比较适合，这一点是我在实践了[云南农信手机银行](https://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)这样一个企业级金融app得到的结论，因为单页应用如果首屏加载和页面组件懒加载等机制做的好的话，其实一般单页应用的加载速度不亚于普通的原生开发
+
 这个模块需要和客户端配合使用，有以下一些约束和条件：
 + 客户端只需要暴露一个`上下文对象`、一个`接口`，因为模块再调用客户端时候会约定一个数据传输对象，来满足客户端的内容分发，如：
 android那边可能是这样的：
