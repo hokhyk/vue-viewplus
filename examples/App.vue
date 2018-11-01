@@ -9,7 +9,7 @@
       <transition :name="transitionName">
         <navigation>
           <!-- <keep-alive> -->
-          <router-view class="child-view"></router-view>
+          <router-view class="child-view" :style="{ height: mheight + 'px' }"></router-view>
           <!-- </keep-alive>   -->
         </navigation>
       </transition>
@@ -20,7 +20,8 @@
           <span slot="label">主页</span>
         </tabbar-item>
         <tabbar-item :link="{path:'/Demo'}" :selected="isDemo" @click.native="onDemoBarClick">
-          <i class="iconfont icon-test-case-secondary" slot="icon" style="font-size: 20px; margin-top: 3px; display: inline-block"></i>
+          <i class="iconfont icon-test-case-secondary" slot="icon"
+             style="font-size: 20px; margin-top: 3px; display: inline-block"></i>
           <span slot="label"><span v-if="componentName" class="vux-demo-tabbar-component">{{componentName}}</span><span
             v-else>示例</span></span>
         </tabbar-item>
@@ -31,97 +32,99 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { vueTopprogress } from 'vue-top-progress'
-import { mapState, mapMutations } from 'vuex'
-import { Loading, XHeader, Tabbar, TabbarItem, Icon, ViewBox } from 'vux'
-import { PLUGIN_VUEX_DEF_MODULE_NAME as MODULE_NAME } from '../src/gloabl-dict'
+  import {vueTopprogress} from 'vue-top-progress'
+  import {mapState, mapMutations} from 'vuex'
+  import {Loading, XHeader, Tabbar, TabbarItem, Icon, ViewBox} from 'vux'
+  import {PLUGIN_VUEX_DEF_MODULE_NAME as MODULE_NAME} from '../src/gloabl-dict'
 
-export default {
-  name: 'app',
-  components: {
-    vueTopprogress,
-    Loading,
-    XHeader,
-    Tabbar,
-    TabbarItem,
-    Icon,
-    ViewBox
-  },
-  data() {
-    return {
-      transitionName: 'slide-left'
-    }
-  },
-  computed: {
-    backState() {
-      return this.$store.state[MODULE_NAME].backState
+  export default {
+    name: 'app',
+    components: {
+      vueTopprogress,
+      Loading,
+      XHeader,
+      Tabbar,
+      TabbarItem,
+      Icon,
+      ViewBox
     },
-    ...mapState({
-      route: state => state.route,
-      path: state => state.route.path
-    }),
-    ...mapState(['isLoading', 'appTitle', 'appTitleBarBackBtnVisible']),
-    isDemo() {
-      return /Components|Demo/.test(this.path)
-    },
-    componentName() {
-      if (/Components|Demo\/./.test(this.path)) {
-        return this.appTitle
-      }
-    },
-    leftOptions() {
+    data() {
       return {
-        showBack: !/.[/Info]./.test(this.path) || /.[/Demo]./.test(this.path),
-        backText: '',
-        preventGoBack: true
-      }
-    }
-  },
-  watch: {
-    backState(state) {
-      if (state) {
-        this.transitionName = 'slide-right'
-      } else {
-        this.transitionName = 'slide-left'
+        transitionName: 'slide-left',
+        mheight: 200
       }
     },
-    isLoading(val) {
-      if (val) {
-        this.$refs.topProgress.start()
-      } else {
+    computed: {
+      backState() {
+        return this.$store.state[MODULE_NAME].backState
+      },
+      ...mapState({
+        route: state => state.route,
+        path: state => state.route.path
+      }),
+      ...mapState(['isLoading', 'appTitle', 'appTitleBarBackBtnVisible']),
+      isDemo() {
+        return /Components|Demo/.test(this.path)
+      },
+      componentName() {
+        if (/Components|Demo\/./.test(this.path)) {
+          return this.appTitle
+        }
+      },
+      leftOptions() {
+        return {
+          showBack: !/.[/Info]./.test(this.path) || /.[/Demo]./.test(this.path),
+          backText: '',
+          preventGoBack: true
+        }
+      }
+    },
+    watch: {
+      backState(state) {
+        if (state) {
+          this.transitionName = 'slide-right'
+        } else {
+          this.transitionName = 'slide-left'
+        }
+      },
+      isLoading(val) {
+        if (val) {
+          this.$refs.topProgress.start()
+        } else {
+          this.$refs.topProgress.done()
+        }
+      },
+      path(path) {
+        if (/Info/.test(this.path)) {
+          this.$vp.psModifyBackState(true)
+        } else if (/Demo/.test(this.path)) {
+          // TODO 将scroll上移
+        }
+      }
+    },
+    methods: {
+      ...mapMutations(['updateBackStatus', 'updateLoadingStatus']),
+      onHomeBarClick() {
+        if (this.backState) {
+          this.transitionName = 'slide-right'
+        } else {
+          this.transitionName = 'slide-left'
+        }
+      },
+      onHeaderBarTapBck() {
+        this.$vp.psPageGoBack()
+      },
+      onDemoBarClick() {
+        this.updateBackStatus(false)
+      }
+    },
+    created() {
+      this.$navigation.on('refresh', () => {
         this.$refs.topProgress.done()
-      }
-    },
-    path(path) {
-      if (/Info/.test(this.path)) {
-        this.$vp.psModifyBackState(true)
-      } else if (/Demo/.test(this.path)) {
-        // TODO 将scroll上移
-      }
+      })
+      this.mheight = document.documentElement.offsetHeight - 100
     }
-  },
-  methods: {
-    ...mapMutations(['updateBackStatus', 'updateLoadingStatus']),
-    onHomeBarClick() {
-      if (this.backState) {
-        this.transitionName = 'slide-right'
-      } else {
-        this.transitionName = 'slide-left'
-      }
-    },
-    onHeaderBarTapBck() {
-      this.$vp.psPageGoBack()
-    },
-    onDemoBarClick() {
-      this.updateBackStatus(false)
-    }
-  },
-  created() {
-    this.$navigation.on('refresh', () => {
-      this.$refs.topProgress.done()
-    })
   }
-}
 </script>
 
 <style lang="less" scoped>
