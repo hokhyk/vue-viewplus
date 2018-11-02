@@ -2,11 +2,11 @@
   <div id="UtilHttp">
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title">util-http.js模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合login-state-check.js模块进行身份认证控制。</p>
+        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/util-http">util-http.js 针对axios进行了二次封装的ajax模块。</a></p>
         <span class="hint-title">注意：</span>
         <ul class="hint-msg">
           <li>1. 在进行一下测试前请先阅读<a>示例项目对util-http.js模块的配置</a></li>
-          <li>2. 保证启动了<a>mock server</a></li>
+          <li>2. 保证启动了<a href="http://jiiiiiin.cn/vue-viewplus/#/README?id=%E4%BE%8B%E5%AD%90">mock server</a></li>
           <li>3. 约定服务器端响应的数据结构（测试）
             <pre v-highlightjs><code class="json">{
   "code": [1| "其他字符串，如：session_timeout_err"],

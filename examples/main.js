@@ -84,13 +84,13 @@ Vue.use(ViewPlus, {
     }
   },
   utilHttp: {
-    baseURL: 'http://localhost:7000',
+    // baseURL: 'http://localhost:7000',
+    baseURL: 'https://easy-mock.com/mock/5abc903ff5c35b191f472d79/example',
     // 这里的data key，请查看mock server的jsonp输出配置
     dataKey: 'data',
     statusCodeKey: 'code',
     statusCode: '1',
     msgKey: 'msg',
-    needBase64DecodeMsg: false,
     loading(loadingHintText) {
       this.uiLoading(loadingHintText)
     },

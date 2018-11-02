@@ -3,9 +3,7 @@
 
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title">login-state-check.js 身份认证控制模块</p>
-        <span class="hint-msg">使用该模块可以让应用使用一个包含正则表达式的数组`LoginStateCheck#checkPaths`，来定义需要进行身份认证（登录）才能访问的页面资源（路由的path），这样做的好处就在于，我们不用向很多应用那些去修改路由组件中的mate字段来确认哪一个路由组件需要进行身份认证控制。</span>
-        <br>
+        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/login-state-check">login-state-check.js 身份认证控制模块。</a></p>
         <span class="hint-title">注意：</span>
         <ul class="hint-msg">
           <li>1. 该模块维护了一个vuex state `vplus#loginState`，来持有用户登录状态，在页面刷新的时候也通过缓存数据来对其进行恢复；</li>

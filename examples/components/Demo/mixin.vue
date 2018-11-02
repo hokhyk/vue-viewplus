@@ -8,7 +8,6 @@
     </group>
 
     <group title="演示为$vp混合一个自定义Toast模块" label-width="15em" class="bottom-group">
-      <span>111</span>
       <cell-box class="code-box">
         <pre v-highlightjs><code class="javascript">
 doMixin() {

@@ -2,12 +2,10 @@
   <div id="UtilCache">
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title">util-cache.js缓存模块，为插件的其他模块提供缓存支持</p>
-        <span class="hint-msg">使用<a href="https://github.com/WQTeam/web-storage-cache">web-storage-cache</a>做底层支持，从而支持在缓存的时候设置被缓存对象的超时时间</span>
+        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/util-cache">util-cache.js 缓存模块。</a></p>
         <ul class="hint-msg">
           <li>1. 如防止页面在刷新之后vuex数据状态不能保持，有了缓存模块，我们就可以从缓存中恢复state中的值；</li>
-          <li>2. 注意关于超时控制，你可能去控制台查看数据的时候发现，设置了exp的数据在超时的时候还存在，那是因为`web-storage-cache`底层是将判断放在程序中控制的，也就是说如果你load出来的是一个程序判断依据超时的数据，那么`web-storage-cache`才会将其delete</li>
-          <li>3. 时间有限，以下示例只写了针对`cacheXXXLocalStorage`的个别常用方法，针对Session Storage也具有相同的方法，这里就不再写了，每个对应的接口定义都是一样的，如果你在使用中遇到问题，欢迎拍砖。</li>
+          <li>2. 时间有限，以下示例只写了针对`cacheXXXLocalStorage`的个别常用方法，针对Session Storage也具有相同的方法，这里就不再写了，每个对应的接口定义都是一样的，如果你在使用中遇到问题，欢迎拍砖。</li>
         </ul>
       </box>
     </group>
