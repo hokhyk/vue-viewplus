@@ -1,6 +1,5 @@
-<p align="center">vue-viewplus <small>0.9.1</small></p>
+<p align="center">vue-viewplus <img src="https://img.shields.io/badge/npm-0.9.1-orange.svg"/></p>
 <p align="center">一个简化Vue应用开发的工具库</p>
-
 做这个插件的目的是为了：
 + 针对大多数应用都会用到的功能进行二次封装，减少样板代码，让开发人员更关注于业务本身
 + 用**一种方式解决一个问题**，在开发时候解决问题可以有多种方式，但是我们只需要一种
@@ -13,8 +12,6 @@
 + util-cache.js 缓存模块。
 + cache-userinfo.js 缓存用户（登录用户）信息模块。
 + 支持[自定义模块混合](http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-)
-
-
 
 # 例子
 
