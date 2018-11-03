@@ -2,13 +2,13 @@
 
 util-http.js 针对axios进行了二次封装的ajax模块。
 
-模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合`login-state-check.js`模块进行身份认证控制。
+模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合`login-state-check.js`模块进行身份认证权限控制。
 
 为什么我们需要再封装axios，因为我们在想要做这个插件的时候已经经历了几个项目，不管是否是前后台分离或者是否服务端是RESTFull类型服务，在发送请求和处理请求的时候，对于一个企业级（或者简单应用）都会存在或多或少的样板代码，那我们在实践的过程中就一步一步把这些样本代码抽离了业务，使得开发人员更容易关注于业务本身，这样就提高了开发效率，避免了一些不必要的错误，而这个模块提供了一下几点抽象：
 
 + 帮我们处理了大部分**业务级错误**。何为业务级错误？因为很多的后端返回的数据都非严格意义上的RESTFull格式的结果，这里我们关注的是很多服务都不是以http规范上的状态码**非200**来标识请求出错，而是会有一些**自定义的错误码**，这就提供给了我们进行**统一业务错误处理的冲动**，当然要在此基础上添加对规范形式的统一错误判断也就容易了
 + 帮助我们进行特殊的**请求代理**，因为**加了一层**，我们就可以做很多事情，这里我们就可以让Ajax编程非Ajax，即在移动应用开发的时候，由于**跨域和WebView Ajax发送请求很难对数据进行SSL加密证书配置**两个需求，我们可以让请求发送到客户端，然后由客户端代理前端完成请求的发送，这就涉及到前端和客户端的交互，也就是JSBridge交互，我们已经有了一套[android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)，来解决JSBridge客户端交互流程，那么我们这里就能很简单的在中间加的这一层很简单的完成上面的两个需求
-+ 关于配合`login-state-check.js`模块进行身份认证控制，可以查看当前模块的`accessRules.sessionTimeOut`和`accessRules.onSessionTimeOut`，因为会话的真正控制一般是在后台，那么如果后台的session或token失效之后，服务端肯定会返回响应的错误，那么当前模块通过上面两个`accessRules`的配置，得以使应用拦截到这一时机，并在通知应用前，清理了插件login-state-check.js模块维护的登录状态：`loginStateCheckInstall.modifyLoginState(false)`
++ 关于配合`login-state-check.js`模块进行身份认证权限控制，可以查看当前模块的`accessRules.sessionTimeOut`和`accessRules.onSessionTimeOut`，因为会话的真正控制一般是在后台，那么如果后台的session或token失效之后，服务端肯定会返回响应的错误，那么当前模块通过上面两个`accessRules`的配置，得以使应用拦截到这一时机，并在通知应用前，清理了插件login-state-check.js模块维护的登录状态：`loginStateCheckInstall.modifyLoginState(false)`
 
 下面的接口可能会涉及到服务端返回数据的描述，这里我们先假定一下基本的服务端响应数据格式。
 
@@ -28,7 +28,7 @@ util-http.js 针对axios进行了二次封装的ajax模块。
 
 ## 示例
 
-+ ajax所发接口返回数据请查看，[源码mock目录对应json数据](https://github.com/Jiiiiiin/vue-viewplus/tree/master/mock/data)
+[浏览线上示例](http://vue_viewplus_demo.jiiiiiin.cn/Demo/UtilHttp)
 
 ```html
 <template>
@@ -51,7 +51,7 @@ util-http.js 针对axios进行了二次封装的ajax模块。
         <x-button @click.native.stop="doAjaxAll" :disabled="ajaxAllBtnState">使用$vp#ajaxAll发送请求</x-button>
       </box>
     </group>
-    
+
     <group title="ajaxMixin - NATIVE请求" label-width="15em">
       <box gap="10px 10px">
         <span class="hint-msg-warn">该功能需要客户端JsBridge能力，如没有修改，请别点了 ；）</span><br/>

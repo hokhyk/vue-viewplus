@@ -282,7 +282,7 @@ const _hLoading = function (showLoading) {
 }
 
 /**
- * util-http.js 模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合login-state-check.js模块进行身份认证控制。
+ * util-http.js 模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合login-state-check.js模块进行身份认证权限控制。
  */
 const plugin = {
   /**

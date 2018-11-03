@@ -12,7 +12,7 @@
 
 # 特性
 + [util-http.js 针对axios进行了二次封装的ajax模块。](http://jiiiiiin.cn/vue-viewplus/#/util-http)
-+ [login-state-check.js 身份认证控制模块。](http://jiiiiiin.cn/vue-viewplus/#/login-state-check)
++ [login-state-check.js 身份认证权限控制模块。](http://jiiiiiin.cn/vue-viewplus/#/login-state-check)
 + [params-stack.js 参数栈模块。](http://jiiiiiin.cn/vue-viewplus/#/params-stack)
 + [js-bridge-context.js JSBridge桥接模块](http://jiiiiiin.cn/vue-viewplus/#/js-bridge-context)，用于简化前端和客户端（Android && IOS）直接的交互，配合[Jiiiiiin/android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)可以让hybrid开发易如反掌 ：）
 + [util-cache.js 缓存模块。](http://jiiiiiin.cn/vue-viewplus/#/util-cache)
@@ -26,11 +26,11 @@
 
 + 线上demo
 
-[点击访问demo](http://vue_viewplus_demo.jiiiiiin.cn/Info)
-
 <p align="center"><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwv0ejzauhj305k05kweb.jpg" width="175"></p>
 
 <p align="center">扫码访问</p>
+
+<p align="center"><a href="http://vue_viewplus_demo.jiiiiiin.cn/Info">点击访问demo</p>
 
 + 自己运行demo
 
@@ -60,7 +60,7 @@ npm run dev
 
 + 变打包插件方式为rollup
 
-+ 计划做一个RBAC权限控制，目前login-state-check.js 身份认证控制模块不足以满足后台管理端的RBAC权限控制
++ 计划做一个RBAC权限控制，目前login-state-check.js 身份认证权限控制模块不足以满足后台管理端的RBAC权限控制
 
 + 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个管理端模板
   <a href="https://github.com/d2-projects/d2-admin" target="_blank"><img src="https://raw.githubusercontent.com/FairyEver/d2-admin/master/doc/image/d2-admin@2x.png" width="200"></a>

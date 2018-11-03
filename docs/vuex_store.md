@@ -2,7 +2,7 @@
 
 插件维护了一个vuex模块：`vplus`。
 
-+ 其中`loginState`为[login-state-check.js 身份认证控制模块使用](login-state-check.md)，来持有用户登录状态，在页面刷新的时候也通过缓存数据来对其进行恢复；
++ 其中`loginState`为[login-state-check.js 身份认证权限控制模块使用](login-state-check.md)，来持有用户登录状态，在页面刷新的时候也通过缓存数据来对其进行恢复；
 + `loginUserInfo`为[cache-userinfo.js 缓存用户（登录用户）信息模块](cache-userinfo.md)使用，来持有用户登录信息，在页面刷新的时候也通过缓存数据来对其进行恢复；
 + `paramsStack`、`backParams`、`backState`为[params-stack.js 参数栈模块](params-stack.md)使用，来控制参数栈相关功能
 

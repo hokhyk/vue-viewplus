@@ -76,6 +76,26 @@ doPost() {
       </cell-box>
     </group>
 
+    <group title="模拟后端返回“业务级错误”" label-width="15em">
+      <box gap="10px 10px">
+        <x-button @click.native="doForcedWithdrawal">测试自动处理错误，并清除登录状态</x-button>
+      </box>
+      <cell-box class="code-box">
+        <pre v-highlightjs><code class="javascript">
+doForcedWithdrawal() {
+  this.$vp
+    .ajaxMixin('FORCEDWITHDRAWAL', {
+      mode: 'GET'
+    })
+    .catch(resp => {
+      console.error(`模拟强制签退完成：${resp}`)
+      this.$vp.toast('模拟强制签退完成')
+    })
+}
+      </code></pre>
+      </cell-box>
+    </group>
+
     <group title="ajaxAll请求" label-width="15em">
 
       <box gap="10px 10px">
@@ -226,6 +246,16 @@ export default {
         })
         .catch(resp => {
           this.doPostBtnState = false
+        })
+    },
+    doForcedWithdrawal() {
+      this.$vp
+        .ajaxMixin('FORCEDWITHDRAWAL', {
+          mode: 'GET'
+        })
+        .catch(resp => {
+          console.error(`模拟强制签退完成：${resp}`)
+          this.$vp.toast('模拟强制签退完成')
         })
     },
     doAjaxAll() {

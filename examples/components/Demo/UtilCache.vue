@@ -89,7 +89,7 @@ doCacheDeleteToLocalStore() {
     'test-del',
     'delete'
   )
-  this.$vp.uiToast(`缓存的值: ${this.$vp.cacheLoadFromLocalStore('test-del')}`)
+  this.$vp.toast(`缓存的值: ${this.$vp.cacheLoadFromLocalStore('test-del')}`)
   setTimeout(() => {
     this.$vp.cacheDeleteToLocalStore('test-del')
     const data = this.$vp.cacheLoadFromLocalStore('test-del', '数据已经删除了')
@@ -154,7 +154,7 @@ export default {
         'test-del',
         'delete'
       )
-      this.$vp.uiToast(`缓存的值: ${this.$vp.cacheLoadFromLocalStore('test-del')}`)
+      this.$vp.toast(`缓存的值: ${this.$vp.cacheLoadFromLocalStore('test-del')}`)
       setTimeout(() => {
         this.$vp.cacheDeleteToLocalStore('test-del')
         const data = this.$vp.cacheLoadFromLocalStore('test-del', '数据已经删除了')

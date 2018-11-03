@@ -9,7 +9,7 @@
 # 特性
 
 + util-http.js 针对axios进行了二次封装的ajax模块。
-+ login-state-check.js 身份认证控制模块。
++ login-state-check.js 身份认证权限控制模块。
 + params-stack.js 参数栈模块。
 + js-bridge-context.js JSBridge桥接模块，用于简化前端和客户端（Android && IOS）直接的交互，配合[Jiiiiiin/android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)可以让hybrid开发易如反掌 ：）
 + util-cache.js 缓存模块。
@@ -57,7 +57,7 @@ npm run dev
 # 计划
 
 + 变打包插件方式为rollup
-+ 计划做一个RBAC权限控制，目前login-state-check.js 身份认证控制模块不足以满足后台管理端的RBAC权限控制
++ 计划做一个RBAC权限控制，目前login-state-check.js 身份认证权限控制模块不足以满足后台管理端的RBAC权限控制
 + 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个管理端模板
   <a href="https://github.com/d2-projects/d2-admin" target="_blank"><img src="https://raw.githubusercontent.com/FairyEver/d2-admin/master/doc/image/d2-admin@2x.png" width="200"></a>
 
