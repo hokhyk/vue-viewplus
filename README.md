@@ -30,7 +30,7 @@
 
 <p align="center">扫码访问</p>
 
-<p align="center"><a href="http://vue_viewplus_demo.jiiiiiin.cn/Info">点击访问demo</p>
+<p align="center"><a href="http://vue_viewplus_demo.jiiiiiin.cn/Info">点击访问demo</a></p>
 
 + 自己运行demo
 
