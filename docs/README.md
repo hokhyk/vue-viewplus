@@ -4,7 +4,10 @@
 + 针对大多数应用都会用到的功能进行二次封装，减少样板代码，让开发人员更关注于业务本身
 + 用**一种方式解决一个问题**，在开发时候解决问题可以有多种方式，但是我们只需要一种
 
+
+
 # 特性
+
 + util-http.js 针对axios进行了二次封装的ajax模块。
 + login-state-check.js 身份认证控制模块。
 + params-stack.js 参数栈模块。
@@ -13,7 +16,19 @@
 + cache-userinfo.js 缓存用户（登录用户）信息模块。
 + 支持[自定义模块混合](http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-)
 
+
+
 # 例子
+
+- 线上demo
+
+[点击访问demo](http://vue_viewplus_demo.jiiiiiin.cn/Info)
+
+<p align="center"><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwv0ejzauhj305k05kweb.jpg" width="175"></p>
+
+<p align="center">扫码访问</p>
+
+- 自己运行demo
 
 ```bash
 ├── examples 插件demo
@@ -31,9 +46,12 @@ npm run mock
 npm run dev
 ```
 
+
+
 # 案例
 
 + [云南农信手机银行 一个企业级金融app](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)
+
 
 
 # 计划
