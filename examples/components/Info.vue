@@ -11,7 +11,7 @@
     <cell title="Github" link="https://github.com/Jiiiiiin/vue-viewplus" value="去点个赞！">
       <i class="iconfont icon-github" slot="icon"></i>
     </cell>
-    <cell title="文档" link="https://github.com/Jiiiiiin/vue-viewplus">
+    <cell title="文档" link="http://jiiiiiin.cn/vue-viewplus/#/">
       <i class="iconfont icon-setting" slot="icon"></i>
     </cell>
   </group>
