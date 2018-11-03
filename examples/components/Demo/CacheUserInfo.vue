@@ -2,8 +2,8 @@
   <div id="CacheUserInfo">
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/cache-userinfo">cache-userinfo.js 缓存用户（登录用户）信息模块。</a></p>
-        <span class="hint-title">注意：</span>
+        <p class="title">cache-userinfo.js 缓存用户（登录用户）信息模块。</p>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/components/Demo/CacheUserInfo.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/cache-userinfo">文档</a></p>
         <ul class="hint-msg">
           <li>1. 提供了缓存用户的一系列接口，可以在缓存用户时候设置缓存的超时时间，通过`CacheUserInfo#cacheSaveSignUserInfo.exp`</li>
           <li>2. 在初始化插件的时候，如用户可能已经在原生客户端登录完毕，可以通过配置`CacheUserInfo#userInfo`来初始化用户状态相关信息；</li>

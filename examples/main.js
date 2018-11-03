@@ -91,6 +91,7 @@ Vue.use(ViewPlus, {
     statusCodeKey: 'code',
     statusCode: '1',
     msgKey: 'msg',
+    defShowLoading: true,
     loading(loadingHintText) {
       this.uiLoading(loadingHintText)
     },

@@ -3,11 +3,10 @@
 
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/params-stack">params-stack.js 参数栈模块。</a></p>
-        <span class="hint-title">注意：</span>
+        <p class="title">params-stack.js 参数栈模块。</p>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/components/Demo/PageStack.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/params-stack">文档</a></p>
         <ul class="hint-msg">
-          <li>1. 目前插件的参数栈并没有管理vue router帮我们传递的参数；</li>
-          <li>2. 当前模块提供的参数传递方式，和vue router给我们提供了两种页面间传递参数的方式，**并不冲突**，可以互补使用；</li>
+          <li>当前模块提供的参数传递方式，和vue router给我们提供了两种页面间传递参数的方式，**并不冲突**，可以互补使用；</li>
         </ul>
       </box>
     </group>

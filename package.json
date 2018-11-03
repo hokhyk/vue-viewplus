@@ -23,6 +23,7 @@
     "test-w": "jest --watchAll --notify",
     "prebuild": "eslint src examples && rm -rf ./dist/* && npm run test",
     "build": "node build/build.js",
+    "build-demo": "node build/build-examples.js",
     "prepublish": "npm run lint && npm run test && npm run build",
     "lint": "eslint --ext .js,.vue src examples",
     "fix": "eslint --fix .js,.vue src examples",

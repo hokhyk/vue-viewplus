@@ -2,10 +2,10 @@
   <div id="JsBridgeContext">
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/js-bridge-context">js-bridge-context.js JSBridge桥接模块。</a></p>
-        <span class="hint-title">注意：</span>
+        <p class="title">js-bridge-context.js JSBridge桥接模块。</p>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/components/Demo/JsBridgeContext.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/js-bridge-context">文档</a></p>
         <ul class="hint-msg">
-          <li>1. 这个页面的交互依赖于客户端提供的`JsBridge Context`能力，详细请参考文档，如果没有提供这组能力，运行将会报错!</li>
+          <li>这个页面的交互依赖于客户端提供的`JsBridge Context`能力，详细请参考文档，如果没有提供这组能力，运行将会报错!</li>
         </ul>
       </box>
     </group>

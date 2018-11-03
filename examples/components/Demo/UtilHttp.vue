@@ -2,12 +2,11 @@
   <div id="UtilHttp">
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/util-http">util-http.js 针对axios进行了二次封装的ajax模块。</a></p>
-        <span class="hint-title">注意：</span>
+        <p class="title">util-http.js 针对axios进行了二次封装的ajax模块。</p>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/master/examples/components/Demo/UtilHttp.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/util-http">文档</a></p>
         <ul class="hint-msg">
-          <li>1. 在进行一下测试前请先阅读<a>示例项目对util-http.js模块的配置</a></li>
-          <li>2. 保证启动了<a href="http://jiiiiiin.cn/vue-viewplus/#/README?id=%E4%BE%8B%E5%AD%90">mock server</a></li>
-          <li>3. 约定服务器端响应的数据结构（测试）
+          <li>1. 在进行一下测试前请先阅读<a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/main.js#L86">示例项目对util-http.js模块的配置</a></li>
+          <li>2. 约定服务器端响应的数据结构（测试）
             <pre v-highlightjs><code class="json">{
   "code": [1| "其他字符串，如：session_timeout_err"],
   "data": [{}|[]],

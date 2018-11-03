@@ -3,12 +3,11 @@
 
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title"><a href="http://jiiiiiin.cn/vue-viewplus/#/login-state-check">login-state-check.js 身份认证控制模块。</a></p>
-        <span class="hint-title">注意：</span>
+        <p class="title">login-state-check.js 身份认证控制模块。</p>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/components/Demo/LoginStateCheck.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/login-state-check">文档</a></p>
         <ul class="hint-msg">
-          <li>1. 该模块维护了一个vuex state `vplus#loginState`，来持有用户登录状态，在页面刷新的时候也通过缓存数据来对其进行恢复；</li>
-          <li>2. 这个状态建议配合UtilHttp#accessRules.sessionTimeOut和UtilHttp#accessRules.onSessionTimeOut，来使用，也就是一般应用都是后台来控制登录状态或者说会话的时长，你需要在sessionTimeOut中配置后台会话超时返回的错误码，这样插件就会自动将当期模块的vplus#loginState设置为false，这样就帮我们管理了这个不可控状态；</li>
-          <li>3. 如果没有配置在改列表里面的都被视为公共交易，即不需要身份认证就可以访问；</li>
+          <li>1. 这个状态建议配合UtilHttp#accessRules.sessionTimeOut和UtilHttp#accessRules.onSessionTimeOut，来使用，也就是一般应用都是后台来控制登录状态或者说会话的时长，你需要在sessionTimeOut中配置后台会话超时返回的错误码，这样插件就会自动将当期模块的vplus#loginState设置为false，这样就帮我们管理了这个不可控状态；</li>
+          <li>2. 如果没有配置在改列表里面的都被视为公共交易，即不需要身份认证就可以访问；</li>
         </ul>
       </box>
     </group>

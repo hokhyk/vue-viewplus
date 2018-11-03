@@ -3,7 +3,10 @@
     <group class="desc-group">
       <box gap="10px 10px">
         <p class="title">添加自定义模块 ：）</p>
-        <span class="hint-msg">当前库有一个终止就是“统一开发人员的编码风格”，当然这里做的很简单，就是把所有模块的方法都定义到Vue.prototype.$vp下面。</span>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/components/Demo/mixin.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-">文档</a></p>
+        <ul class="hint-msg">
+          <li>当前库有一个终止就是“统一开发人员的编码风格”，当然这里做的很简单，就是把所有模块的方法都定义到Vue.prototype.$vp下面。</li>
+        </ul>
       </box>
     </group>
 

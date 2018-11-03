@@ -2,7 +2,7 @@
   <div id="demo">
 
     <group>
-      <group-title slot="title">预装模块<span style="float:right;">默认加载</span></group-title>
+      <group-title slot="title">预装模块</group-title>
       <cell title="params-stack" link="/Demo/PageStack/PageStack">
         <i class="iconfont icon-icon_stack" slot="icon"></i>
         <badge text="✨✨✨✨✨"></badge>
