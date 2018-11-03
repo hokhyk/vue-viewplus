@@ -32,7 +32,7 @@ doGet() {
     })
     .then(data => {
       this.doGetBtnState = false
-      this.$vp.uiDialog(
+      this.$vp.dialog(
         data,
         {
           title: '请求成功，响应结果',
@@ -61,7 +61,7 @@ doPost() {
     .ajaxMixin('LOGIN')
     .then(data => {
       this.doPostBtnState = false
-      this.$vp.uiDialog(
+      this.$vp.dialog(
         data,
         {
           title: '请求成功，响应结果',
@@ -103,7 +103,7 @@ doAjaxAll() {
       const res = _.map(resArr, (item) => {
         return item.data
       })
-      this.$vp.uiDialog(res, {
+      this.$vp.dialog(res, {
         title: '请求成功，响应结果',
         showCode: true
       })
@@ -125,14 +125,14 @@ doHttpNative() {
   this.$vp
     .ajaxMixin('TIMESTAMP', { mode: 'NATIVE' })
     .then(res => {
-      this.$vp.uiDialog(res, {
+      this.$vp.dialog(res, {
         title: '请求成功，响应结果',
         showCode: true
       })
       this.doHttpNativeBtnState = false
     })
     .catch((err) => {
-      this.$vp.uiDialog(err, {
+      this.$vp.dialog(err, {
         title: '请求失败，响应结果',
         showCode: true
       })
@@ -156,7 +156,7 @@ doCORS() {
   this.$vp
     .ajaxMixin('TIMESTAMP', { mode: 'GET' })
     .then(res => {
-      this.$vp.uiDialog(res, {
+      this.$vp.dialog(res, {
         title: '请求成功，响应结果',
         showCode: true
       })
@@ -193,11 +193,12 @@ export default {
       this.doGetBtnState = true
       this.$vp
         .ajaxMixin('TIMESTAMP', {
+        // .ajaxMixin('https://www.easy-mock.com/mock/5abc903ff5c35b191f472d79/example/TIMESTAMP', {
           mode: 'GET'
         })
         .then(data => {
           this.doGetBtnState = false
-          this.$vp.uiDialog(
+          this.$vp.dialog(
             data,
             {
               title: '请求成功，响应结果',
@@ -216,7 +217,7 @@ export default {
         .ajaxMixin('LOGIN')
         .then(data => {
           this.doPostBtnState = false
-          this.$vp.uiDialog(
+          this.$vp.dialog(
             data,
             {
               title: '请求成功，响应结果',
@@ -246,7 +247,7 @@ export default {
           const res = _.map(resArr, (item) => {
             return item.data
           })
-          this.$vp.uiDialog(res, {
+          this.$vp.dialog(res, {
             title: '请求成功，响应结果',
             showCode: true
           })
@@ -257,14 +258,14 @@ export default {
       this.$vp
         .ajaxMixin('TIMESTAMP', { mode: 'NATIVE' })
         .then(res => {
-          this.$vp.uiDialog(res, {
+          this.$vp.dialog(res, {
             title: '请求成功，响应结果',
             showCode: true
           })
           this.doHttpNativeBtnState = false
         })
         .catch((err) => {
-          this.$vp.uiDialog(err, {
+          this.$vp.dialog(err, {
             title: '请求失败，响应结果',
             showCode: true
           })
@@ -276,7 +277,7 @@ export default {
       this.$vp
         .ajaxMixin('TIMESTAMP', { mode: 'GET' })
         .then(res => {
-          this.$vp.uiDialog(res, {
+          this.$vp.dialog(res, {
             title: '请求成功，响应结果',
             showCode: true
           })

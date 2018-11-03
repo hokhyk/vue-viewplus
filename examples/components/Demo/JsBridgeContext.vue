@@ -21,12 +21,12 @@ doFireEvent() {
       msg: 'hello vplus'
     }
   }).then(res => {
-    this.$vp.uiDialog(res, {
+    this.$vp.dialog(res, {
       title: '桥接调用成功',
       showCode: true
     })
   }).catch(err => {
-    this.$vp.uiDialog(`桥接调用失败 ${err.message}`)
+    this.$vp.dialog(`桥接调用失败 ${err.message}`)
   })
 }
       </code></pre>
@@ -54,15 +54,15 @@ doFireEvent() {
               msg: 'hello vplus'
             }
           }).then(res => {
-            this.$vp.uiDialog(res, {
+            this.$vp.dialog(res, {
               title: '桥接调用成功',
               showCode: true
             })
           }).catch(err => {
-            this.$vp.uiDialog(`桥接调用失败 ${err.message}`)
+            this.$vp.dialog(`桥接调用失败 ${err.message}`)
           })
         } catch (e) {
-          this.$vp.uiDialog(`桥接调用失败 ${e.message}`)
+          this.$vp.dialog(`桥接调用失败 ${e.message}`)
         }
       }
     }

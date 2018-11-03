@@ -36,7 +36,7 @@ doMixin() {
       version: '1.0'
     })
   } catch (e) {
-    this.$vp.uiDialog(`自定义混合出错 ${e.message}`)
+    this.$vp.dialog(`自定义混合出错 ${e.message}`)
   }
 }
       </code></pre>
@@ -85,7 +85,7 @@ doMixin() {
             version: '1.0'
           })
         } catch (e) {
-          this.$vp.uiDialog(`自定义混合出错 ${e.message}`)
+          this.$vp.dialog(`自定义混合出错 ${e.message}`)
         }
       }
     }

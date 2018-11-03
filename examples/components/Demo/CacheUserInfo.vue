@@ -19,7 +19,7 @@ doCacheSaveUserInfo() {
     { name: 'admin' }
   )
   const user = this.$vp.cacheLoadUserInfo()
-  this.$vp.uiDialog(user, { title: '查询缓存用户信息', showCode: true })
+  this.$vp.dialog(user, { title: '查询缓存用户信息', showCode: true })
 }
       </code></pre>
       </cell-box>
@@ -34,7 +34,7 @@ doCacheSaveUserInfo() {
 doCacheClearUserInfo() {
   this.$vp.cacheLoadUserInfo()
   const user = this.$vp.cacheLoadUserInfo()
-  this.$vp.uiDialog(user, { title: '查询缓存用户信息', showCode: true })
+  this.$vp.dialog(user, { title: '查询缓存用户信息', showCode: true })
 }
       </code></pre>
       </cell-box>
@@ -49,7 +49,7 @@ doCacheClearUserInfo() {
         <pre v-highlightjs><code class="javascript">
 doIsCachedUserInfoState() {
   const state = this.$vp.isCachedUserInfoState()
-  this.$vp.uiDialog(state)
+  this.$vp.dialog(state)
 }
       </code></pre>
       </cell-box>
@@ -73,16 +73,16 @@ doIsCachedUserInfoState() {
           { name: 'admin' }
         )
         const user = this.$vp.cacheLoadUserInfo()
-        this.$vp.uiDialog(user, { title: '查询缓存用户信息', showCode: true })
+        this.$vp.dialog(user, { title: '查询缓存用户信息', showCode: true })
       },
       doCacheClearUserInfo() {
         this.$vp.cacheLoadUserInfo()
         const user = this.$vp.cacheLoadUserInfo()
-        this.$vp.uiDialog(user, { title: '查询缓存用户信息', showCode: true })
+        this.$vp.dialog(user, { title: '查询缓存用户信息', showCode: true })
       },
       doIsCachedUserInfoState() {
         const state = this.$vp.isCachedUserInfoState()
-        this.$vp.uiDialog(state)
+        this.$vp.dialog(state)
       }
     }
   }

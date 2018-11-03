@@ -30,7 +30,7 @@ doCacheSaveToLocalStore() {
         <pre v-highlightjs><code class="javascript">
 doCacheLoadFromLocalStore() {
   const data = this.$vp.cacheLoadFromLocalStore('user', { name: 'tourist' })
-  this.$vp.uiDialog(data, {
+  this.$vp.dialog(data, {
     showCode: true
   })
 }
@@ -56,7 +56,7 @@ doCacheModifyExpFromLocalStore() {
     this.$vp.cacheModifyExpFromLocalStore('test', 1)
     setTimeout(() => {
       const data = this.$vp.cacheLoadFromLocalStore('test', '数据已经被更新之后，过期了')
-      this.$vp.uiDialog(data)
+      this.$vp.dialog(data)
     }, 3000)
   }, 3000)
 }
@@ -92,7 +92,7 @@ doCacheDeleteToLocalStore() {
   setTimeout(() => {
     this.$vp.cacheDeleteToLocalStore('test-del')
     const data = this.$vp.cacheLoadFromLocalStore('test-del', '数据已经删除了')
-    this.$vp.uiDialog(data, {
+    this.$vp.dialog(data, {
       showCode: true
     })
   }, 1000)
@@ -138,13 +138,13 @@ export default {
         this.$vp.cacheModifyExpFromLocalStore('test-exp', 1)
         setTimeout(() => {
           const data = this.$vp.cacheLoadFromLocalStore('test-exp', '数据已经被更新之后，过期了')
-          this.$vp.uiDialog(data)
+          this.$vp.dialog(data)
         }, 3000)
       }, 3000)
     },
     doCacheLoadFromLocalStore() {
       const data = this.$vp.cacheLoadFromLocalStore('user', { name: 'tourist' })
-      this.$vp.uiDialog(data, {
+      this.$vp.dialog(data, {
         showCode: true
       })
     },
@@ -157,7 +157,7 @@ export default {
       setTimeout(() => {
         this.$vp.cacheDeleteToLocalStore('test-del')
         const data = this.$vp.cacheLoadFromLocalStore('test-del', '数据已经删除了')
-        this.$vp.uiDialog(data, {
+        this.$vp.dialog(data, {
           showCode: true
         })
       }, 1000)
