@@ -24,6 +24,16 @@
 
 # 例子
 
++ 线上demo
+
+[点击访问demo](http://vue_viewplus_demo.jiiiiiin.cn/Info)
+
+<p align="center"><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwv0ejzauhj305k05kweb.jpg" width="175"></p>
+
+<p align="center">扫码访问</p>
+
++ 自己运行demo
+
 ```bash
 ├── examples 插件demo
 ├── mock 插件demo mock服务器接口
