@@ -3,7 +3,7 @@
     <img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwq8xk9nh9j305k05kdfs.jpg" width="175">
   </a>
 </p>
-<p align="center">vue-viewplus <img src="https://img.shields.io/badge/npm-0.9.1-orange.svg"/></p>
+<p align="center">vue-viewplus <img src="https://img.shields.io/badge/npm-0.9.2-orange.svg"/></p>
 <p align="center">一个简化Vue应用开发的工具库</p>
 
 做这个插件的目的是为了：
