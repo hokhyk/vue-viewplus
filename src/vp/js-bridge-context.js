@@ -29,6 +29,7 @@ let _mixinPreCheck = true
  */
 const plugin = {
   installed() {
+    console.log('jsb init')
     if (_.isFunction(_installed)) {
       this::_installed()
     }
@@ -134,7 +135,7 @@ const plugin = {
               break
             default:
           }
-          emitErr(new JsBridgeError('请求客户端出错', `CLINET_THROW_ERROR:${e.message}`), reject)
+          emitErr(new JsBridgeError(`请求客户端出错[${e.message}]`, `FIRE_EVENT_ERROR`), reject)
         }
       }
     })
@@ -178,6 +179,7 @@ export const install = function (Vue, {
     installed = null
   } = {}
 } = {}) {
+  console.log('jsb init', runNative, enable)
   if (runNative && enable) {
     _onParseClientResp = onParseClientResp
     if (device.isIpad || device.isIphone || device.isIpod) {
@@ -200,12 +202,9 @@ export const install = function (Vue, {
   } else {
     _mixinPreCheck = false
   }
-  if (_mixinPreCheck) {
-    _installed = installed
-    MixinPlugin.mixin(Vue, plugin, modelName)
-  } else {
-    if (runNative) {
-      emitErr(new JsBridgeError(`JsBridge检测失败，不支持当前运行环境，无法添加${modelName}模块！`, 'RUN_EVN_NOT_SUPPORT'), null, true)
-    }
+  if (!_mixinPreCheck) {
+    emitErr(new JsBridgeError(`JsBridge检测失败，不支持当前运行环境，无法添加${modelName}模块！`, 'RUN_EVN_NOT_SUPPORT'), null, true)
   }
+  _installed = installed
+  MixinPlugin.mixin(Vue, plugin, modelName)
 }

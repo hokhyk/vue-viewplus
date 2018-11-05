@@ -38,6 +38,7 @@ const install = function (Vue, opts = {}) {
      */
     errorHandler, debug = false, runNative = true
   } = opts
+  opts = {...{debug, runNative}, ...opts}
   if (_.isUndefined(router)) {
     emitErr(new Error(`router必须配置！`))
   }

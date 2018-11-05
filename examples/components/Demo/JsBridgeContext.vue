@@ -59,7 +59,9 @@ doFireEvent() {
               showCode: true
             })
           }).catch(err => {
-            this.$vp.dialog(`桥接调用失败 ${err.message}`)
+            this.$vp.dialog(`${err.message}`, {
+              title: '桥接调用失败'
+            })
           })
         } catch (e) {
           this.$vp.dialog(`桥接调用失败 ${e.message}`)
