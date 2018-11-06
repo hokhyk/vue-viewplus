@@ -8,10 +8,6 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
-// function resolve (dir) {
-//   return path.join(__dirname, '..', dir)
-// }
-
 const devAddEntryWebpackConfig = merge(baseWebpackConfig, {
   entry: {
     app: './examples/main.js',
