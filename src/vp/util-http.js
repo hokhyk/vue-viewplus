@@ -31,7 +31,7 @@ let _Vue, _router,
   _onSendAjaxRespErr,
   _onSendAjaxParamsHandle,
   _onSendAjaxRespHandle,
-  _onReqErrPaserMsg,
+  _onReqErrParseMsg,
   _defShowLoading,
   _dataKey,
   _statusCodeKey,
@@ -159,11 +159,11 @@ const _handlerBusinessErrMsg = function (needHandlerErr, response) {
         const errCode = _.isEmpty(_errCodeKey) ? response[_statusCodeKey] : response[_errCodeKey]
         // 错误标识符改成可配置
         let errMsg = _getErrMsg(response)
-        if (_.isFunction(_onReqErrPaserMsg)) {
-          // onReqErrPaserMsg回调返回非空字符，视为应用自己来解析了本次错误消息，否则还是用插件解析的为准
-          const tempErrMsg = this::_onReqErrPaserMsg(response, errMsg)
+        if (_.isFunction(_onReqErrParseMsg)) {
+          // onReqErrParseMsg回调返回非空字符，视为应用自己来解析了本次错误消息，否则还是用插件解析的为准
+          const tempErrMsg = this::_onReqErrParseMsg(response, errMsg)
           if (!tempErrMsg || _.isEmpty(tempErrMsg)) {
-            warn(`onReqErrPaserMsg钩子返回的解析到的错误消息为空`)
+            warn(`onReqErrParseMsg钩子返回的解析到的错误消息为空`)
           } else {
             errMsg = tempErrMsg
           }
@@ -768,12 +768,12 @@ export const install = function (Vue, {
      */
     errInfoOutDataObj = false,
     /**
-     * 【可选】`UtilHttp#onReqErrPaserMsg(response)=>{string}`
+     * 【可选】`UtilHttp#onReqErrParseMsg(response)=>{string}`
      * 当发生业务级错误时候被调用，用于给应用提供转意或者解析错误消息的机会，如果返回的字符串为空，否显示默认解析到的错误结果。
      * <p>
      * 回调返回非空字符，视为应用处理了本次错误消息，否显示默认解析到的错误结果。
      */
-    onReqErrPaserMsg = null,
+    onReqErrParseMsg = null,
     /**
      * 【可选】配置是否在发送请求的时候显示loading
      *  <p>
@@ -865,7 +865,7 @@ export const install = function (Vue, {
     _onSendAjaxRespErr = onSendAjaxRespErr
     _onSendAjaxParamsHandle = onSendAjaxParamsHandle
     _onSendAjaxRespHandle = onSendAjaxRespHandle
-    _onReqErrPaserMsg = onReqErrPaserMsg
+    _onReqErrParseMsg = onReqErrParseMsg
     _sessionTimeOut = sessionTimeOut
     _onSessionTimeOut = onSessionTimeOut
     _noNeedDialogHandlerErr = noNeedDialogHandlerErr

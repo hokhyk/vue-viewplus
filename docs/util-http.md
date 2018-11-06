@@ -480,16 +480,16 @@ Vue.use(ViewPlus, {
     errInfoOutDataObj = false
 ```
 
-### onReqErrPaserMsg
+### onReqErrParseMsg
 
 ```js
     /**
-     * 【可选】`UtilHttp#onReqErrPaserMsg(response)=>{string}`
+     * 【可选】`UtilHttp#onReqErrParseMsg(response)=>{string}`
      * 当发生业务级错误时候被调用，用于给应用提供转意或者解析错误消息的机会，如果返回的字符串为空，否显示默认解析到的错误结果。
      * <p>
      * 回调返回非空字符，视为应用处理了本次错误消息，否显示默认解析到的错误结果。
      */
-    onReqErrPaserMsg = null
+    onReqErrParseMsg = null
 ```
 
 ### defShowLoading [*]
