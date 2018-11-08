@@ -41,6 +41,9 @@ Vue.mixin({
   }
 })
 
+// 演示混合自定义模块到$vp
+ViewPlus.mixin(Vue, jsComponents, {moduleName: '自定义jsComponents模块'})
+
 Vue.use(ViewPlus, {
   router,
   store,
@@ -118,9 +121,6 @@ Vue.use(ViewPlus, {
     }
   }
 })
-
-// 演示混合自定义模块到$vp
-ViewPlus.mixin(Vue, jsComponents)
 
 /* eslint-disable no-new */
 new Vue({

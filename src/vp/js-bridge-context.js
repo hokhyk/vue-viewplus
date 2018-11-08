@@ -29,7 +29,6 @@ let _mixinPreCheck = true
  */
 const plugin = {
   installed() {
-    console.log('jsb init')
     if (_.isFunction(_installed)) {
       this::_installed()
     }
@@ -179,7 +178,6 @@ export const install = function (Vue, {
     installed = null
   } = {}
 } = {}) {
-  console.log('jsb init', runNative, enable)
   if (runNative && enable) {
     _onParseClientResp = onParseClientResp
     if (device.isIpad || device.isIphone || device.isIpod) {

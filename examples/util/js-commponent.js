@@ -83,7 +83,6 @@ const plugin = {
    * @returns {plugin}
    */
   uiLoading(text = '加载中...', {position = 'fixed', time} = {}) {
-    console.log('uiLoading')
     _Vue.$vux.loading.show({
       text,
       position

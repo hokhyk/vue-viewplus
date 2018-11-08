@@ -1,25 +1,12 @@
 import Navigation from 'vue-navigation'
 import { PLUGIN_VM_PREFIX_VIEWPLUS } from './gloabl-dict'
 import MixinPlugin from './util/mixin-plugin'
-import {
-  install as utilCacheInstall
-} from './vp/util-cache'
-import {
-  install as jsBridgeContextInstall
-} from './vp/js-bridge-context'
-import {
-  install as cacheUserInfoInstall
-} from './vp/cache-userinfo'
-import {
-  install as loginStateCheckInstall
-} from './vp/login-state-check'
-import {
-  install as utilHttpInstall
-} from './vp/util-http'
-import {
-  install as paramsStackInstall,
-  paramsStackMixin
-} from './vp/params-stack'
+import { install as utilCacheInstall } from './vp/util-cache'
+import { install as jsBridgeContextInstall } from './vp/js-bridge-context'
+import { install as cacheUserInfoInstall } from './vp/cache-userinfo'
+import { install as loginStateCheckInstall } from './vp/login-state-check'
+import { install as utilHttpInstall } from './vp/util-http'
+import { install as paramsStackInstall, paramsStackMixin } from './vp/params-stack'
 import { emitErr, init as registErrorHandlerConfigMethod } from './util/warn'
 import EventBus from './vp/event-bus.js'
 import device from './util/device'
