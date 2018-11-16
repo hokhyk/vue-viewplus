@@ -492,6 +492,17 @@ Vue.use(ViewPlus, {
     onReqErrParseMsg = null
 ```
 
+
+### onReqErrParseHttpStatusCode
+
+```js
+    /**
+     * 【可选】`UtilHttp#onReqErrParseHttpStatus(status, response)`
+     * 当解析到请求出错，如（401...），该函数将会被回调，用于给应用提供处理特殊`http status code`的机会
+     */
+    onReqErrParseHttpStatusCode = null,
+```
+
 ### defShowLoading [*]
 
 ```js

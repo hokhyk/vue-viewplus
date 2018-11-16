@@ -32,6 +32,7 @@ let _Vue, _router,
   _onSendAjaxParamsHandle,
   _onSendAjaxRespHandle,
   _onReqErrParseMsg,
+  _onReqErrParseHttpStatusCode,
   _defShowLoading,
   _dataKey,
   _statusCodeKey,
@@ -127,32 +128,36 @@ const _handlerBusinessErrMsg = function (needHandlerErr, response) {
       if (_.isError(response) && response instanceof JsBridgeError) {
         this::_errDialog(`${response.message} [${response.code}]`)
       } else if (_.isError(response)) {
-        // 处理非业务类别抛出的的错误：
-        // 存在错误消息
+        // 细化错误消息
         const errMsg = response.message
         if (/Network Error/.test(errMsg)) {
           this::_errDialog('网络异常，请稍后尝试')
         } else if (/timeout/.test(errMsg)) {
           this::_errDialog('请求超时，请稍后尝试')
         } else {
-          // 按响应状态码解析错误
-          const statusFlag = response.response.status
           let errmsg
-          switch (statusFlag) {
-            case 400: errmsg = '请求错误'; break
-            case 401: errmsg = '未授权，请登录'; break
-            case 403: errmsg = '拒绝访问'; break
-            case 404: errmsg = `404 找不到待请求的资源: ${response.response.config.url}`; break
-            case 408: errmsg = '请求超时'; break
-            case 500: errmsg = `500 服务器内部错误 [${errMsg}]`; break
-            case 501: errmsg = '服务未实现'; break
-            case 502: errmsg = '网关错误'; break
-            case 503: errmsg = '服务不可用'; break
-            case 504: errmsg = '网关超时'; break
-            case 505: errmsg = 'HTTP版本不受支持'; break
-            default:
-              errmsg = `请求出错 [${errMsg}]`
-              break
+          if (_.has(response, ['response', 'status'])) {
+            // 按响应状态码解析错误
+            const statusFlag = response.response.status
+            this::callFunc2(_onReqErrParseHttpStatusCode, 'onReqErrParseHttpStatusCode Not configured', statusFlag, response)
+            switch (statusFlag) {
+              case 400: errmsg = '请求错误'; break
+              case 401: errmsg = '未授权，请登录'; break
+              case 403: errmsg = '拒绝访问'; break
+              case 404: errmsg = `404 找不到待请求的资源: ${response.response.config.url}`; break
+              case 408: errmsg = '请求超时'; break
+              case 500: errmsg = `500 服务器内部错误 [${errMsg}]`; break
+              case 501: errmsg = '服务未实现'; break
+              case 502: errmsg = '网关错误'; break
+              case 503: errmsg = '服务不可用'; break
+              case 504: errmsg = '网关超时'; break
+              case 505: errmsg = 'HTTP版本不受支持'; break
+              default:
+                errmsg = `请求出错 [${errMsg}]`
+                break
+            }
+          } else {
+            errmsg = `请求出错 [${errMsg}]`
           }
           this::_errDialog(errmsg)
         }
@@ -755,6 +760,11 @@ export const install = function (Vue, {
      */
     onReqErrParseMsg = null,
     /**
+     * 【可选】`UtilHttp#onReqErrParseHttpStatus(status, response)`
+     * 当解析到请求出错，如（401...），该函数将会被回调，用于给应用提供处理特殊`http status code`的机会
+     */
+    onReqErrParseHttpStatusCode = null,
+    /**
      * 【可选】配置是否在发送请求的时候显示loading
      *  <p>
      *  建议修改为true，ajax的loading ui需要在配置的时候自行实现`utilHttpInstall#loading和UtilHttp#hideLoading`两个接口，这样就方便应用适配符合自己的UI组件
@@ -846,6 +856,7 @@ export const install = function (Vue, {
     _onSendAjaxParamsHandle = onSendAjaxParamsHandle
     _onSendAjaxRespHandle = onSendAjaxRespHandle
     _onReqErrParseMsg = onReqErrParseMsg
+    _onReqErrParseHttpStatusCode = onReqErrParseHttpStatusCode
     _sessionTimeOut = sessionTimeOut
     _onSessionTimeOut = onSessionTimeOut
     _noNeedDialogHandlerErr = noNeedDialogHandlerErr
