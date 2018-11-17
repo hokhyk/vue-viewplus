@@ -234,6 +234,12 @@ export default {
       this.doPostBtnState = true
       this.$vp
         .ajaxMixin('LOGIN')
+        // 测试 发送json字符串参数
+        // .ajaxPostJson('create', {
+        //   params: {
+        //     id: 111
+        //   }
+        // })
         .then(data => {
           this.doPostBtnState = false
           this.$vp.dialog(

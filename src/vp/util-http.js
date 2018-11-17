@@ -15,6 +15,7 @@ import _ from 'lodash'
 export const modelName = 'util-http'
 export const GET = 'GET'
 export const POST = 'POST'
+export const POST_JSON = 'POST_JSON'
 export const PUT = 'PUT'
 export const DELETE = 'DELETE'
 export const NATIVE = 'NATIVE'
@@ -466,6 +467,9 @@ const plugin = {
               params = qs.stringify(params)
               reqP = _instance.post(url, params, axiosOptions)
               break
+            case POST_JSON:
+              reqP = _instance.post(url, params, axiosOptions)
+              break
             case PUT:
               reqP = _instance.put(url, params, axiosOptions)
               break
@@ -554,7 +558,7 @@ const plugin = {
     needHandlerErr = true
   } = {}) {
     axiosOptions = {...{headers: {'Content-Type': 'application/json'}}, ...axiosOptions}
-    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST})
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST_JSON})
   },
   /**
    * 发送`PUT`请求
