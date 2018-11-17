@@ -15,9 +15,13 @@ import _ from 'lodash'
 export const modelName = 'util-http'
 export const GET = 'GET'
 export const POST = 'POST'
+export const PUT = 'PUT'
+export const DELETE = 'DELETE'
 export const NATIVE = 'NATIVE'
 
-let _Vue, _router,
+let _debug,
+  _Vue,
+  _router,
   _vp,
   _instance,
   _timeout,
@@ -119,6 +123,9 @@ const _getErrMsg = function (data) {
  * @private
  */
 const _handlerBusinessErrMsg = function (needHandlerErr, response) {
+  if (_debug) {
+    console.log(`${PLUGIN_CONSOLE_LOG_FLAG} handler err: `, response)
+  }
   try {
     let selfHandlerErr = false
     if (_.isFunction(_onSendAjaxRespErr)) {
@@ -141,17 +148,39 @@ const _handlerBusinessErrMsg = function (needHandlerErr, response) {
             const statusFlag = response.response.status
             this::callFunc2(_onReqErrParseHttpStatusCode, 'onReqErrParseHttpStatusCode Not configured', statusFlag, response)
             switch (statusFlag) {
-              case 400: errmsg = '请求错误'; break
-              case 401: errmsg = '未授权，请登录'; break
-              case 403: errmsg = '拒绝访问'; break
-              case 404: errmsg = `404 找不到待请求的资源: ${response.response.config.url}`; break
-              case 408: errmsg = '请求超时'; break
-              case 500: errmsg = `500 服务器内部错误 [${errMsg}]`; break
-              case 501: errmsg = '服务未实现'; break
-              case 502: errmsg = '网关错误'; break
-              case 503: errmsg = '服务不可用'; break
-              case 504: errmsg = '网关超时'; break
-              case 505: errmsg = 'HTTP版本不受支持'; break
+              case 400:
+                errmsg = '请求错误'
+                break
+              case 401:
+                errmsg = '未授权，请登录'
+                break
+              case 403:
+                errmsg = '拒绝访问'
+                break
+              case 404:
+                errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
+                break
+              case 408:
+                errmsg = '请求超时'
+                break
+              case 500:
+                errmsg = `500 服务器内部错误 [${errMsg}]`
+                break
+              case 501:
+                errmsg = '服务未实现'
+                break
+              case 502:
+                errmsg = '网关错误'
+                break
+              case 503:
+                errmsg = '服务不可用'
+                break
+              case 504:
+                errmsg = '网关超时'
+                break
+              case 505:
+                errmsg = 'HTTP版本不受支持'
+                break
               default:
                 errmsg = `请求出错 [${errMsg}]`
                 break
@@ -210,12 +239,12 @@ const _createAxiosInstance = function ({
     baseURL = null,
     timeout = _timeout,
     /**
-     * 【可选】`headers` 是即将被发送的自定义请求头
-     */
+    * 【可选】`headers` 是即将被发送的自定义请求头
+    */
     headers = null,
     /**
-     * 【可选】`params` 是即将与请求一起发送的 URL 参数必须是一个无格式对象(plain object)或 URLSearchParams 对象
-     */
+    * 【可选】`params` 是即将与请求一起发送的 URL 参数必须是一个无格式对象(plain object)或 URLSearchParams 对象
+    */
     params = null,
     withCredentials = _withCredentials
   } = {}
@@ -269,11 +298,7 @@ const _get = function ({url, axiosOptions = {}, params = {}}) {
 
 const _post = function ({url, axiosOptions = {}, params = {}}) {
   let urlParams = qs.stringify(params)
-  let options = axiosOptions
-  if (_.has(axiosOptions, 'headers')) {
-    options = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
-  }
-  return _instance.post(url, urlParams, options)
+  return _instance.post(url, urlParams, axiosOptions)
 }
 
 const _hLoading = function (showLoading) {
@@ -360,7 +385,7 @@ const plugin = {
    * ajaxMixin(url[, config])
    * 支持普通的Ajax GET/POST(默认)请求 和 客户端桥接访问
    * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE'】
+   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE', 'PUT'】
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
@@ -384,47 +409,7 @@ const plugin = {
       this::callFunc(_loading, loadingHintText)
     }
     info(`请求[${mode}]后台的url: ${url} params: ${JSON.stringify(params)}`)
-    if (mode === GET) {
-      return new Promise((resolve, reject) => {
-        if (_.isFunction(_onSendAjaxParamsHandle)) {
-          params = _onSendAjaxParamsHandle(url, params, mode)
-        }
-        const options = axiosOptions
-        _instance
-          .get(url, options)
-          .then((response) => {
-            resolve(_getResData(response))
-          })
-          .catch((response) => {
-            this::_handlerBusinessErrMsg(needHandlerErr, response)
-            reject(response)
-          })
-          .finally(this::_hLoading(showLoading))
-      })
-    } else if (mode === POST) {
-      return new Promise((resolve, reject) => {
-        let urlParams = null
-        if (_.isFunction(_onSendAjaxParamsHandle)) {
-          urlParams = _onSendAjaxParamsHandle(url, params, mode)
-        } else {
-          urlParams = qs.stringify(params)
-        }
-        let options = axiosOptions
-        if (_.has(axiosOptions, 'headers')) {
-          options = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
-        }
-        _instance
-          .post(url, urlParams, options)
-          .then((response) => {
-            resolve(_getResData(response))
-          })
-          .catch((err) => {
-            this::_handlerBusinessErrMsg(needHandlerErr, err)
-            reject(err)
-          })
-          .finally(this::_hLoading(showLoading))
-      })
-    } else if (mode === NATIVE) {
+    if (mode === NATIVE) {
       return new Promise((resolve, reject) => {
         if (_.isFunction(_onSendAjaxParamsHandle)) {
           params = this::_onSendAjaxParamsHandle(url, params, mode)
@@ -469,6 +454,38 @@ const plugin = {
           reject(err)
         }).finally(this::_hLoading(showLoading))
       })
+    } else {
+      // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
+      return new Promise((resolve, reject) => {
+        let reqP
+        if (_.isFunction(_onSendAjaxParamsHandle)) {
+          params = _onSendAjaxParamsHandle(url, params, mode)
+        } else {
+          switch (mode) {
+            case POST:
+              params = qs.stringify(params)
+              reqP = _instance.post(url, params, axiosOptions)
+              break
+            case PUT:
+              reqP = _instance.put(url, params, axiosOptions)
+              break
+            case DELETE:
+              reqP = _instance.delete(url, params, axiosOptions)
+              break
+            default:
+              reqP = _instance.get(url, params, axiosOptions)
+          }
+        }
+        reqP
+          .then((response) => {
+            resolve(_getResData(response))
+          })
+          .catch((err) => {
+            this::_handlerBusinessErrMsg(needHandlerErr, err)
+            reject(err)
+          })
+          .finally(this::_hLoading(showLoading))
+      })
     }
   },
   /**
@@ -499,7 +516,7 @@ const plugin = {
    * 底层交由`$vp#ajaxMixin`处理
    *
    * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE'】
+   * @param {Object} [params={}] 请求参数
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
@@ -513,7 +530,69 @@ const plugin = {
     loadingHintText = '加载中...',
     needHandlerErr = true
   } = {}) {
+    axiosOptions = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
     return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST})
+  },
+  /**
+   * 发送POST请求
+   * <p>
+   * 参数为json对象
+   *
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxPostJson(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  } = {}) {
+    axiosOptions = {...{headers: {'Content-Type': 'application/json'}}, ...axiosOptions}
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST})
+  },
+  /**
+   * 发送`PUT`请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxPut(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  } = {}) {
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: PUT})
+  },
+  /**
+   * 发送`DELETE`请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxDel(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  } = {}) {
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: DELETE})
   },
   /**
    * 通过`window.location.href`进行页面跳转
@@ -613,6 +692,7 @@ const plugin = {
 export default plugin
 
 export const install = function (Vue, {
+  debug = false,
   router,
   utilHttp: {
     /**
@@ -838,6 +918,7 @@ export const install = function (Vue, {
     warn(new Error(`${modelName}模块：建议配置loading和hideLoading，在发送请求的时候统一弹出和取消loading UI组件`), null, true)
   }
   if (pluginCanUse) {
+    _debug = debug
     _Vue = Vue
     _router = router
     _errDialog = errDialog

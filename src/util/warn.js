@@ -47,12 +47,6 @@ export function warn(message) {
   }
 }
 
-export function debug(message) {
-  if (_isdebug) {
-    typeof console !== 'undefined' && console.debug(`${PLUGIN_CONSOLE_LOG_FLAG} ${message}`)
-  }
-}
-
 export function init(
   Vue,
   isdebug,

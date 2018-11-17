@@ -737,7 +737,79 @@ Vue.use(ViewPlus, {
   } = {})
 ```
 
+### ajaxPostJson
+
+```js
+/**
+   * 发送POST请求
+   * <p>
+   * 参数为json对象
+   *
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxPostJson(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  }
+```
+
+### ajaxPut
+
+```js
+/**
+   * 发送`PUT`请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxPut(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  }
+```
+
+### ajaxDel
+
+```js
+/**
+   * 发送`DELETE`请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxDel(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  } = {})
+```
+
+
+
 ### pageHref
+
 ```js
   /**
    * 通过`window.location.href`进行页面跳转

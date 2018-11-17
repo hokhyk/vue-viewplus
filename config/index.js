@@ -56,13 +56,13 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       // 代理所有的以 /api 开头的请求到 http://jsonplaceholder.typicode.com
-      // '/pweb': {
-      //   target: 'http://192.168.1.119:8280',
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     '^/pweb': '/pweb'
-      //   }
-      // },
+      '/mng': {
+        target: 'http://192.168.3.43:9090',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/mng': '/mng'
+        }
+      },
       // '*': {
       //   target: 'http://localhost:3000/',
       //   changeOrigin: true,
