@@ -56,8 +56,10 @@ npm run dev
 + [云南农信手机银行 一个企业级金融app](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)
 
 # 更新
-+ 0.9.7
-  
+
++ v0.9.7
+  - refactor: 解决util-http模块处理ajax错误时，不能处理非200的业务错误消息的问题[#740ce76](https://github.com/Jiiiiiin/vue-viewplus/commit/740ce761501bcb1bfae987fb29efd00099460b40)
+
 
 # 计划
 
