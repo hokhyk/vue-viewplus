@@ -116,6 +116,34 @@ const _getErrMsg = function (data) {
   return errmsg
 }
 
+const _handlerBusinessErrMsg = function (response) {
+  // 有些后端返回的消息状态【如statu和错误标识码errcode】是需要分离的
+  const errCode = _.isEmpty(_errCodeKey) ? response[_statusCodeKey] : response[_errCodeKey]
+  // 需要进行而外处理的错误
+  if (Array.isArray(_sessionTimeOut) && _sessionTimeOut.includes(errCode)) {
+    loginStateCheck.modifyLoginState(false)
+    this::callFunc2(_onSessionTimeOut, '用户登录会话超时！onSessionTimeOut回调函数未定义', response)
+  } else if (Array.isArray(_unauthorized) && _unauthorized.includes(errCode)) {
+    this::callFunc2(_onUnauthorized, '用户无权访问该资源！onUnauthorized回调函数未定义', response)
+  } else {
+    // 不需要进行而外处理的错误
+    if (!Array.isArray(_noNeedDialogHandlerErr) || !_noNeedDialogHandlerErr.includes(errCode)) {
+      // 错误标识符改成可配置
+      let errMsg = _getErrMsg(response)
+      if (_.isFunction(_onReqErrParseMsg)) {
+        // onReqErrParseMsg回调返回非空字符，视为应用自己来解析了本次错误消息，否则还是用插件解析的为准
+        const tempErrMsg = this::_onReqErrParseMsg(response, errMsg)
+        if (!tempErrMsg || _.isEmpty(tempErrMsg)) {
+          warn(`onReqErrParseMsg钩子返回的解析到的错误消息为空`)
+        } else {
+          errMsg = tempErrMsg
+        }
+      }
+      this::_errDialog(errMsg)
+    }
+  }
+}
+
 /**
  * 处理通用的和服务端交互的错误信息，直接将错误信息解析以dialog的方式弹出，给应用预留了一个钩子 onSendAjaxRespErr，如果该函数（onSendAjaxRespErr）返回true则表示应用已经处理了本次请求的错误，否则交给插件进行处理。
  * onSendAjaxRespErr钩子是针对于没有那么通用的，但是在某些应用看来又是他们的需要统一处理的错误，给应用一次自己消化的机会。
@@ -123,7 +151,7 @@ const _getErrMsg = function (data) {
  * @param response 这个值可能是服务端响应的结果&异常对象
  * @private
  */
-const _handlerBusinessErrMsg = function (needHandlerErr, response) {
+const _handlerErr = function (needHandlerErr, response) {
   if (_debug) {
     console.log(`${PLUGIN_CONSOLE_LOG_FLAG} handler err: `, response)
   }
@@ -136,87 +164,69 @@ const _handlerBusinessErrMsg = function (needHandlerErr, response) {
       if (_.isError(response) && response instanceof JsBridgeError) {
         this::_errDialog(`${response.message} [${response.code}]`)
       } else if (_.isError(response)) {
-        // 细化错误消息
-        const errMsg = response.message
-        if (/Network Error/.test(errMsg)) {
-          this::_errDialog('网络异常，请稍后尝试')
-        } else if (/timeout/.test(errMsg)) {
-          this::_errDialog('请求超时，请稍后尝试')
+        if (_.has(response, 'data') && (_.has(response.data, `${_statusCodeKey}`) || (_.has(response.data, `${_errCodeKey}`)))) {
+          // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
+          this::_handlerBusinessErrMsg(response.data)
         } else {
-          let errmsg
-          if (_.has(response, ['response', 'status'])) {
-            // 按响应状态码解析错误
-            const statusFlag = response.response.status
-            this::callFunc2(_onReqErrParseHttpStatusCode, 'onReqErrParseHttpStatusCode Not configured', statusFlag, response)
-            switch (statusFlag) {
-              case 400:
-                errmsg = '请求错误'
-                break
-              case 401:
-                errmsg = '未授权，请登录'
-                break
-              case 403:
-                errmsg = '拒绝访问'
-                break
-              case 404:
-                errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
-                break
-              case 408:
-                errmsg = '请求超时'
-                break
-              case 500:
-                errmsg = `500 服务器内部错误 [${errMsg}]`
-                break
-              case 501:
-                errmsg = '服务未实现'
-                break
-              case 502:
-                errmsg = '网关错误'
-                break
-              case 503:
-                errmsg = '服务不可用'
-                break
-              case 504:
-                errmsg = '网关超时'
-                break
-              case 505:
-                errmsg = 'HTTP版本不受支持'
-                break
-              default:
-                errmsg = `请求出错 [${errMsg}]`
-                break
-            }
+          // 细化错误消息
+          const errMsg = response.message
+          if (/Network Error/.test(errMsg)) {
+            this::_errDialog('网络异常，请稍后尝试')
+          } else if (/timeout/.test(errMsg)) {
+            this::_errDialog('请求超时，请稍后尝试')
           } else {
-            errmsg = `请求出错 [${errMsg}]`
+            let errmsg
+            // 检测`http`响应状态码属性
+            if (_.has(response, ['response', 'status'])) {
+              // 按响应状态码解析错误
+              const statusFlag = response.response.status
+              this::callFunc2(_onReqErrParseHttpStatusCode, 'onReqErrParseHttpStatusCode Not configured', statusFlag, response)
+              switch (statusFlag) {
+                case 400:
+                  errmsg = '请求错误'
+                  break
+                case 401:
+                  errmsg = '未授权，请登录'
+                  break
+                case 403:
+                  errmsg = '拒绝访问'
+                  break
+                case 404:
+                  errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
+                  break
+                case 408:
+                  errmsg = '请求超时'
+                  break
+                case 500:
+                  errmsg = `500 服务器内部错误 [${errMsg}]`
+                  break
+                case 501:
+                  errmsg = '服务未实现'
+                  break
+                case 502:
+                  errmsg = '网关错误'
+                  break
+                case 503:
+                  errmsg = '服务不可用'
+                  break
+                case 504:
+                  errmsg = '网关超时'
+                  break
+                case 505:
+                  errmsg = 'HTTP版本不受支持'
+                  break
+                default:
+                  errmsg = `请求出错 [${errMsg}]`
+                  break
+              }
+            } else {
+              errmsg = `请求出错 [${errMsg}]`
+            }
+            this::_errDialog(errmsg)
           }
-          this::_errDialog(errmsg)
         }
       } else {
-        // 有些后端返回的消息状态【如statu和错误标识码errcode】是需要分离的
-        const errCode = _.isEmpty(_errCodeKey) ? response[_statusCodeKey] : response[_errCodeKey]
-        // 错误标识符改成可配置
-        let errMsg = _getErrMsg(response)
-        if (_.isFunction(_onReqErrParseMsg)) {
-          // onReqErrParseMsg回调返回非空字符，视为应用自己来解析了本次错误消息，否则还是用插件解析的为准
-          const tempErrMsg = this::_onReqErrParseMsg(response, errMsg)
-          if (!tempErrMsg || _.isEmpty(tempErrMsg)) {
-            warn(`onReqErrParseMsg钩子返回的解析到的错误消息为空`)
-          } else {
-            errMsg = tempErrMsg
-          }
-        }
-        // 需要进行而外处理的错误
-        if (Array.isArray(_sessionTimeOut) && _sessionTimeOut.includes(errCode)) {
-          loginStateCheck.modifyLoginState(false)
-          this::callFunc2(_onSessionTimeOut, '用户登录会话超时！onSessionTimeOut回调函数未定义', response)
-        } else if (Array.isArray(_unauthorized) && _unauthorized.includes(errCode)) {
-          this::callFunc2(_onUnauthorized, '用户无权访问该资源！onUnauthorized回调函数未定义', response)
-        } else {
-          // 不需要进行而外处理的错误
-          if (!Array.isArray(_noNeedDialogHandlerErr) || !_noNeedDialogHandlerErr.includes(errCode)) {
-            this::_errDialog(errMsg)
-          }
-        }
+        this::_handlerBusinessErrMsg(response)
       }
     } else {
       warn(`不处理默认错误消息，因为请求needHandlerErr设置为true或者onSendAjaxRespErr已经自行处理了本次错误`)
@@ -427,7 +437,7 @@ const plugin = {
             // 需要对是否为服务端业务状态进行判断
             const isErr = _parseServerResp(response)
             if (isErr) {
-              that::_handlerBusinessErrMsg(needHandlerErr, response)
+              that::_handlerErr(needHandlerErr, response)
               reject(response)
             } else {
               resolve(_getResData(response))
@@ -451,7 +461,7 @@ const plugin = {
           warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
         }).catch(err => {
           this::_hLoading(showLoading)
-          this::_handlerBusinessErrMsg(needHandlerErr, err)
+          this::_handlerErr(needHandlerErr, err)
           reject(err)
         }).finally(this::_hLoading(showLoading))
       })
@@ -485,7 +495,7 @@ const plugin = {
             resolve(_getResData(response))
           })
           .catch((err) => {
-            this::_handlerBusinessErrMsg(needHandlerErr, err)
+            this::_handlerErr(needHandlerErr, err)
             reject(err)
           })
           .finally(this::_hLoading(showLoading))
