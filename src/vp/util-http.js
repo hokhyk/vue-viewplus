@@ -166,7 +166,7 @@ const _handlerErr = function (needHandlerErr, response) {
       } else if (_.isError(response)) {
         if (_.has(response, 'response.data') && (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`)))) {
           // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
-          this::_handlerBusinessErrMsg(response.data)
+          this::_handlerBusinessErrMsg(response.response.data)
         } else {
           // 细化错误消息
           const errMsg = response.message
