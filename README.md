@@ -3,7 +3,7 @@
     <img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwq8xk9nh9j305k05kdfs.jpg" width="175">
   </a>
 </p>
-<p align="center">vue-viewplus <img src="https://img.shields.io/badge/npm-0.9.7-orange.svg"/></p>
+<p align="center">vue-viewplus <img src="https://img.shields.io/badge/npm-0.9.71-orange.svg"/></p>
 <p align="center">一个简化Vue应用开发的工具库</p>
 
 做这个插件的目的是为了：
@@ -57,8 +57,8 @@ npm run dev
 
 # 更新
 
-+ v0.9.7
-  - refactor: 解决util-http模块处理ajax错误时，不能处理非200的业务错误消息的问题[#740ce76](https://github.com/Jiiiiiin/vue-viewplus/commit/740ce761501bcb1bfae987fb29efd00099460b40)
++ v0.9.71
+  - refactor: 解决util-http模块处理ajax错误时，不能处理非200的业务错误消息的问题 [#740ce76](https://github.com/Jiiiiiin/vue-viewplus/commit/740ce761501bcb1bfae987fb29efd00099460b40)
 
 
 # 计划

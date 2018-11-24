@@ -164,7 +164,7 @@ const _handlerErr = function (needHandlerErr, response) {
       if (_.isError(response) && response instanceof JsBridgeError) {
         this::_errDialog(`${response.message} [${response.code}]`)
       } else if (_.isError(response)) {
-        if (_.has(response, 'data') && (_.has(response.data, `${_statusCodeKey}`) || (_.has(response.data, `${_errCodeKey}`)))) {
+        if (_.has(response, 'response.data') && (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`)))) {
           // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
           this::_handlerBusinessErrMsg(response.data)
         } else {
