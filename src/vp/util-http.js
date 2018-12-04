@@ -484,7 +484,9 @@ const plugin = {
               reqP = _instance.put(url, params, axiosOptions)
               break
             case DELETE:
-              reqP = _instance.delete(url, params, axiosOptions)
+              // https://blog.csdn.net/qq383366204/article/details/80268007
+              // https://cloud.tencent.com/developer/article/1147735
+              reqP = _instance.delete(url, {data: params}, axiosOptions)
               break
             default:
               reqP = _instance.get(url, params, axiosOptions)
