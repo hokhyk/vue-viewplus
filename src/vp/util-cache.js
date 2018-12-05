@@ -91,7 +91,7 @@ let plugin = {
   cacheLoadFromLocalStore(key, def) {
     try {
       const temp = _lsWSCache.get(key)
-      if (_.isUndefined(temp) || _.isEmpty(temp)) {
+      if (_.isNil(temp)) {
         _lsWSCache.delete(key)
         return def
       } else {
@@ -187,7 +187,7 @@ let plugin = {
   cacheLoadFromSessionStore(key, def) {
     try {
       const temp = _ssWSCache.get(key)
-      if (_.isUndefined(temp) || _.isEmpty(temp)) {
+      if (_.isNil(temp)) {
         _ssWSCache.delete(key)
         return def
       } else {
