@@ -662,6 +662,28 @@ Vue.use(ViewPlus, {
     showLoading = _defShowLoading,
     loadingHintText = '加载中...'
   } = {})
+
+  // 示例：
+  this.$vp.ajaxAll([
+      {
+        url: 'ALL1',
+        mode: 'GET'
+      }, {
+        url: 'ALL2',
+        mode: 'GET'
+      }
+    ])
+    .then(resArr => {
+      this.ajaxAllBtnState = false
+      // 这里需要应用手动把axios的data属性解析掉
+      const res = _.map(resArr, (item) => {
+        return item.data
+      })
+      this.$vp.dialog(res, {
+        title: '请求成功，响应结果',
+        showCode: true
+      })
+    })
 ```
 
 ### ajaxMixin

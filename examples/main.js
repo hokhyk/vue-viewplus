@@ -87,8 +87,8 @@ Vue.use(ViewPlus, {
     }
   },
   utilHttp: {
-    baseURL: 'http://192.168.3.43:8888/mng',
-    // baseURL: 'http://localhost:7000',
+    // baseURL: 'http://192.168.3.43:8888/mng',
+    baseURL: 'http://localhost:7000',
     // baseURL: 'https://www.easy-mock.com/mock/5abc903ff5c35b191f472d79/example',
     // 这里的data key，请查看mock server的jsonp输出配置
     dataKey: 'data',

@@ -374,6 +374,10 @@ const plugin = {
       if (ajaxArr.length <= 0) {
         reject(new Error(`${PLUGIN_CONSOLE_LOG_FLAG} 需要进行并发的请求函数ajaxArr参数${ajaxArr}不正确! `))
       }
+      this::_hLoading(showLoading)
+      if (showLoading) {
+        this::callFunc(_loading, loadingHintText)
+      }
       const iterable = []
       ajaxArr.forEach((p) => {
         const mode = p.mode || POST
@@ -389,7 +393,16 @@ const plugin = {
       if (showLoading) {
         this::callFunc(_loading, loadingHintText)
       }
-      resolve(axios.all(iterable))
+      axios.all(iterable)
+        .then(res => {
+          resolve(res)
+        })
+        .catch(err => {
+          reject(err)
+        })
+        .finally(() => {
+          this::_hLoading(showLoading)
+        })
     })
   },
   /**
