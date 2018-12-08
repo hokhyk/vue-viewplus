@@ -498,7 +498,7 @@ Vue.use(ViewPlus, {
 ```js
     /**
      * 【可选】`UtilHttp#onReqErrParseHttpStatus(status, response)`
-     * 当解析到请求出错，如（401...），该函数将会被回调，用于给应用提供处理特殊`http status code`的机会
+     * 当解析到请求出错，如（401...），该函数将会被回调，用于给应用提供处理特殊`http status code`的机会，如果返回`true`则表明应用自己处理了该错误
      */
     onReqErrParseHttpStatusCode = null,
 ```
