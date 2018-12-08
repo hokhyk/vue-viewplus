@@ -1,4 +1,4 @@
-<p align="center">vue-viewplus <img src="https://img.shields.io/badge/npm-0.9.76-orange.svg"/></p>
+<p align="center">vue-viewplus <img src="https://img.shields.io/badge/npm-0.9.77-orange.svg"/></p>
 <p align="center">一个简化Vue应用开发的工具库</p>
 做这个插件的目的是为了：
 + 针对大多数应用都会用到的功能进行二次封装，减少样板代码，让开发人员更关注于业务本身

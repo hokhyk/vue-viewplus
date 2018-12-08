@@ -220,7 +220,6 @@ const _handlerErr = function (needHandlerErr, response) {
                     errmsg = `请求出错 [${errMsg}]`
                     break
                 }
-                errmsg = `请求出错 [${errMsg}]`
                 this::_errDialog(errmsg)
               }
             }
