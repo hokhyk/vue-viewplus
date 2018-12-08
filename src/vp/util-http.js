@@ -180,49 +180,51 @@ const _handlerErr = function (needHandlerErr, response) {
             if (_.has(response, ['response', 'status'])) {
               // 按响应状态码解析错误
               const statusFlag = response.response.status
-              this::callFunc2(_onReqErrParseHttpStatusCode, 'onReqErrParseHttpStatusCode Not configured', statusFlag, response)
-              switch (statusFlag) {
-                case 400:
-                  errmsg = '请求错误'
-                  break
-                case 401:
-                  errmsg = '未授权，请登录'
-                  break
-                case 403:
-                  errmsg = '拒绝访问'
-                  break
-                case 404:
-                  errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
-                  break
-                case 408:
-                  errmsg = '请求超时'
-                  break
-                case 500:
-                  errmsg = `500 服务器内部错误 [${errMsg}]`
-                  break
-                case 501:
-                  errmsg = '服务未实现'
-                  break
-                case 502:
-                  errmsg = '网关错误'
-                  break
-                case 503:
-                  errmsg = '服务不可用'
-                  break
-                case 504:
-                  errmsg = '网关超时'
-                  break
-                case 505:
-                  errmsg = 'HTTP版本不受支持'
-                  break
-                default:
-                  errmsg = `请求出错 [${errMsg}]`
-                  break
+              const handled = this::callFunc(_onReqErrParseHttpStatusCode, statusFlag, response)
+              if (!handled) {
+                switch (statusFlag) {
+                  case 400:
+                    errmsg = '请求错误'
+                    break
+                  case 401:
+                    errmsg = '未授权，请登录'
+                    break
+                  case 403:
+                    errmsg = '拒绝访问'
+                    break
+                  case 404:
+                    errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
+                    break
+                  case 408:
+                    errmsg = '请求超时'
+                    break
+                  case 500:
+                    errmsg = `500 服务器内部错误 [${errMsg}]`
+                    break
+                  case 501:
+                    errmsg = '服务未实现'
+                    break
+                  case 502:
+                    errmsg = '网关错误'
+                    break
+                  case 503:
+                    errmsg = '服务不可用'
+                    break
+                  case 504:
+                    errmsg = '网关超时'
+                    break
+                  case 505:
+                    errmsg = 'HTTP版本不受支持'
+                    break
+                  default:
+                    errmsg = `请求出错 [${errMsg}]`
+                    break
+                }
+              } else {
+                errmsg = `请求出错 [${errMsg}]`
               }
-            } else {
-              errmsg = `请求出错 [${errMsg}]`
+              this::_errDialog(errmsg)
             }
-            this::_errDialog(errmsg)
           }
         }
       } else {
