@@ -1,13 +1,10 @@
 import { PLUGIN_CONSOLE_LOG_FLAG, PLUGIN_VM_PREFIX_VIEWPLUS } from '../gloabl-dict'
 import _ from 'lodash'
 
-let _isdebug, _errorHandler, _vp, _Vue
+let _isdebug, _errorHandler, _Vue
 
-export function checkVp(Vue) {
-  if (!_vp) {
-    _vp = Vue.prototype[PLUGIN_VM_PREFIX_VIEWPLUS]
-  }
-  return _vp
+export function checkVp() {
+  return _Vue.prototype[PLUGIN_VM_PREFIX_VIEWPLUS]
 }
 
 export function emitErr(err, reject = null, isInstall = false) {
@@ -15,8 +12,7 @@ export function emitErr(err, reject = null, isInstall = false) {
     reject(err)
   }
   if (_.isFunction(_errorHandler)) {
-    checkVp(_Vue)
-    _vp::_errorHandler(_.isError(err) ? err : new Error(err))
+    checkVp()::_errorHandler(_.isError(err) ? err : new Error(err))
   } else {
     if (isInstall) {
       warn(_.isString(err) ? err : err.message)

@@ -73,6 +73,9 @@ Vue.use(ViewPlus, {
     }
   },
   loginStateCheck: {
+    installed() {
+      console.log('loginStateCheck', this)
+    },
     checkPaths: [
       /Manage/
     ],

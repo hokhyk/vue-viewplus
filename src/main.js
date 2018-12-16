@@ -7,7 +7,7 @@ import { install as cacheUserInfoInstall } from './vp/cache-userinfo'
 import { install as loginStateCheckInstall } from './vp/login-state-check'
 import { install as utilHttpInstall } from './vp/util-http'
 import { install as paramsStackInstall, paramsStackMixin } from './vp/params-stack'
-import { emitErr, init as registErrorHandlerConfigMethod } from './util/warn'
+import { emitErr, init as registErrorHandlerConfigMethod, checkVp } from './util/warn'
 import EventBus from './vp/event-bus.js'
 import device from './util/device'
 import _ from 'lodash'
@@ -42,9 +42,10 @@ const install = function (Vue, opts = {}) {
       this.debug = options.debug
       this.device = device
       this.runNative = runNative
+      this.checkVp = checkVp
     }
   }(opts)
-  MixinPlugin.mixin(Vue, defPlugin)
+  MixinPlugin.mixin(Vue, defPlugin, '初始化模块')
   utilCacheInstall(Vue, opts)
   cacheUserInfoInstall(Vue, opts)
   jsBridgeContextInstall(Vue, opts)

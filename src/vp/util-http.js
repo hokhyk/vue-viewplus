@@ -21,9 +21,7 @@ export const DELETE = 'DELETE'
 export const NATIVE = 'NATIVE'
 
 let _debug,
-  _Vue,
   _router,
-  _vp,
   _instance,
   _timeout,
   _withCredentials,
@@ -273,8 +271,7 @@ const _createAxiosInstance = function ({
       return config
     },
     error => {
-      _vp = checkVp(_Vue)
-      _vp::callFunc2(_hideLoading)
+      checkVp()::callFunc2(_hideLoading)
       return Promise.reject(error)
     }
   )
@@ -948,7 +945,6 @@ export const install = function (Vue, {
   }
   if (pluginCanUse) {
     _debug = debug
-    _Vue = Vue
     _router = router
     _errDialog = errDialog
     _loading = loading

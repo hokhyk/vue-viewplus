@@ -14,7 +14,7 @@ export const modelName = 'login-state-check'
  */
 const USER_SIGN_STATE_KEY = '__USER_SIGN_STATE__'
 
-let _Vue, _router, _vp,
+let _router,
   _store,
   _checkPaths,
   _onLoginStateCheckFail,
@@ -93,6 +93,7 @@ let plugin = {
  * @private
  */
 const _check = function (to, from, next) {
+  // 默认认为没有在`checkPaths`中的都是公共页面不需要校验是否需要登录
   let isAllow = true
   const path = to.path
   for (let i = _checkPaths.length; i--;) {
@@ -108,8 +109,7 @@ const _check = function (to, from, next) {
   } else {
     if (_.isFunction(_onLoginStateCheckFail)) {
       warn(`身份认证模块到用户并未登录，访问${path}，回调onLoginStateCheckFail钩子`, this)
-      _vp = checkVp(_Vue)
-      _vp::_onLoginStateCheckFail(to, from, next)
+      checkVp()::_onLoginStateCheckFail(to, from, next)
     } else {
       next(new Error('authtication_check_login_state_fail'))
     }
@@ -144,19 +144,17 @@ export const install = function (Vue, {
     installed = null
   } = {}
 } = {}) {
-  if (!_.isFunction(onLoginStateCheckFail)) {
-    warn(`${modelName}模块 onLoginStateCheckFail 未配置，将导致监测到授权失败，插件将会使用默认处理next(error)`)
-  }
-
-  _Vue = Vue
   _router = router
   _store = store
   _checkPaths = checkPaths
   _onLoginStateCheckFail = onLoginStateCheckFail
-  if (_.isArray(_checkPaths) && _checkPaths.length > 0) {
+  if (_.isArray(_checkPaths) && !_.isEmpty(_checkPaths)) {
     _router.beforeEach((to, from, next) => {
       _check(to, from, next)
     })
+    if (!_.isFunction(onLoginStateCheckFail)) {
+      warn(`${modelName}模块 onLoginStateCheckFail 未配置，将导致监测到授权失败，插件将会使用默认处理next(error)`)
+    }
   }
   plugin.modifyLoginState(isLogin)
   _installed = installed
