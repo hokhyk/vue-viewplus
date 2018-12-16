@@ -49,12 +49,14 @@ export function warn(message) {
 
 export function init(
   Vue,
-  isdebug,
+  isdebug = false,
   /* 指定和客户端交互过程中抛出的错误的处理函数。应用可以使用该函数来统一处理非业务级别的公共错误消息。 */
   errorHandler) {
   _Vue = Vue
   _isdebug = isdebug
-  _errorHandler = errorHandler
+  if (_.isFunction(errorHandler)) {
+    _errorHandler = errorHandler
+  }
   if (_isdebug) {
     warn('您配置为debug模式，插件将会输出一些调试信息，建议上线前关闭调试')
   }

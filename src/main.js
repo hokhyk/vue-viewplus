@@ -58,11 +58,6 @@ const install = function (Vue, opts = {}) {
   })
 }
 
-// es6 class export no support instanceof
-// if (inBrowser) {
-//   window.JsBridgeError = JsBridgeError
-// }
-
 export default {
   install,
   mixin(Vue, plugin, options) {
@@ -70,6 +65,8 @@ export default {
       throw new Error('插件定义失败')
     }
     try {
+      const {errorHandler, debug = false} = options
+      registErrorHandlerConfigMethod(Vue, debug, errorHandler)
       MixinPlugin.mixin(Vue, plugin, _.has(options, 'moduleName') ? options.moduleName : '未命名混合模块', options)
     } catch (e) {
       console.log('err', e)
