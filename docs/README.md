@@ -50,8 +50,10 @@ npm run dev
 
 # 案例
 
-+ [云南农信手机银行 一个企业级金融app](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank)
-
+| 名称 | 渠道 | 简介 |
+| ------ | ------ | ------ |
+| [云南农信手机银行](http://sj.qq.com/myapp/detail.htm?apkName=com.csii.mobilebank) | 移动端 | [2018区域性商业银行“最佳手机银行奖”](https://mp.weixin.qq.com/s/n0QMYGBSdatmkXTfS9p6HA)，整个手机银行80%的界面都基于Vue开发，完整使用了当前插件 |
+| [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | PC端 | 一个前后端分离的内管基础项目，并基于当前插件完成了[RBAC前端权限控制](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js#L124) |
 
 
 # 计划
