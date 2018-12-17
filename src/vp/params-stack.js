@@ -96,6 +96,7 @@ const plugin = {
   restoreParamsStack() {
     _store.commit('setBackParams', cache.cacheLoadFromSessionStore('__BACK_PARAMS__', {}))
     _store.commit('pushParamsStack', cache.cacheLoadFromSessionStore('__PARAMS_STACK__', []))
+    _store.commit('setBackState', cache.cacheLoadFromSessionStore('__BACK_STATE__', false))
   },
   /**
    * $vp.psModifyBackState(bckState)

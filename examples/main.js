@@ -74,7 +74,7 @@ Vue.use(ViewPlus, {
   },
   loginStateCheck: {
     installed() {
-      console.log('loginStateCheck', this)
+      // console.log('loginStateCheck', this)
     },
     checkPaths: [
       /Manage/
@@ -139,5 +139,6 @@ new Vue({
     console.log('ViewPlus -> ', ViewPlus)
     console.log('vp -> ', window._VP, this.$vp)
     console.log('$bus -> ', this.$bus)
+    // this.$vp.modifyLoginState(false)
   }
 })

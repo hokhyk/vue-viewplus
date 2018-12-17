@@ -47,8 +47,6 @@ let plugin = {
     if (_.isFunction(_installed)) {
       this::_installed()
     }
-    // 在这里恢复插件的需要进行缓存的vuex状态
-    this.restoreLoginState()
   },
   /**
    * $vp.isLogin()
@@ -156,7 +154,11 @@ export const install = function (Vue, {
       warn(`${modelName}模块 onLoginStateCheckFail 未配置，将导致监测到授权失败，插件将会使用默认处理next(error)`)
     }
   }
-  plugin.modifyLoginState(isLogin)
+  // 恢复登录状态，如果恢复的值为真，则放弃初始值，理解为用户刷新页面导致
+  plugin.restoreLoginState()
+  if (!plugin.isLogin()) {
+    plugin.modifyLoginState(isLogin)
+  }
   _installed = installed
   MixinPlugin.mixin(Vue, plugin, modelName)
 }
