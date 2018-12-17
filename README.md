@@ -62,11 +62,11 @@ npm run dev
 
 
 # 计划
+| 功能 | 完成状态 | 简介 |
+| ------ | ------ | ------ |
+| 变打包插件方式为rollup | 0% | |
+| 前端RBAC权限控制 | 90% | [自定义RBAC前端权限控制模块](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js#L124) |
+| [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | 70% | 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个[管理端模板](https://github.com/Jiiiiiin/jiiiiiin-security) <br> <a href="https://github.com/d2-projects/d2-admin" target="_blank"><img src="https://raw.githubusercontent.com/FairyEver/d2-admin/master/doc/image/d2-admin@2x.png" width="200"></a>
 
-+ 变打包插件方式为rollup
 
-+ 计划做一个RBAC权限控制，目前login-state-check.js 身份认证权限控制模块不足以满足后台管理端的RBAC权限控制
-
-+ 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个管理端模板
-  <a href="https://github.com/d2-projects/d2-admin" target="_blank"><img src="https://raw.githubusercontent.com/FairyEver/d2-admin/master/doc/image/d2-admin@2x.png" width="200"></a>
 
