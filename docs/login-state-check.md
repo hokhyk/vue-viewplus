@@ -140,7 +140,7 @@ Vue.use(ViewPlus, {
 ### onLoginStateCheckFail
 ```js
   /**
-     * [*] `$vp#onLoginStateCheckFail(to, from, next)`
+     * [*] `$vp::onLoginStateCheckFail(to, from, next)`
      * <p>
 	 * 身份认证检查失败时被回调
      */

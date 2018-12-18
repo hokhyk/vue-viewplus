@@ -12,13 +12,14 @@
 + 用**一种方式解决一个问题**，在开发时候解决问题可以有多种方式，但是我们只需要一种
 
 # 特性
-+ [util-http.js 针对axios进行了二次封装的ajax模块。](http://jiiiiiin.cn/vue-viewplus/#/util-http)
-+ [login-state-check.js 身份认证权限控制模块。](http://jiiiiiin.cn/vue-viewplus/#/login-state-check)
-+ [params-stack.js 参数栈模块。](http://jiiiiiin.cn/vue-viewplus/#/params-stack)
-+ [js-bridge-context.js JSBridge桥接模块](http://jiiiiiin.cn/vue-viewplus/#/js-bridge-context)，用于简化前端和客户端（Android && IOS）直接的交互，配合[Jiiiiiin/android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)可以让hybrid开发易如反掌 ：）
-+ [util-cache.js 缓存模块。](http://jiiiiiin.cn/vue-viewplus/#/util-cache)
-+ [cache-userinfo.js 缓存用户（登录用户）信息模块。](http://jiiiiiin.cn/vue-viewplus/#/cache-userinfo)
++ [针对axios进行了二次封装的ajax模块](http://jiiiiiin.cn/vue-viewplus/#/util-http)
++ [身份认证权限控制模块](http://jiiiiiin.cn/vue-viewplus/#/login-state-check)
++ [参数栈模块](http://jiiiiiin.cn/vue-viewplus/#/params-stack)
++ [JSBridge桥接模块](http://jiiiiiin.cn/vue-viewplus/#/js-bridge-context)，用于简化前端和客户端（Android && IOS）直接的交互，配合[Jiiiiiin/android-viewplus 一个安卓混合客户端开发库](https://github.com/Jiiiiiin/android-viewplus)可以让hybrid开发易如反掌 ：）
++ [缓存模块](http://jiiiiiin.cn/vue-viewplus/#/util-cache)
++ [缓存用户（登录用户）信息模块](http://jiiiiiin.cn/vue-viewplus/#/cache-userinfo)
 + [支持自定义模块混合](http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-)
++ [自定义RBAC权限控制模块](http://jiiiiiin.cn/vue-viewplus/#/rbac)
 
 # 文档
 [点击查看文档](http://jiiiiiin.cn/vue-viewplus/)
@@ -29,10 +30,7 @@
 
 <p align="center"><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwv0ejzauhj305k05kweb.jpg" width="175"></p>
 
-<p align="center">扫码访问</p>
-
-<p align="center"><a href="http://vue_viewplus_demo.jiiiiiin.cn/Info">点击访问demo</a></p>
-
+<p align="center">扫码访问 | <a herf="http://vue_viewplus_demo.jiiiiiin.cn/Info">点击访问demo</a></p>
 + 自己运行demo
 
 ```bash
@@ -66,7 +64,7 @@ npm run dev
 | ------ | ------ | ------ |
 | 变打包插件方式为rollup | 0% | |
 | 前端RBAC权限控制 | 90% | [自定义RBAC前端权限控制模块](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js#L124) |
-| [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | 70% | 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个[管理端模板](https://github.com/Jiiiiiin/jiiiiiin-security) <br> <a href="https://github.com/d2-projects/d2-admin" target="_blank"><img src="https://raw.githubusercontent.com/FairyEver/d2-admin/master/doc/image/d2-admin@2x.png" width="200"></a>
+| [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | 70% | 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个[一个前后端分离的内管基础项目](https://github.com/Jiiiiiin/jiiiiiin-security) |
 
 
 
