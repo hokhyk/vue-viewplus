@@ -99,8 +99,18 @@ ViewPlus.mixin(Vue, rbacModule, {
 
 `authorizeInterfaces`:
 
+这个数据需要根据当前模块的[`isRESTfulInterfaces=true`]()属性来判断要设置什么类型的数据格式：
+
+如果`isRESTfulInterfaces`设置为`false`，则使用下面的格式：
+
 ```json
 ["admin/dels/*", "admin/search/*/*/*", "admin/*/*/*", "role/list/*", "admin/*"]
+```
+
+如果`isRESTfulInterfaces`设置为`true`，**注意这是默认设置**，则使用下面的格式：
+
+```json
+[[{url: "admin/dels/*", method: "DELETE"}, ...]]
 ```
 
 ```authorizeResourceAlias```:
@@ -129,9 +139,38 @@ ViewPlus.mixin(Vue, rbacModule, {
 </el-form>
 ```
 
+针对`v-access`指令的值的使用，可以有以下几种情况：
+
++ 如果`isRESTfulInterfaces`设置为`true`，**注意这是默认设置**，则使用下面的格式：
+
+```html
+v-access="[{url: 'admin/search/*', method: 'POST'}]"
+```
+
++ 如果`isRESTfulInterfaces`设置为`false`，则使用下面的格式：
+
+```html
+v-access="['admin', 'admin/*']"
+```
+
++ 如果希望使用别名标识一个资源：
+
+```html
+v-access:alias="['LOGIN', 'WELCOME']"
+v-access:alias="'LOGIN'"
+```
+
++ 另外以上几种都是如何声明组件所需权限，而如果登录用户没有这个权限，则组件将会被`隐藏`，但是也可以使用下面的配置让组件变为半透明且不可用点击：
+
+```html
+v-access:alias.disable="['LOGIN', 'WELCOME']"
+v-access.disable="['admin', 'admin/*']"
+```
+
+就是加一个`disable`而已；
+
+
 完成以上配置即可让正常使用当前模块提供的权限控制服务，当然如`$vp.modifyLoginState|$vp#isLogin`涉及到[`login-state-check.js 身份认证权限控制模块`](http://jiiiiiin.cn/vue-viewplus/#/login-state-check)
-
-
 
 ## 计划
 
@@ -176,7 +215,7 @@ authorizedPaths = []
 ### authorizeInterfaces
 
 ```js
- /**
+/**
      * [*] 登录用户拥有访问权限的后台接口集合
      * {Array<Object>}
      * <p>
@@ -186,6 +225,20 @@ authorizedPaths = []
      * 数组中的item，可以是一个**正则表达式字面量**，如`[/^((\/Interbus)(?!\/SubMenu)\/.+)$/]`，也可以是一个字符串
      * <p>
      * 匹配规则：将会用于在发送ajax请求之前，对待请求的接口和当前集合进行匹配，如果匹配失败说明用户就没有请求权限，则直接不发送后台请求，减少后端不必要的资源浪费
+     * <p>
+     *   注意需要根据`isRESTfulInterfaces`属性的值，来判断当前集合的数据类型：
+     *
+     如果`isRESTfulInterfaces`设置为`false`，则使用下面的格式：
+
+     ```json
+     ["admin/dels/*", ...]
+     ```
+
+     如果`isRESTfulInterfaces`设置为`true`，**注意这是默认设置**，则使用下面的格式：
+
+     ```json
+     [[{url: "admin/dels/*", method: "DELETE"}, ...]]
+     ```
      */
     authorizeInterfaces = []
 ```
@@ -205,6 +258,20 @@ authorizedPaths = []
 authorizeResourceAlias = []
 ```
 
+### isRESTfulInterfaces
+
+```js
+/**
+ * [*] 声明`authorizeInterfaces`集合存储的是RESTful类型的接口还是常规接口
+ * 1. 如果是（true），则`authorizeInterfaces`集合需要存储的结构就是:
+ * [{url: 'admin/dels/*', method: 'DELETE'}]
+ * 即进行接口匹配的时候会校验类型
+ * 2. 如果不是（false），则`authorizeInterfaces`集合需要存储的结构就是，即不区分接口类型:
+ * ['admin/dels/*']
+ */
+isRESTfulInterfaces = true
+```
+
 ### onLoginStateCheckFail
 
 ```js
@@ -216,7 +283,7 @@ authorizeResourceAlias = []
 onLoginStateCheckFail = null
 ```
 
-### 
+###
 
 
 ## API接口
