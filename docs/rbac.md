@@ -41,7 +41,7 @@ ViewPlus.mixin(Vue, rbacModule, {
     moduleName: '自定义RBAC',
     router,
     publicPaths: ['/login'],
-    onLoginStateCheckFail(to, from, next) {
+    onPathCheckFail(to, from, next) {
         this.dialog(`您无权访问【${to.path}】页面`)
             .then(() => {
             // 防止用户被踢出之后，被权限拦截导致访问不了任何页面，故这里进行登录状态监测
@@ -145,6 +145,8 @@ ViewPlus.mixin(Vue, rbacModule, {
 
 ```html
 v-access="[{url: 'admin/search/*', method: 'POST'}]"
+// 或者如果只有一个接口声明
+v-access="{url: 'admin/search/*/*/*', method: 'POST'}"
 ```
 
 + 如果`isRESTfulInterfaces`设置为`false`，则使用下面的格式：
@@ -174,7 +176,7 @@ v-access.disable="['admin', 'admin/*']"
 
 ## 计划
 
-针对`authorizeInterfaces`，后期将会用于在发送ajax请求之前，对待请求的接口和当前集合进行匹配，如果匹配失败说明用户就没有请求权限，则直接不发送后台请求，减少后端不必要的资源浪费，在完成这个权限匹配，前端基础的权限规则就完整了。
+针对`authorizeInterfaces`，后期将会用于在发送ajax请求之前，对待请求的接口和当前集合进行匹配，如果匹配失败说明用户就没有请求权限，则直接不发送后台请求，减少后端不必要的资源浪费，再完成这个计划，前端基础的权限规则就完整了。
 
 
 
@@ -232,7 +234,7 @@ authorizedPaths = []
 
      ```json
      ["admin/dels/*", ...]
-     ```
+```
 
      如果`isRESTfulInterfaces`设置为`true`，**注意这是默认设置**，则使用下面的格式：
 
@@ -245,7 +247,7 @@ authorizedPaths = []
 
 ### authorizeResourceAlias
 
-```js
+​```js
 /**
      * [可选] 登录用户拥有访问权限的资源别名集合
      * {Array<Object>}
@@ -272,15 +274,15 @@ authorizeResourceAlias = []
 isRESTfulInterfaces = true
 ```
 
-### onLoginStateCheckFail
+### onPathCheckFail
 
 ```js
 /**
-     * [*] `$vp::onLoginStateCheckFail(to, from, next)`
+     * [*] `$vp::onPathCheckFail(to, from, next)`
      * <p>
      * 权限检查失败时被回调
      */
-onLoginStateCheckFail = null
+onPathCheckFail = null
 ```
 
 ###
