@@ -19,6 +19,10 @@ rabc.js 自定义RBAC权限控制模块，为前端应用提供rbac权限控制�
 | ------ | ------ | ------ |
 | [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | PC端 | 一个前后端分离的内管基础项目，并基于当前插件完成了[RBAC前端权限控制](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js#L124) |
 
+效果如下：
+|  |  |  |  |
+| ------ | ------ | ------ | ------ |
+| ![](https://user-gold-cdn.xitu.io/2018/12/19/167c4284909a210e?w=1920&h=1080&f=jpeg&s=85075) | ![](https://user-gold-cdn.xitu.io/2018/12/19/167c4286378ca846?w=1728&h=1080&f=jpeg&s=78121) | ![](https://user-gold-cdn.xitu.io/2018/12/19/167c42968b5600a8?w=1920&h=1080&f=jpeg&s=196559) | ![](https://user-gold-cdn.xitu.io/2018/12/19/167c429962878279?w=1920&h=1080&f=jpeg&s=156734) |
 
 使用方法：
 
