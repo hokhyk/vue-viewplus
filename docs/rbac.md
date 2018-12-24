@@ -1,6 +1,7 @@
 # rbac.js
 
 > [前端如何配合后端完成RBAC权限控制](https://juejin.im/post/5c1f8d6c6fb9a049e06353aa)
+
 > [Vue 前端应用实现RBAC权限控制的一种方式](https://juejin.im/post/5c19a282f265da61137f372c)
 
 rabc.js 自定义RBAC权限控制模块，为前端应用提供rbac权限控制帮助。
