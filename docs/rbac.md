@@ -1,5 +1,8 @@
 # rbac.js
 
+> [前端如何配合后端完成RBAC权限控制](https://juejin.im/post/5c1f8d6c6fb9a049e06353aa)
+> [Vue 前端应用实现RBAC权限控制的一种方式](https://juejin.im/post/5c19a282f265da61137f372c)
+
 rabc.js 自定义RBAC权限控制模块，为前端应用提供rbac权限控制帮助。
 
 [RBAC](https://zh.wikipedia.org/zh/以角色為基礎的存取控制)基于角色的访问控制，一般只会在管理端应用使用，故这个模块不作为默认模块，[点击下载](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js)。
@@ -177,7 +180,6 @@ v-access.disable="['admin', 'admin/*']"
 ## 计划
 
 针对`authorizeInterfaces`，后期将会用于在发送ajax请求之前，对待请求的接口和当前集合进行匹配，如果匹配失败说明用户就没有请求权限，则直接不发送后台请求，减少后端不必要的资源浪费，再完成这个计划，前端基础的权限规则就完整了。
-
 
 
 ## 配置
