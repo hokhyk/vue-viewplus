@@ -182,6 +182,8 @@ v-access.disable="['admin', 'admin/*']"
 
 针对`authorizeInterfaces`，后期将会用于在发送ajax请求之前，对待请求的接口和当前集合进行匹配，如果匹配失败说明用户就没有请求权限，则直接不发送后台请求，减少后端不必要的资源浪费，再完成这个计划，前端基础的权限规则就完整了。
 
+## [模块源代码](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js)
+
 
 ## 配置
 
