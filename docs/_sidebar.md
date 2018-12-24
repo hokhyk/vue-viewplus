@@ -17,4 +17,4 @@
   * [js-bridge-context.js](js-bridge-context.md)
   * [util-cache.js](util-cache.md)
   * [cache-userinfo.js](cache-userinfo.md)
-  * [rabc.js](rabc.md)
+  * [rbac.js](rbac.md)
