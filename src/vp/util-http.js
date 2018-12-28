@@ -438,7 +438,7 @@ const plugin = {
         const that = this
         const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
         window[listenerName] = function (data) {
-          this::_hLoading(showLoading)
+          that::_hLoading(showLoading)
           try {
             if (_.isFunction(_onSendAjaxRespHandle)) {
               data = _onSendAjaxRespHandle(data)

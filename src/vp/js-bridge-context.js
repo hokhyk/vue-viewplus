@@ -112,7 +112,7 @@ const plugin = {
                 }
                 window[callBackName] = undefined
               } catch (e) {
-                emitErr(new JsBridgeError(`解析安卓客户端返回的结果出错[${e.message}]`, 'PARSE_ANDROID_RES_ERR'), reject, true)
+                emitErr(new JsBridgeError(`解析苹果客户端返回的结果出错[${e.message}]`, 'PARSE_IOS_RES_ERR'), reject, true)
               }
             }
             const p = { ...{
