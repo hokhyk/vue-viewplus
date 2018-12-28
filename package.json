@@ -1,8 +1,8 @@
 {
   "name": "vue-viewplus",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "一个简化Vue应用开发的工具库",
-  "author": "z.jiiiiiin <“jiiiiiin@yeah.net”>",
+  "author": "赵津 <“15398699939@163.com”>",
   "license": "MIT",
   "private": false,
   "main": "dist/vue-viewplus.js",
