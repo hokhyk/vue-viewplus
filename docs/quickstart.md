@@ -14,7 +14,6 @@
 module.exports = {
   // ...
   transpileDependencies: [
-    '@babel/plugin-proposal-function-bind',
     'vue-viewplus/src/'
   ],
 }
@@ -56,15 +55,26 @@ const webpackConfig = {
  }
 ```
 也就是说，`peerDependencies`，需要大家手动安装，因为lodash很大，所以建议大家自行安装和配置[`lodash-webpack-plugin`](https://github.com/lodash/lodash-webpack-plugin)。
-另外我们插件源码使用了`babel-plugin-transform-function-bind`，大家可能也需要手动安装并配置：
+另外我们插件源码使用了`babel-plugin-transform-function-bind`，大家需要手动安装并修改babel配置：
 
 ```js
 "plugins": [
     //...
     "transform-function-bind",
-    "lodash"
   ]
 ```
+
+修改vue-cli3配置：
+
+```bash
+module.exports = {
+  // ...
+  transpileDependencies: [
+    '@babel/plugin-proposal-function-bind'
+  ],
+}
+```
+
 至于为什么要使用，我再这里做了简单解释，[说说我的入坑记录](https://github.com/Jiiiiiin/vue-viewplus/issues/1#issuecomment-450269572)
 
 ## 插件配置
