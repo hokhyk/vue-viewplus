@@ -55,7 +55,7 @@ const webpackConfig = {
     "qs": "^6.5.2"
  }
 ```
-也就是说，`peerDependencies`，需要大家手动安装，因为lodash很大，所以建议大家自行安装和配置[`babel-plugin-lodash`](https://github.com/lodash/babel-plugin-lodash)。
+也就是说，`peerDependencies`，需要大家手动安装，因为lodash很大，所以建议大家自行安装和配置[`lodash-webpack-plugin`](https://github.com/lodash/lodash-webpack-plugin)。
 另外我们插件源码使用了`babel-plugin-transform-function-bind`，大家可能也需要手动安装并配置：
 
 ```js
