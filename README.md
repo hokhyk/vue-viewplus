@@ -26,12 +26,7 @@
 
 # 例子
 
-+ 线上demo
-
-<p align="center"><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fwv0ejzauhj305k05kweb.jpg" width="175"></p>
-
-<p align="center">扫码访问 | <a herf="http://vue_viewplus_demo.jiiiiiin.cn/Info">点击访问demo</a></p>
-+ 自己运行demo
++ 运行demo
 
 ```bash
 ├── examples 插件demo
