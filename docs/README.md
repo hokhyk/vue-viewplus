@@ -1,4 +1,4 @@
-<h4 align="center">vue-viewplus <br> <br> <img src="https://img.shields.io/badge/npm-0.9.9-orange.svg"/></h4>
+<h4 align="center">vue-viewplus <br> <br> <img src="https://img.shields.io/badge/npm-0.9.10-orange.svg"/></h4>
 <p align="center">一个简化Vue应用开发的工具库</p>
 
 做这个插件的目的是为了：
