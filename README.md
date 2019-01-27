@@ -58,8 +58,8 @@ npm run dev
 | 功能 | 完成状态 | 简介 |
 | ------ | ------ | ------ |
 | 变打包插件方式为rollup | 0% | |
-| 前端RBAC权限控制 | 90% | [自定义RBAC前端权限控制模块](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js#L124) |
-| [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | 70% | 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个[一个前后端分离的内管基础项目](https://github.com/Jiiiiiin/jiiiiiin-security) |
+| 前端RBAC权限控制 | 100% | [自定义RBAC前端权限控制模块](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js#L124) |
+| [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | 100% | 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个[一个前后端分离的内管基础项目](https://github.com/Jiiiiiin/jiiiiiin-security) |
 
 
 
