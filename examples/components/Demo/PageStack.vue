@@ -16,6 +16,11 @@
         <cell title="点击 手机充值" @click.native="next()" link="/Demo/PageStack/Page1" style="color: #af7f00"></cell>
       </box>
     </group>
+    <group title="模拟多页面之间的参数传递" label-width="15em" class="bottom-group">
+      <box gap="10px 10px">
+        <cell title="模拟多页面" link="" @click.native="goMultipage" style="color: #af7f00"></cell>
+      </box>
+    </group>
 
   </div>
 </template>
@@ -23,7 +28,7 @@
 <script type="text/ecmascript-6">
   import demoMixin from './demo-mixin'
   import { Cell } from 'vux'
-
+  import { mapMutations } from 'vuex'
   export default {
     mixins: [demoMixin],
     components: {
@@ -37,6 +42,11 @@
     methods: {
       next() {
         this.$vp.psPageNext('/Demo/PageStack/Page1', {params: {phoneNumb: 13111111111}})
+      },
+      ...mapMutations(['updateActivePages']),
+      goMultipage() {
+        this.updateActivePages(['Trans1-Page1', 'Trans2-Page1'])
+        this.$vp.psPageNext('/Demo/PageStack/Multipage/Trans1-Page1')
       }
     },
     created() {
