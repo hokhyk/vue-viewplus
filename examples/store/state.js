@@ -3,5 +3,6 @@ export default {
   isLoading: false,
   // 导航栏标题
   appTitle: '',
-  appTitleBarBackBtnVisible: false
+  appTitleBarBackBtnVisible: false,
+  activePages: ['Trans1-Page1', 'Trans2-Page1']
 }

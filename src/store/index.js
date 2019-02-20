@@ -1,5 +1,6 @@
 import { PLUGIN_VUEX_DEF_MODULE_NAME } from '../gloabl-dict'
 import cache from '../vp/util-cache'
+import _ from 'lodash'
 
 export default (store) => {
   store.registerModule(PLUGIN_VUEX_DEF_MODULE_NAME, {
@@ -13,9 +14,11 @@ export default (store) => {
        */
       loginUserInfo: {},
       /**
-       * 参数栈
+       * 参数栈（添加了一个key来区分）
        */
-      paramsStack: [],
+      paramsStacks: {
+        def: []
+      },
       /**
        * 回传参数
        */
@@ -23,17 +26,12 @@ export default (store) => {
       /**
        * 是否是出栈|是否是返回状态（点击返回页面）
        */
-      backState: false
-    },
-    getters: {
+      backState: false,
       /**
-       * 查看栈顶参数
-       * @param state
-       * @returns {*}
+       * 当前参数栈的key
        */
-      params: state => {
-        return state.paramsStack[state.paramsStack.length - 1]
-      }
+      activeParamsStack: 'def',
+      params: {}
     },
     mutations: {
       /**
@@ -62,30 +60,54 @@ export default (store) => {
         cache.cacheSaveToSessionStore('__BACK_PARAMS__', params)
       },
       /**
+       * 修改当前参数栈的key
+       * @param state
+       * @param curVal
+       */
+      'modifyActiveParamsStack': (state, curVal = 'def') => {
+        state.activeParamsStack = curVal
+        if (_.hasIn(state.paramsStacks, curVal)) {
+          const activeParamsStack = state.paramsStacks[curVal]
+          state.params = activeParamsStack[activeParamsStack.length - 1]
+        } else {
+          state.paramsStacks[curVal] = []
+          state.params = {}
+        }
+      },
+      /**
        * 入栈
        * @param state
        * @param {Object} [params={}]
        */
       'pushParams': (state, params) => {
-        state.paramsStack.push(params)
-        cache.cacheSaveToSessionStore('__PARAMS_STACK__', state.paramsStack)
+        let activeParamsStack = state.paramsStacks[state.activeParamsStack]
+        activeParamsStack.push(params)
+        state.params = activeParamsStack[activeParamsStack.length - 1]
+        cache.cacheSaveToSessionStore('__PARAMS_STACKS__', state.paramsStacks)
       },
       /**
        * 设置参数栈
        * @param state
-       * @param {Array} [paramsArr=[]]
+       * @param paramsStacks
        */
-      'pushParamsStack': (state, paramsArr) => {
-        state.paramsStack = paramsArr
-        cache.cacheSaveToSessionStore('__PARAMS_STACK__', paramsArr)
+      'pushParamsStacks': (state, paramsStacks) => {
+        if (!paramsStacks) {
+          paramsStacks = {}
+          paramsStacks[state.activeParamsStack] = []
+        }
+        state.paramsStacks = paramsStacks
+        state.params = {}
+        cache.cacheSaveToSessionStore('__PARAMS_STACKS__', paramsStacks)
       },
       /**
        * 出栈
        * @param state
        */
       'popParams': (state) => {
-        state.paramsStack.pop()
-        cache.cacheSaveToSessionStore('__PARAMS_STACK__', state.paramsStack)
+        const activeParamsStack = state.paramsStacks[state.activeParamsStack]
+        activeParamsStack.pop()
+        state.params = activeParamsStack[activeParamsStack.length - 1]
+        cache.cacheSaveToSessionStore('__PARAMS_STACKS__', state.paramsStacks)
       },
       /**
        * 修改栈顶参数
@@ -100,13 +122,20 @@ export default (store) => {
         store.commit('pushParams', params)
       },
       /**
-       * 清空参数栈
+       * 清空参数栈（若存在多个参数栈，清空当前参数栈）
        * @param state
        */
       'clearParamsStack': (state) => {
-        state.paramsStack = []
-        cache.cacheDeleteToSessionStore('__PARAMS_STACK__')
-        // state.backParams = {}
+        state.paramsStacks[state.activeParamsStack] = []
+        cache.cacheSaveToSessionStore('__PARAMS_STACKS__', state.paramsStacks)
+      },
+      /**
+       * 清空参数栈（若存在多个参数栈，清空当前参数栈）
+       * @param state
+       */
+      'delParamsStack': (state, paramsStacks = state.activeParamsStack) => {
+        delete state.paramsStacks[paramsStacks]
+        cache.cacheSaveToSessionStore('__PARAMS_STACKS__', state.paramsStacks)
       },
       /**
        * 设置是否是出栈|是否是返回状态（点击返回页面）

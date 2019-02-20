@@ -56,6 +56,48 @@ export default new Router({
               meta: {
                 title: 'Page4'
               }
+            },
+            {
+              path: 'Multipage',
+              component: (resolve) => import('../components/Demo/PageStack/Multipage/Multipage').then(module => resolve(module)),
+              children: [
+                {
+                  path: 'Trans1-Page1',
+                  name: 'Trans1-Page1',
+                  component: (resolve) => import('../components/Demo/PageStack/Multipage/Trans1/Page1').then(module => resolve(module)),
+                  meta: {
+                    title: 'Trans1-Page1',
+                    trsName: 'Trans1'
+                  }
+                },
+                {
+                  path: 'Trans1-Page2',
+                  name: 'Trans1-Page2',
+                  component: (resolve) => import('../components/Demo/PageStack/Multipage/Trans1/Page2').then(module => resolve(module)),
+                  meta: {
+                    title: 'Trans1-Page2',
+                    trsName: 'Trans1'
+                  }
+                },
+                {
+                  path: 'Trans2-Page1',
+                  name: 'Trans2-Page1',
+                  component: (resolve) => import('../components/Demo/PageStack/Multipage/Trans2/Page3').then(module => resolve(module)),
+                  meta: {
+                    title: 'Trans2-Page1',
+                    trsName: 'Trans2'
+                  }
+                },
+                {
+                  path: 'Trans2-Page2',
+                  name: 'Trans2-Page2',
+                  component: (resolve) => import('../components/Demo/PageStack/Multipage/Trans2/Page4').then(module => resolve(module)),
+                  meta: {
+                    title: 'Trans2-Page2',
+                    trsName: 'Trans2'
+                  }
+                }
+              ]
             }
           ]
         },

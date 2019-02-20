@@ -1,4 +1,4 @@
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations } from 'vuex'
 import MixinPlugin from '../util/mixin-plugin'
 import _utilHttp from '../vp/util-http'
 import _ from 'lodash'
@@ -25,12 +25,12 @@ export const paramsStackMixin = {
     }
   },
   computed: {
-    ...mapGetters([
-      /**
-       * 查看`vuex#vplus.paramsStack[top-length]`栈顶参数
-       */
-      'params'
-    ]),
+    params() {
+      return this.$store.state[MODULE_NAME].params
+    },
+    activeParamsStack() {
+      return this.$store.state[MODULE_NAME].activeParamsStack
+    },
     /**
      * 查看`vuex#vplus.backParams`回传参数
      */
@@ -65,7 +65,11 @@ export const paramsStackMixin = {
       /**
        * 设置是否是出栈|是否是返回状态（点击返回页面）
        */
-      'setBackState'
+      'setBackState',
+      /**
+       * 修改当前激活的参数栈的key
+       */
+      'modifyActiveParamsStack'
     ])
   },
   // 导航离开该组件的对应路由时调用
@@ -85,17 +89,17 @@ const plugin = {
     if (_.isFunction(_installed)) {
       this::_installed()
     }
-    this.restoreParamsStack()
+    this.restoreParamsStacks()
   },
   /**
-   * $vp.restoreParamsStack()
-   * 恢复插件中`vuex#$vp.paramsStack` && vuex#$vp.backParams` && vuex#$vp.backState`参数栈所用状态
+   * $vp.restoreParamsStacks()
+   * 恢复插件中`vuex#$vp.paramsStacks` && vuex#$vp.backParams` && vuex#$vp.backState`参数栈所用状态
    * <p>
    * 在当前模块重新安装的时候，一般对应就是插件初始化和页面刷新的时候
    */
-  restoreParamsStack() {
+  restoreParamsStacks() {
     _store.commit('setBackParams', cache.cacheLoadFromSessionStore('__BACK_PARAMS__', {}))
-    _store.commit('pushParamsStack', cache.cacheLoadFromSessionStore('__PARAMS_STACK__', []))
+    _store.commit('pushParamsStacks', cache.cacheLoadFromSessionStore('__PARAMS_STACKS__'))
     _store.commit('setBackState', cache.cacheLoadFromSessionStore('__BACK_STATE__', false))
   },
   /**
@@ -116,6 +120,20 @@ const plugin = {
     _store.commit('clearParamsStack')
   },
   /**
+   * 修改当前激活的参数栈
+   * @param pramsStackName 参数栈名
+   */
+  psModifyActiveParamsStack(pramsStackName) {
+    _store.commit('modifyActiveParamsStack', pramsStackName)
+  },
+  /**
+   * 删除参数栈
+   * @param pramsStackName 参数栈名
+   */
+  psDeleteParamsStack(pramsStackName) {
+    _store.commit('delParamsStack', pramsStackName)
+  },
+  /**
    * $vp.(location[, {params = {}, clearParamsStack = false, backState = false} = {}])
    * <p>
    * 页面导航
@@ -124,8 +142,10 @@ const plugin = {
    * @param {Boolean} [clearParamsStack=false] 在进行页面导航的时候，是否清空参数栈，默认为false
    * @param {Boolean} [backState=false] 设置`vuex#vplus.backState`返回状态，默认为false
    */
-  psPageNext(location, {params = {}, clearParamsStack = false, backState = false} = {}) {
-    _store.commit('pushParams', params)
+  psPageNext(location, {params = null, clearParamsStack = false, backState = false} = {}) {
+    if (!_.isNil(params)) {
+      _store.commit('pushParams', params)
+    }
     _store.commit('setBackParams', {})
     this.psModifyBackState(backState)
     if (clearParamsStack) {

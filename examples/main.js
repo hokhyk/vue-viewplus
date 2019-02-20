@@ -24,6 +24,12 @@ sync(store, router)
 
 router.beforeEach(function (to, from, next) {
   store.commit('updateLoadingStatus', true)
+  // 多页面需要修改参数栈名
+  if (to.path.indexOf('Multipage') > 0) {
+    store.commit('modifyActiveParamsStack', to.meta.trsName)
+  } else {
+    store.commit('modifyActiveParamsStack')
+  }
   next()
 })
 
