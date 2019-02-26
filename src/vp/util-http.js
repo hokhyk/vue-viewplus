@@ -162,9 +162,9 @@ const _handlerErr = function (needHandlerErr, response) {
       if (_.isError(response) && response instanceof JsBridgeError) {
         this::_errDialog(`${response.message} [${response.code}]`)
       } else if (_.isError(response)) {
-        if (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`))) {
+        if (_.has(response.data, `${_statusCodeKey}`) || (_.has(response.data, `${_errCodeKey}`))) {
           // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
-          this::_handlerBusinessErrMsg(response.response.data)
+          this::_handlerBusinessErrMsg(response.data)
         } else {
           // 细化错误消息
           const errMsg = response.message
@@ -175,9 +175,9 @@ const _handlerErr = function (needHandlerErr, response) {
           } else {
             let errmsg
             // 检测`http`响应状态码属性
-            if (_.has(response.response, 'status')) {
+            if (_.has(response, 'status')) {
               // 按响应状态码解析错误
-              const statusFlag = response.response.status
+              const statusFlag = response.status
               const handled = this::callFunc(_onReqErrParseHttpStatusCode, statusFlag, response)
               if (!handled) {
                 switch (statusFlag) {
@@ -191,7 +191,7 @@ const _handlerErr = function (needHandlerErr, response) {
                     errmsg = '拒绝访问'
                     break
                   case 404:
-                    errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
+                    errmsg = `404 找不到待请求的资源: ${response.config.url}`
                     break
                   case 408:
                     errmsg = '请求超时'
@@ -477,7 +477,7 @@ const plugin = {
           this::_hLoading(showLoading)
           this::_handlerErr(needHandlerErr, err)
           reject(err)
-        }).finally(this::_hLoading(showLoading))
+        }).finally(() => this::_hLoading(showLoading))
       })
     } else {
       // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
@@ -514,7 +514,8 @@ const plugin = {
             this::_handlerErr(needHandlerErr, err)
             reject(err)
           })
-          .finally(this::_hLoading(showLoading))
+          .finally(() => this::_hLoading(showLoading)
+          )
       })
     }
   },
