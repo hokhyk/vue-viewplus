@@ -440,44 +440,65 @@ const plugin = {
           params = this::_onSendAjaxParamsHandle(url, params, mode)
         }
         const that = this
-        const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
-        window[listenerName] = function (data) {
-          this::_hLoading(showLoading)
-          try {
-            if (_.isFunction(_onSendAjaxRespHandle)) {
-              data = _onSendAjaxRespHandle(data)
+        if (typeof XMLHttpRequest !== 'undefined') {
+          // For browsers todo something
+          const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
+          window[listenerName] = function (data) {
+            this::_hLoading(showLoading)
+            try {
+              if (_.isFunction(_onSendAjaxRespHandle)) {
+                data = _onSendAjaxRespHandle(data)
+              }
+              const response = JSON.parse(data)
+              // 需要对是否为服务端业务状态进行判断
+              const isErr = _parseServerResp(response)
+              if (isErr) {
+                that::_handlerErr(needHandlerErr, response)
+                reject(response)
+              } else {
+                resolve(_getResData(response))
+              }
+            } catch (e) {
+              reject(new Error(`解析客户端返回的请求数据出错[${e.message}]`))
             }
-            const response = JSON.parse(data)
-            // 需要对是否为服务端业务状态进行判断
-            const isErr = _parseServerResp(response)
-            if (isErr) {
-              that::_handlerErr(needHandlerErr, response)
-              reject(response)
-            } else {
-              resolve(_getResData(response))
+          }
+          const command = {
+            event: _eventName,
+            action: _actionName,
+            listener: listenerName,
+            params: {
+              transcode: url,
+              timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
+              params,
+              axiosOptions
             }
-          } catch (e) {
-            reject(new Error(`解析客户端返回的请求数据出错[${e.message}]`))
           }
-        }
-        const command = {
-          event: _eventName,
-          action: _actionName,
-          listener: listenerName,
-          params: {
-            transcode: url,
-            timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
-            params,
-            axiosOptions
+          this.fireEvent(command).then(response => {
+            warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
+          }).catch(err => {
+            this::_hLoading(showLoading)
+            this::_handlerErr(needHandlerErr, err)
+            reject(err)
+          }).finally(this::_hLoading(showLoading))
+        } else if (typeof process !== 'undefined') {
+          // For node todo something
+          const command = {
+            params: {
+              transcode: url,
+              mode: mode,
+              params,
+              axiosOptions
+            }
           }
+          this.fireEvent(command).then((response) => {
+            warn(`发送[${url}]请求，服务端响应数据，[${JSON.stringify(response)}]`)
+            resolve(_getResData(response))
+          }).catch((err) => {
+            this::_hLoading(showLoading)
+            this::_handlerErr(needHandlerErr, err)
+            reject(err)
+          }).finally(this::_hLoading(showLoading))
         }
-        this.fireEvent(command).then(response => {
-          warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
-        }).catch(err => {
-          this::_hLoading(showLoading)
-          this::_handlerErr(needHandlerErr, err)
-          reject(err)
-        }).finally(this::_hLoading(showLoading))
       })
     } else {
       // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
