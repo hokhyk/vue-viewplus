@@ -1,16 +1,13 @@
 import {
-  PLUGIN_VM_PREFIX_EVENTBUS
+  PLUGIN_VM_PREFIX_EVENTBUS, PLUGIN_VM_PREFIX_VIEWPLUS
 } from '../gloabl-dict'
 import {
-  info,
-  checkVp
+  info
 } from '../util/warn'
 import _ from 'lodash'
 
 const modelName = 'event-bus'
-let _Vue,
-  _vp,
-  _installed
+let _installed
 // noinspection JSUnusedGlobalSymbols
 export default class EventBus {
   constructor(Vue) {
@@ -21,8 +18,7 @@ export default class EventBus {
     // this::callFunc2(_onInitComplete, `${modelName} onInitComplete钩子函数未定义。`)
     info(`引入${modelName}模块：[vm.${PLUGIN_VM_PREFIX_EVENTBUS}]完成`)
     if (_.isFunction(_installed)) {
-      _vp = checkVp(_Vue)
-      _vp::_installed()
+      Vue.prototype[PLUGIN_VM_PREFIX_VIEWPLUS]::_installed()
     }
   }
 
@@ -35,7 +31,6 @@ export default class EventBus {
   } = {}) {
     if (!Vue.prototype.hasOwnProperty(PLUGIN_VM_PREFIX_EVENTBUS)) {
       _installed = installed
-      _Vue = Vue
       /* eslint-disable no-new */
       new EventBus(Vue)
     } else {

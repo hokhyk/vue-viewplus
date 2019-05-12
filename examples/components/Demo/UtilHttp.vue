@@ -2,12 +2,11 @@
   <div id="UtilHttp">
     <group class="desc-group">
       <box gap="10px 10px">
-        <p class="title">util-http.js模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合login-state-check.js模块进行身份认证控制。</p>
-        <span class="hint-title">注意：</span>
+        <p class="title">util-http.js 针对axios进行了二次封装的ajax模块。</p>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/master/examples/components/Demo/UtilHttp.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/util-http">文档</a></p>
         <ul class="hint-msg">
-          <li>1. 在进行一下测试前请先阅读<a>示例项目对util-http.js模块的配置</a></li>
-          <li>2. 保证启动了<a>mock server</a></li>
-          <li>3. 约定服务器端响应的数据结构（测试）
+          <li>1. 在进行一下测试前请先阅读<a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/main.js#L86">示例项目对util-http.js模块的配置</a></li>
+          <li>2. 约定服务器端响应的数据结构（测试）
             <pre v-highlightjs><code class="json">{
   "code": [1| "其他字符串，如：session_timeout_err"],
   "data": [{}|[]],
@@ -32,7 +31,7 @@ doGet() {
     })
     .then(data => {
       this.doGetBtnState = false
-      this.$vp.uiDialog(
+      this.$vp.dialog(
         data,
         {
           title: '请求成功，响应结果',
@@ -61,7 +60,7 @@ doPost() {
     .ajaxMixin('LOGIN')
     .then(data => {
       this.doPostBtnState = false
-      this.$vp.uiDialog(
+      this.$vp.dialog(
         data,
         {
           title: '请求成功，响应结果',
@@ -71,6 +70,26 @@ doPost() {
     })
     .catch(resp => {
       this.doPostBtnState = false
+    })
+}
+      </code></pre>
+      </cell-box>
+    </group>
+
+    <group title="模拟后端返回“业务级错误”" label-width="15em">
+      <box gap="10px 10px">
+        <x-button @click.native="doForcedWithdrawal">测试自动处理错误，并清除登录状态</x-button>
+      </box>
+      <cell-box class="code-box">
+        <pre v-highlightjs><code class="javascript">
+doForcedWithdrawal() {
+  this.$vp
+    .ajaxMixin('FORCEDWITHDRAWAL', {
+      mode: 'GET'
+    })
+    .catch(resp => {
+      console.error(`模拟强制签退完成：${resp}`)
+      this.$vp.toast('模拟强制签退完成')
     })
 }
       </code></pre>
@@ -103,7 +122,7 @@ doAjaxAll() {
       const res = _.map(resArr, (item) => {
         return item.data
       })
-      this.$vp.uiDialog(res, {
+      this.$vp.dialog(res, {
         title: '请求成功，响应结果',
         showCode: true
       })
@@ -125,14 +144,14 @@ doHttpNative() {
   this.$vp
     .ajaxMixin('TIMESTAMP', { mode: 'NATIVE' })
     .then(res => {
-      this.$vp.uiDialog(res, {
+      this.$vp.dialog(res, {
         title: '请求成功，响应结果',
         showCode: true
       })
       this.doHttpNativeBtnState = false
     })
     .catch((err) => {
-      this.$vp.uiDialog(err, {
+      this.$vp.dialog(err, {
         title: '请求失败，响应结果',
         showCode: true
       })
@@ -156,7 +175,7 @@ doCORS() {
   this.$vp
     .ajaxMixin('TIMESTAMP', { mode: 'GET' })
     .then(res => {
-      this.$vp.uiDialog(res, {
+      this.$vp.dialog(res, {
         title: '请求成功，响应结果',
         showCode: true
       })
@@ -193,11 +212,12 @@ export default {
       this.doGetBtnState = true
       this.$vp
         .ajaxMixin('TIMESTAMP', {
+        // .ajaxMixin('https://www.easy-mock.com/mock/5abc903ff5c35b191f472d79/example/TIMESTAMP', {
           mode: 'GET'
         })
         .then(data => {
           this.doGetBtnState = false
-          this.$vp.uiDialog(
+          this.$vp.dialog(
             data,
             {
               title: '请求成功，响应结果',
@@ -214,9 +234,15 @@ export default {
       this.doPostBtnState = true
       this.$vp
         .ajaxMixin('LOGIN')
+        // 测试 发送json字符串参数
+        // .ajaxPostJson('create', {
+        //   params: {
+        //     id: 111
+        //   }
+        // })
         .then(data => {
           this.doPostBtnState = false
-          this.$vp.uiDialog(
+          this.$vp.dialog(
             data,
             {
               title: '请求成功，响应结果',
@@ -226,6 +252,16 @@ export default {
         })
         .catch(resp => {
           this.doPostBtnState = false
+        })
+    },
+    doForcedWithdrawal() {
+      this.$vp
+        .ajaxMixin('FORCEDWITHDRAWAL', {
+          mode: 'GET'
+        })
+        .catch(resp => {
+          console.error(`模拟强制签退完成：${resp}`)
+          this.$vp.toast('模拟强制签退完成')
         })
     },
     doAjaxAll() {
@@ -246,7 +282,7 @@ export default {
           const res = _.map(resArr, (item) => {
             return item.data
           })
-          this.$vp.uiDialog(res, {
+          this.$vp.dialog(res, {
             title: '请求成功，响应结果',
             showCode: true
           })
@@ -257,14 +293,14 @@ export default {
       this.$vp
         .ajaxMixin('TIMESTAMP', { mode: 'NATIVE' })
         .then(res => {
-          this.$vp.uiDialog(res, {
+          this.$vp.dialog(res, {
             title: '请求成功，响应结果',
             showCode: true
           })
           this.doHttpNativeBtnState = false
         })
         .catch((err) => {
-          this.$vp.uiDialog(err, {
+          this.$vp.dialog(err, {
             title: '请求失败，响应结果',
             showCode: true
           })
@@ -276,7 +312,7 @@ export default {
       this.$vp
         .ajaxMixin('TIMESTAMP', { mode: 'GET' })
         .then(res => {
-          this.$vp.uiDialog(res, {
+          this.$vp.dialog(res, {
             title: '请求成功，响应结果',
             showCode: true
           })

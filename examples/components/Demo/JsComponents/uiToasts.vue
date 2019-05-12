@@ -8,7 +8,7 @@
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-        this.$vp.uiToast()
+        this.$vp.toast()
       </code></pre>
         </cell-box>
       </group>
@@ -20,7 +20,7 @@
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-this.$vp.uiToast('这是自定义的消息内容哦!')
+this.$vp.toast('这是自定义的消息内容哦!')
       </code></pre>
         </cell-box>
       </group>
@@ -32,7 +32,7 @@ this.$vp.uiToast('这是自定义的消息内容哦!')
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-this.$vp.uiToast('默认消息！', {position: 'top'})
+this.$vp.toast('默认消息！', {position: 'top'})
       </code></pre>
         </cell-box>
       </group>
@@ -43,7 +43,7 @@ this.$vp.uiToast('默认消息！', {position: 'top'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-this.$vp.uiToast('默认消息！', {position: 'middle'})
+this.$vp.toast('默认消息！', {position: 'middle'})
       </code></pre>
         </cell-box>
       </group>
@@ -54,7 +54,7 @@ this.$vp.uiToast('默认消息！', {position: 'middle'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-  this.$vp.uiToast('type为text', {type: 'text'})
+  this.$vp.toast('type为text', {type: 'text'})
       </code></pre>
         </cell-box>
       </group>
@@ -65,7 +65,7 @@ this.$vp.uiToast('默认消息！', {position: 'middle'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-  this.$vp.uiToast('type为cancel', {type: 'cancel'})
+  this.$vp.toast('type为cancel', {type: 'cancel'})
       </code></pre>
         </cell-box>
       </group>
@@ -76,7 +76,7 @@ this.$vp.uiToast('默认消息！', {position: 'middle'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
- this.$vp.uiToast('type为警告', {type: 'warn'})
+ this.$vp.toast('type为警告', {type: 'warn'})
       </code></pre>
         </cell-box>
       </group>
@@ -87,7 +87,7 @@ this.$vp.uiToast('默认消息！', {position: 'middle'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
- this.$vp.uiToast('type为success', {type: 'success'})
+ this.$vp.toast('type为success', {type: 'success'})
       </code></pre>
         </cell-box>
       </group>
@@ -98,7 +98,7 @@ this.$vp.uiToast('默认消息！', {position: 'middle'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-this.$vp.uiToast('显示时间为1s', {time: 1000})
+this.$vp.toast('显示时间为1s', {time: 1000})
       </code></pre>
         </cell-box>
       </group>
@@ -109,7 +109,7 @@ this.$vp.uiToast('显示时间为1s', {time: 1000})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
- this.$vp.uiToast('设置宽度为200px', {width: '200px'})
+ this.$vp.toast('设置宽度为200px', {width: '200px'})
       </code></pre>
         </cell-box>
       </group>
@@ -149,22 +149,22 @@ this.$vp.uiToast('显示时间为1s', {time: 1000})
     },
     methods: {
       uiToastDefult() {
-        this.$vp.uiToast()
+        this.$vp.toast()
       },
       uiToastText() {
-        this.$vp.uiToast('这是自定义的消息内容哦!')
+        this.$vp.toast('这是自定义的消息内容哦!')
       },
       uiToastPosition(position) {
-        this.$vp.uiToast('默认消息！', {position: position})
+        this.$vp.toast('默认消息！', {position: position})
       },
       uiToastType(type) {
-        this.$vp.uiToast(`type为${type}`, {type: type})
+        this.$vp.toast(`type为${type}`, {type: type})
       },
       uiToast1s() {
-        this.$vp.uiToast('显示时间为1s', {time: 1000})
+        this.$vp.toast('显示时间为1s', {time: 1000})
       },
       uiToastidth() {
-        this.$vp.uiToast('设置宽度为200px', {width: '200px'})
+        this.$vp.toast('设置宽度为200px', {width: '200px'})
       }
     }
   }

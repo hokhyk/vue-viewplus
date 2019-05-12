@@ -1,13 +1,10 @@
 import { PLUGIN_CONSOLE_LOG_FLAG, PLUGIN_VM_PREFIX_VIEWPLUS } from '../gloabl-dict'
 import _ from 'lodash'
 
-let _isdebug, _errorHandler, _vp, _Vue
+let _isdebug, _errorHandler, _Vue
 
-export function checkVp(Vue) {
-  if (!_vp) {
-    _vp = Vue.prototype[PLUGIN_VM_PREFIX_VIEWPLUS]
-  }
-  return _vp
+export function checkVp() {
+  return _Vue.prototype[PLUGIN_VM_PREFIX_VIEWPLUS]
 }
 
 export function emitErr(err, reject = null, isInstall = false) {
@@ -15,8 +12,7 @@ export function emitErr(err, reject = null, isInstall = false) {
     reject(err)
   }
   if (_.isFunction(_errorHandler)) {
-    checkVp(_Vue)
-    _vp::_errorHandler(_.isError(err) ? err : new Error(err))
+    checkVp()::_errorHandler(_.isError(err) ? err : new Error(err))
   } else {
     if (isInstall) {
       warn(_.isString(err) ? err : err.message)
@@ -49,12 +45,14 @@ export function warn(message) {
 
 export function init(
   Vue,
-  isdebug,
+  isdebug = false,
   /* 指定和客户端交互过程中抛出的错误的处理函数。应用可以使用该函数来统一处理非业务级别的公共错误消息。 */
   errorHandler) {
   _Vue = Vue
   _isdebug = isdebug
-  _errorHandler = errorHandler
+  if (_.isFunction(errorHandler)) {
+    _errorHandler = errorHandler
+  }
   if (_isdebug) {
     warn('您配置为debug模式，插件将会输出一些调试信息，建议上线前关闭调试')
   }

@@ -89,6 +89,8 @@ android,模块调用的是`global[name].event(JSON.stringify(command))`，这里
 
 模拟前端调用客户端`toast`打印一个`'hello vplus'`
 
+[浏览线上示例](http://vue_viewplus_demo.jiiiiiin.cn/Demo/JsBridgeContext)
+
 ```html
 <template>
   <div id="JsBridgeContext">

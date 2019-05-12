@@ -3,12 +3,14 @@
     <group class="desc-group">
       <box gap="10px 10px">
         <p class="title">添加自定义模块 ：）</p>
-        <span class="hint-msg">当前库有一个终止就是“统一开发人员的编码风格”，当然这里做的很简单，就是把所有模块的方法都定义到Vue.prototype.$vp下面。</span>
+        <p class="hint-a"><a href="https://github.com/Jiiiiiin/vue-viewplus/blob/9861d0139e39fccb29c1d0a856e0e28d003ca716/examples/components/Demo/mixin.vue">源码</a> | <a href="http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-">文档</a></p>
+        <ul class="hint-msg">
+          <li>当前库有一个终止就是“统一开发人员的编码风格”，当然这里做的很简单，就是把所有模块的方法都定义到Vue.prototype.$vp下面。</li>
+        </ul>
       </box>
     </group>
 
     <group title="演示为$vp混合一个自定义Toast模块" label-width="15em" class="bottom-group">
-      <span>111</span>
       <cell-box class="code-box">
         <pre v-highlightjs><code class="javascript">
 doMixin() {
@@ -37,7 +39,7 @@ doMixin() {
       version: '1.0'
     })
   } catch (e) {
-    this.$vp.uiDialog(`自定义混合出错 ${e.message}`)
+    this.$vp.dialog(`自定义混合出错 ${e.message}`)
   }
 }
       </code></pre>
@@ -86,7 +88,7 @@ doMixin() {
             version: '1.0'
           })
         } catch (e) {
-          this.$vp.uiDialog(`自定义混合出错 ${e.message}`)
+          this.$vp.dialog(`自定义混合出错 ${e.message}`)
         }
       }
     }

@@ -32,5 +32,8 @@ export default {
   },
   'navigation/REFRESH': (state, {to: {route: {meta}}}) => {
     this::_setAppTitlebarConfig(state, meta)
+  },
+  updateActivePages(state, activePages) {
+    state.activePages = activePages
   }
 }

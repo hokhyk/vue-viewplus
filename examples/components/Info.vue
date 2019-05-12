@@ -8,8 +8,11 @@
     <cell title="示例" link="/Demo">
       <i class="iconfont icon-demoon" slot="icon"></i>
     </cell>
-    <cell title="Github" link="https://gitee.com/zhaojinos/vue-viewplus" value="去点个赞！">
+    <cell title="Github" link="https://github.com/Jiiiiiin/vue-viewplus" value="去点个赞！">
       <i class="iconfont icon-github" slot="icon"></i>
+    </cell>
+    <cell title="文档" link="http://jiiiiiin.cn/vue-viewplus/#/">
+      <i class="iconfont icon-setting" slot="icon"></i>
     </cell>
   </group>
   <br>

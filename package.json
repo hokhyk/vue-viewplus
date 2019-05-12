@@ -1,8 +1,8 @@
 {
   "name": "vue-viewplus",
-  "version": "0.9.1",
+  "version": "0.9.11",
   "description": "一个简化Vue应用开发的工具库",
-  "author": "z.jiiiiiin <“jiiiiiin@yeah.net”>",
+  "author": "赵津 <“15398699939@163.com”>",
   "license": "MIT",
   "private": false,
   "main": "dist/vue-viewplus.js",
@@ -23,6 +23,7 @@
     "test-w": "jest --watchAll --notify",
     "prebuild": "eslint src examples && rm -rf ./dist/* && npm run test",
     "build": "node build/build.js",
+    "build-demo": "node build/build-examples.js",
     "prepublish": "npm run lint && npm run test && npm run build",
     "lint": "eslint --ext .js,.vue src examples",
     "fix": "eslint --fix .js,.vue src examples",
@@ -33,15 +34,17 @@
     "lint && test"
   ],
   "dependencies": {
-    "axios": "^0.18.0",
-    "lodash": "^4.17.11",
-    "qs": "^6.5.2",
     "vue-navigation": "^1.1.4",
     "web-storage-cache": "^1.0.3"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "axios": "^0.18.0",
+    "lodash": "^4.17.11",
+    "qs": "^6.5.2"
+  },
   "devDependencies": {
     "autoprefixer": "^8.1.0",
+    "axios": "^0.18.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.2",
     "babel-jest": "^22.4.1",
@@ -86,11 +89,13 @@
     "json-server": "^0.12.1",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
+    "lodash": "^4.17.11",
     "lodash-webpack-plugin": "^0.11.5",
     "opn": "^5.4.0",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "ora": "^2.0.0",
     "portfinder": "^1.0.19",
+    "qs": "^6.6.0",
     "rimraf": "^2.6.0",
     "semver": "^5.5.0",
     "shelljs": "^0.8.1",

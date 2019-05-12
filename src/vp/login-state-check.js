@@ -14,18 +14,18 @@ export const modelName = 'login-state-check'
  */
 const USER_SIGN_STATE_KEY = '__USER_SIGN_STATE__'
 
-let _Vue, _router, _vp,
+let _router,
   _store,
   _checkPaths,
   _onLoginStateCheckFail,
   _installed
 
 /**
- *  login-state-check.js 身份认证控制模块。
+ *  login-state-check.js 身份认证权限控制模块。
  *
- *  使用该模块可以让应用使用一个包含正则表达式的数组`LoginStateCheck#checkPaths`，来定义需要进行身份认证（登录）才能访问的页面资源（路由的path），这样做的好处就在于，我们不用向很多应用那些去修改路由组件中的mate字段来确认哪一个路由组件需要进行身份认证控制。
+ *  使用该模块可以让应用使用一个包含正则表达式的数组`LoginStateCheck#checkPaths`，来定义需要进行身份认证（登录）才能访问的页面资源（路由的path），这样做的好处就在于，我们不用向很多应用那些去修改路由组件中的mate字段来确认哪一个路由组件需要进行身份认证权限控制。
  *
- *  一般的应用在权限控制这一块，一般有两种需求，一种是基于`RBAC`权限模型的管理端应用，而大多数应用只需要控制那些页面需要用户登录才能访问；当前模块默认认为所有页面都是`公共资源`，如果要进行身份认证控制，可以这样定义：
+ *  一般的应用在权限控制这一块，一般有两种需求，一种是基于`RBAC`权限模型的管理端应用，而大多数应用只需要控制那些页面需要用户登录才能访问；当前模块默认认为所有页面都是`公共资源`，如果要进行身份认证权限控制，可以这样定义：
  *
  *  ```js
  *  loginStateCheckInstall: {
@@ -47,8 +47,6 @@ let plugin = {
     if (_.isFunction(_installed)) {
       this::_installed()
     }
-    // 在这里恢复插件的需要进行缓存的vuex状态
-    this.restoreLoginState()
   },
   /**
    * $vp.isLogin()
@@ -93,6 +91,7 @@ let plugin = {
  * @private
  */
 const _check = function (to, from, next) {
+  // 默认认为没有在`checkPaths`中的都是公共页面不需要校验是否需要登录
   let isAllow = true
   const path = to.path
   for (let i = _checkPaths.length; i--;) {
@@ -108,8 +107,7 @@ const _check = function (to, from, next) {
   } else {
     if (_.isFunction(_onLoginStateCheckFail)) {
       warn(`身份认证模块到用户并未登录，访问${path}，回调onLoginStateCheckFail钩子`, this)
-      _vp = checkVp(_Vue)
-      _vp::_onLoginStateCheckFail(to, from, next)
+      checkVp()::_onLoginStateCheckFail(to, from, next)
     } else {
       next(new Error('authtication_check_login_state_fail'))
     }
@@ -144,21 +142,23 @@ export const install = function (Vue, {
     installed = null
   } = {}
 } = {}) {
-  if (!_.isFunction(onLoginStateCheckFail)) {
-    warn(`${modelName}模块 onLoginStateCheckFail 未配置，将导致监测到授权失败，插件将会使用默认处理next(error)`)
-  }
-
-  _Vue = Vue
   _router = router
   _store = store
   _checkPaths = checkPaths
   _onLoginStateCheckFail = onLoginStateCheckFail
-  if (_.isArray(_checkPaths) && _checkPaths.length > 0) {
+  if (_.isArray(_checkPaths) && !_.isEmpty(_checkPaths)) {
     _router.beforeEach((to, from, next) => {
       _check(to, from, next)
     })
+    if (!_.isFunction(onLoginStateCheckFail)) {
+      warn(`${modelName}模块 onLoginStateCheckFail 未配置，将导致监测到授权失败，插件将会使用默认处理next(error)`)
+    }
   }
-  plugin.modifyLoginState(isLogin)
+  // 恢复登录状态，如果恢复的值为真，则放弃初始值，理解为用户刷新页面导致
+  plugin.restoreLoginState()
+  if (!plugin.isLogin()) {
+    plugin.modifyLoginState(isLogin)
+  }
   _installed = installed
   MixinPlugin.mixin(Vue, plugin, modelName)
 }

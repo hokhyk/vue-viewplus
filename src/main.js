@@ -1,26 +1,13 @@
 import Navigation from 'vue-navigation'
 import { PLUGIN_VM_PREFIX_VIEWPLUS } from './gloabl-dict'
 import MixinPlugin from './util/mixin-plugin'
-import {
-  install as utilCacheInstall
-} from './vp/util-cache'
-import {
-  install as jsBridgeContextInstall
-} from './vp/js-bridge-context'
-import {
-  install as cacheUserInfoInstall
-} from './vp/cache-userinfo'
-import {
-  install as loginStateCheckInstall
-} from './vp/login-state-check'
-import {
-  install as utilHttpInstall
-} from './vp/util-http'
-import {
-  install as paramsStackInstall,
-  paramsStackMixin
-} from './vp/params-stack'
-import { emitErr, init as registErrorHandlerConfigMethod } from './util/warn'
+import { install as utilCacheInstall } from './vp/util-cache'
+import { install as jsBridgeContextInstall } from './vp/js-bridge-context'
+import { install as cacheUserInfoInstall } from './vp/cache-userinfo'
+import { install as loginStateCheckInstall } from './vp/login-state-check'
+import { install as utilHttpInstall } from './vp/util-http'
+import { install as paramsStackInstall, paramsStackMixin } from './vp/params-stack'
+import { emitErr, init as registErrorHandlerConfigMethod, checkVp } from './util/warn'
 import EventBus from './vp/event-bus.js'
 import device from './util/device'
 import _ from 'lodash'
@@ -38,6 +25,7 @@ const install = function (Vue, opts = {}) {
      */
     errorHandler, debug = false, runNative = true
   } = opts
+  opts = {...{debug, runNative}, ...opts}
   if (_.isUndefined(router)) {
     emitErr(new Error(`router必须配置！`))
   }
@@ -54,9 +42,10 @@ const install = function (Vue, opts = {}) {
       this.debug = options.debug
       this.device = device
       this.runNative = runNative
+      this.checkVp = checkVp
     }
   }(opts)
-  MixinPlugin.mixin(Vue, defPlugin)
+  MixinPlugin.mixin(Vue, defPlugin, '初始化模块')
   utilCacheInstall(Vue, opts)
   cacheUserInfoInstall(Vue, opts)
   jsBridgeContextInstall(Vue, opts)
@@ -70,11 +59,6 @@ const install = function (Vue, opts = {}) {
   })
 }
 
-// es6 class export no support instanceof
-// if (inBrowser) {
-//   window.JsBridgeError = JsBridgeError
-// }
-
 export default {
   install,
   mixin(Vue, plugin, options) {
@@ -82,6 +66,8 @@ export default {
       throw new Error('插件定义失败')
     }
     try {
+      const {errorHandler, debug = false} = options
+      registErrorHandlerConfigMethod(Vue, debug, errorHandler)
       MixinPlugin.mixin(Vue, plugin, _.has(options, 'moduleName') ? options.moduleName : '未命名混合模块', options)
     } catch (e) {
       console.log('err', e)

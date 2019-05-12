@@ -8,7 +8,7 @@
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-        this.$vp.uiDialog()
+        this.$vp.dialog()
       </code></pre>
         </cell-box>
       </group>
@@ -20,7 +20,7 @@
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-this.$vp.uiDialog('这是自定义的消息内容哦!')
+this.$vp.dialog('这是自定义的消息内容哦!')
       </code></pre>
         </cell-box>
       </group>
@@ -32,7 +32,7 @@ this.$vp.uiDialog('这是自定义的消息内容哦!')
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-this.$vp.uiDialog('提示信息', {title: '设置提示标题'})
+this.$vp.dialog('提示信息', {title: '设置提示标题'})
       </code></pre>
         </cell-box>
       </group>
@@ -43,7 +43,7 @@ this.$vp.uiDialog('提示信息', {title: '设置提示标题'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-this.$vp.uiDialog('提示信息', {buttonText: 'buttonText'})
+this.$vp.dialog('提示信息', {buttonText: 'buttonText'})
       </code></pre>
         </cell-box>
       </group>
@@ -54,7 +54,7 @@ this.$vp.uiDialog('提示信息', {buttonText: 'buttonText'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-  this.$vp.uiDialog('这是点击遮罩关闭提示实例', {hideOnBlur: true})
+  this.$vp.dialog('这是点击遮罩关闭提示实例', {hideOnBlur: true})
       </code></pre>
         </cell-box>
       </group>
@@ -65,7 +65,7 @@ this.$vp.uiDialog('提示信息', {buttonText: 'buttonText'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-  this.$vp.uiDialog('这是点击提示框button时导航是否可以回退的配置', {canBeBack: true})
+  this.$vp.dialog('这是点击提示框button时导航是否可以回退的配置', {canBeBack: true})
       </code></pre>
         </cell-box>
       </group>
@@ -76,7 +76,7 @@ this.$vp.uiDialog('提示信息', {buttonText: 'buttonText'})
         <cell-box >
         <pre v-highlightjs><code class="javascript">
         // 执行代码：
-   this.$vp.uiDialog('这是点击提示框button的回调事件配置(注意this 指向)', {
+   this.$vp.dialog('这是点击提示框button的回调事件配置(注意this 指向)', {
           action: this::function () {
             alert(this.uiDialog)
           }
@@ -129,32 +129,32 @@ this.$vp.uiDialog('提示信息', {buttonText: 'buttonText'})
     },
     methods: {
       uiDialogDefult() {
-        this.$vp.uiDialog()
+        this.$vp.dialog()
       },
       uiDialogContent() {
-        this.$vp.uiDialog('这是自定义的消息内容哦!')
+        this.$vp.dialog('这是自定义的消息内容哦!')
       },
       uiDialogTitle() {
-        this.$vp.uiDialog('提示信息', {title: '设置提示标题'})
+        this.$vp.dialog('提示信息', {title: '设置提示标题'})
       },
       uiDialogButtonText() {
-        this.$vp.uiDialog('提示信息', {buttonText: 'buttonText'})
+        this.$vp.dialog('提示信息', {buttonText: 'buttonText'})
       },
       uiDialogHideOnBlur() {
-        this.$vp.uiDialog('这是点击遮罩关闭提示实例', {hideOnBlur: true})
+        this.$vp.dialog('这是点击遮罩关闭提示实例', {hideOnBlur: true})
       },
       uiDialogCanBeBack() {
-        this.$vp.uiDialog('这是当提示框显示时导航是否可以回退的配置', {canBeBack: true})
+        this.$vp.dialog('这是当提示框显示时导航是否可以回退的配置', {canBeBack: true})
       },
       uiDialogAction() {
-        this.$vp.uiDialog('这是点击提示框button的回调事件配置(注意this 指向)', {
+        this.$vp.dialog('这是点击提示框button的回调事件配置(注意this 指向)', {
           action: this::function () {
             alert(this.uiDialog)
           }
         })
       },
       uiHideDialog() {
-        this.$vp.uiDialog('这是uiHideDialog使用')
+        this.$vp.dialog('这是uiHideDialog使用')
         setTimeout(() => {
           this.$vp.uiHideDialog()
         }, 500)

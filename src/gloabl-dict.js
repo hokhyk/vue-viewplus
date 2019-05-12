@@ -13,4 +13,4 @@ export const PLUGIN_CONSOLE_LOG_FLAG = '[v+]'
 
 // 通用异常信息
 export const ERR_DEFAULT = '未能解析到错误消息'
-export const ERR_DEFAULT_ERRMSG_ON_REQ_ERR = '未解析到服务端返回的错误消息'
+export const UNRESOLVED_ERROR_MESSAGE = '未解析到服务端返回的错误消息'

@@ -24,6 +24,12 @@ sync(store, router)
 
 router.beforeEach(function (to, from, next) {
   store.commit('updateLoadingStatus', true)
+  // 多页面需要修改参数栈名
+  if (to.path.indexOf('Multipage') > 0) {
+    store.commit('modifyActiveParamsStack', to.meta.trsName)
+  } else {
+    store.commit('modifyActiveParamsStack')
+  }
   next()
 })
 
@@ -40,6 +46,9 @@ Vue.mixin({
     }
   }
 })
+
+// 演示混合自定义模块到$vp
+ViewPlus.mixin(Vue, jsComponents, {moduleName: '自定义jsComponents模块'})
 
 Vue.use(ViewPlus, {
   router,
@@ -70,6 +79,9 @@ Vue.use(ViewPlus, {
     }
   },
   loginStateCheck: {
+    installed() {
+      // console.log('loginStateCheck', this)
+    },
     checkPaths: [
       /Manage/
     ],
@@ -84,13 +96,15 @@ Vue.use(ViewPlus, {
     }
   },
   utilHttp: {
-    baseURL: 'http://localhost:7000',
+    // baseURL: 'http://192.168.3.43:8888/mng',
+    // baseURL: 'http://localhost:7000',
+    baseURL: 'https://www.easy-mock.com/mock/5abc903ff5c35b191f472d79/example',
     // 这里的data key，请查看mock server的jsonp输出配置
     dataKey: 'data',
     statusCodeKey: 'code',
     statusCode: '1',
     msgKey: 'msg',
-    needBase64DecodeMsg: false,
+    defShowLoading: true,
     loading(loadingHintText) {
       this.uiLoading(loadingHintText)
     },
@@ -118,9 +132,6 @@ Vue.use(ViewPlus, {
   }
 })
 
-// 演示混合自定义模块到$vp
-ViewPlus.mixin(Vue, jsComponents)
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -134,5 +145,6 @@ new Vue({
     console.log('ViewPlus -> ', ViewPlus)
     console.log('vp -> ', window._VP, this.$vp)
     console.log('$bus -> ', this.$bus)
+    // this.$vp.modifyLoginState(false)
   }
 })

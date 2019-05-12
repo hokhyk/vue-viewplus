@@ -112,7 +112,7 @@ const plugin = {
                 }
                 window[callBackName] = undefined
               } catch (e) {
-                emitErr(new JsBridgeError(`解析安卓客户端返回的结果出错[${e.message}]`, 'PARSE_ANDROID_RES_ERR'), reject, true)
+                emitErr(new JsBridgeError(`解析苹果客户端返回的结果出错[${e.message}]`, 'PARSE_IOS_RES_ERR'), reject, true)
               }
             }
             const p = { ...{
@@ -134,7 +134,7 @@ const plugin = {
               break
             default:
           }
-          emitErr(new JsBridgeError('请求客户端出错', `CLINET_THROW_ERROR:${e.message}`), reject)
+          emitErr(new JsBridgeError(`请求客户端出错[${e.message}]`, `FIRE_EVENT_ERROR`), reject)
         }
       }
     })
@@ -200,12 +200,9 @@ export const install = function (Vue, {
   } else {
     _mixinPreCheck = false
   }
-  if (_mixinPreCheck) {
-    _installed = installed
-    MixinPlugin.mixin(Vue, plugin, modelName)
-  } else {
-    if (runNative) {
-      emitErr(new JsBridgeError(`JsBridge检测失败，不支持当前运行环境，无法添加${modelName}模块！`, 'RUN_EVN_NOT_SUPPORT'), null, true)
-    }
+  if (!_mixinPreCheck) {
+    emitErr(new JsBridgeError(`JsBridge检测失败，不支持当前运行环境，无法添加${modelName}模块！`, 'RUN_EVN_NOT_SUPPORT'), null, true)
   }
+  _installed = installed
+  MixinPlugin.mixin(Vue, plugin, modelName)
 }

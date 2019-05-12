@@ -6,7 +6,7 @@ import loginStateCheck from './login-state-check'
 import { assert, info, warn, emitErr, checkVp } from '../util/warn'
 import { JsBridgeError } from './js-bridge-context'
 import {
-  ERR_DEFAULT_ERRMSG_ON_REQ_ERR,
+  UNRESOLVED_ERROR_MESSAGE,
   ERR_DEFAULT,
   PLUGIN_CONSOLE_LOG_FLAG
 } from '../gloabl-dict'
@@ -15,10 +15,13 @@ import _ from 'lodash'
 export const modelName = 'util-http'
 export const GET = 'GET'
 export const POST = 'POST'
+export const POST_JSON = 'POST_JSON'
+export const PUT = 'PUT'
+export const DELETE = 'DELETE'
 export const NATIVE = 'NATIVE'
 
-let _Vue, _router,
-  _vp,
+let _debug,
+  _router,
   _instance,
   _timeout,
   _withCredentials,
@@ -31,7 +34,8 @@ let _Vue, _router,
   _onSendAjaxRespErr,
   _onSendAjaxParamsHandle,
   _onSendAjaxRespHandle,
-  _onReqErrPaserMsg,
+  _onReqErrParseMsg,
+  _onReqErrParseHttpStatusCode,
   _defShowLoading,
   _dataKey,
   _statusCodeKey,
@@ -103,11 +107,39 @@ const _parseServerResp = function (response) {
 const _getErrMsg = function (data) {
   // 解析返回业务数据：
   let errmsg = _.isEmpty(_errMsgKey) ? data[_msgKey] : data[_errMsgKey]
-  if (!errmsg || _.isEmpty(errmsg)) {
-    errmsg = `${ERR_DEFAULT_ERRMSG_ON_REQ_ERR}`
+  if (_.isEmpty(errmsg)) {
+    errmsg = `${UNRESOLVED_ERROR_MESSAGE}`
     warn(`未能解析到错误消息，返回默认错误消息：${errmsg}`)
   }
   return errmsg
+}
+
+const _handlerBusinessErrMsg = function (response) {
+  // 有些后端返回的消息状态【如statu和错误标识码errcode】是需要分离的
+  const errCode = _.isEmpty(_errCodeKey) ? response[_statusCodeKey] : response[_errCodeKey]
+  // 需要进行而外处理的错误
+  if (Array.isArray(_sessionTimeOut) && _sessionTimeOut.includes(errCode)) {
+    loginStateCheck.modifyLoginState(false)
+    this::callFunc2(_onSessionTimeOut, '用户登录会话超时！onSessionTimeOut回调函数未定义', response)
+  } else if (Array.isArray(_unauthorized) && _unauthorized.includes(errCode)) {
+    this::callFunc2(_onUnauthorized, '用户无权访问该资源！onUnauthorized回调函数未定义', response)
+  } else {
+    // 不需要进行而外处理的错误
+    if (!Array.isArray(_noNeedDialogHandlerErr) || !_noNeedDialogHandlerErr.includes(errCode)) {
+      // 错误标识符改成可配置
+      let errMsg = _getErrMsg(response)
+      if (_.isFunction(_onReqErrParseMsg)) {
+        // onReqErrParseMsg回调返回非空字符，视为应用自己来解析了本次错误消息，否则还是用插件解析的为准
+        const tempErrMsg = this::_onReqErrParseMsg(response, errMsg)
+        if (!tempErrMsg || _.isEmpty(tempErrMsg)) {
+          warn(`onReqErrParseMsg钩子返回的解析到的错误消息为空`)
+        } else {
+          errMsg = tempErrMsg
+        }
+      }
+      this::_errDialog(errMsg)
+    }
+  }
 }
 
 /**
@@ -117,7 +149,10 @@ const _getErrMsg = function (data) {
  * @param response 这个值可能是服务端响应的结果&异常对象
  * @private
  */
-const _handlerBusinessErrMsg = function (needHandlerErr, response) {
+const _handlerErr = function (needHandlerErr, response) {
+  if (_debug) {
+    console.log(`${PLUGIN_CONSOLE_LOG_FLAG} handler err: `, response)
+  }
   try {
     let selfHandlerErr = false
     if (_.isFunction(_onSendAjaxRespErr)) {
@@ -127,59 +162,69 @@ const _handlerBusinessErrMsg = function (needHandlerErr, response) {
       if (_.isError(response) && response instanceof JsBridgeError) {
         this::_errDialog(`${response.message} [${response.code}]`)
       } else if (_.isError(response)) {
-        // 处理非业务类别抛出的的错误：
-        if (!_.isEmpty(response.message)) {
-          // 存在错误消息
+        if (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`))) {
+          // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
+          this::_handlerBusinessErrMsg(response.response.data)
+        } else {
+          // 细化错误消息
           const errMsg = response.message
           if (/Network Error/.test(errMsg)) {
             this::_errDialog('网络异常，请稍后尝试')
           } else if (/timeout/.test(errMsg)) {
             this::_errDialog('请求超时，请稍后尝试')
           } else {
-            // TODO 有一些错误没有处理！
-            console.log(`测试以修复解析错误的bug 1： ${response}`)
-            this::_errDialog(`${ERR_DEFAULT_ERRMSG_ON_REQ_ERR} - 1 - ${errMsg}`)
-          }
-        } else {
-          // 按响应状态码解析错误
-          const statusFlag = response.status
-          if (/^4\d{2}$/.test(statusFlag)) {
-            this::_errDialog('未找到您访问的资源，请稍后尝试')
-          } else if (/^5\d{2}$/.test(statusFlag)) {
-            // TODO 待测试打印错误消息
-            this::_errDialog(`该服务出现异常，请稍后尝试 [${response.message}]`)
-          } else {
-            // TODO 有一些错误没有处理！
-            console.log(`测试以修复解析错误的bug 2： ${response}`)
-            this::_errDialog(`${ERR_DEFAULT_ERRMSG_ON_REQ_ERR} - 2 - ${response.message}`)
+            let errmsg
+            // 检测`http`响应状态码属性
+            if (_.has(response.response, 'status')) {
+              // 按响应状态码解析错误
+              const statusFlag = response.response.status
+              const handled = this::callFunc(_onReqErrParseHttpStatusCode, statusFlag, response)
+              if (!handled) {
+                switch (statusFlag) {
+                  case 400:
+                    errmsg = '请求错误'
+                    break
+                  case 401:
+                    errmsg = '未授权，请登录'
+                    break
+                  case 403:
+                    errmsg = '拒绝访问'
+                    break
+                  case 404:
+                    errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
+                    break
+                  case 408:
+                    errmsg = '请求超时'
+                    break
+                  case 500:
+                    errmsg = `500 服务器内部错误 [${errMsg}]`
+                    break
+                  case 501:
+                    errmsg = '服务未实现'
+                    break
+                  case 502:
+                    errmsg = '网关错误'
+                    break
+                  case 503:
+                    errmsg = '服务不可用'
+                    break
+                  case 504:
+                    errmsg = '网关超时'
+                    break
+                  case 505:
+                    errmsg = 'HTTP版本不受支持'
+                    break
+                  default:
+                    errmsg = `请求出错 [${errMsg}]`
+                    break
+                }
+                this::_errDialog(errmsg)
+              }
+            }
           }
         }
       } else {
-        // 有些后端返回的消息状态【如statu和错误标识码errcode】是需要分离的
-        const errCode = _.isEmpty(_errCodeKey) ? response[_statusCodeKey] : response[_errCodeKey]
-        // 错误标识符改成可配置
-        let errMsg = _getErrMsg(response)
-        if (_.isFunction(_onReqErrPaserMsg)) {
-          // onReqErrPaserMsg回调返回非空字符，视为应用自己来解析了本次错误消息，否则还是用插件解析的为准
-          const tempErrMsg = this::_onReqErrPaserMsg(response, errMsg)
-          if (!tempErrMsg || _.isEmpty(tempErrMsg)) {
-            warn(`onReqErrPaserMsg钩子返回的解析到的错误消息为空`)
-          } else {
-            errMsg = tempErrMsg
-          }
-        }
-        // 需要进行而外处理的错误
-        if (Array.isArray(_sessionTimeOut) && _sessionTimeOut.includes(errCode)) {
-          loginStateCheck.modifyLoginState(false)
-          this::callFunc2(_onSessionTimeOut, '用户登录会话超时！onSessionTimeOut回调函数未定义', response)
-        } else if (Array.isArray(_unauthorized) && _unauthorized.includes(errCode)) {
-          this::callFunc2(_onUnauthorized, '用户无权访问该资源！onUnauthorized回调函数未定义', response)
-        } else {
-          // 不需要进行而外处理的错误
-          if (!Array.isArray(_noNeedDialogHandlerErr) || !_noNeedDialogHandlerErr.includes(errCode)) {
-            this::_errDialog(errMsg)
-          }
-        }
+        this::_handlerBusinessErrMsg(response)
       }
     } else {
       warn(`不处理默认错误消息，因为请求needHandlerErr设置为true或者onSendAjaxRespErr已经自行处理了本次错误`)
@@ -203,12 +248,12 @@ const _createAxiosInstance = function ({
     baseURL = null,
     timeout = _timeout,
     /**
-     * 【可选】`headers` 是即将被发送的自定义请求头
-     */
+    * 【可选】`headers` 是即将被发送的自定义请求头
+    */
     headers = null,
     /**
-     * 【可选】`params` 是即将与请求一起发送的 URL 参数必须是一个无格式对象(plain object)或 URLSearchParams 对象
-     */
+    * 【可选】`params` 是即将与请求一起发送的 URL 参数必须是一个无格式对象(plain object)或 URLSearchParams 对象
+    */
     params = null,
     withCredentials = _withCredentials
   } = {}
@@ -226,8 +271,7 @@ const _createAxiosInstance = function ({
       return config
     },
     error => {
-      _vp = checkVp(_Vue)
-      _vp::callFunc2(_hideLoading)
+      checkVp()::callFunc2(_hideLoading)
       return Promise.reject(error)
     }
   )
@@ -236,8 +280,7 @@ const _createAxiosInstance = function ({
     response => {
       try {
         if (_.isFunction(_onSendAjaxRespHandle)) {
-          _vp = checkVp(_Vue)
-          response = _vp::_onSendAjaxRespHandle(response)
+          response = _onSendAjaxRespHandle(response)
         }
         const errflag = _parseServerResp(response)
         if (errflag) {
@@ -248,14 +291,9 @@ const _createAxiosInstance = function ({
         }
       } catch (e) {
         return Promise.reject(e)
-      } finally {
-        _vp = checkVp(_Vue)
-        _vp::callFunc2(_hideLoading)
       }
     },
     reqerror => {
-      _vp = checkVp(_Vue)
-      _vp::callFunc2(_hideLoading)
       return Promise.reject(reqerror)
     }
   )
@@ -268,11 +306,7 @@ const _get = function ({url, axiosOptions = {}, params = {}}) {
 
 const _post = function ({url, axiosOptions = {}, params = {}}) {
   let urlParams = qs.stringify(params)
-  let options = axiosOptions
-  if (_.has(axiosOptions, 'headers')) {
-    options = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
-  }
-  return _instance.post(url, urlParams, options)
+  return _instance.post(url, urlParams, axiosOptions)
 }
 
 const _hLoading = function (showLoading) {
@@ -282,7 +316,7 @@ const _hLoading = function (showLoading) {
 }
 
 /**
- * util-http.js 模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合login-state-check.js模块进行身份认证控制。
+ * util-http.js 模块对axios进行了一次封装，目的是为了减少开发人员的工作量，简化和服务器端、客户端（JSBridge 代理请求）的交互，配合login-state-check.js模块进行身份认证权限控制。
  */
 const plugin = {
   /**
@@ -337,6 +371,10 @@ const plugin = {
       if (ajaxArr.length <= 0) {
         reject(new Error(`${PLUGIN_CONSOLE_LOG_FLAG} 需要进行并发的请求函数ajaxArr参数${ajaxArr}不正确! `))
       }
+      this::_hLoading(showLoading)
+      if (showLoading) {
+        this::callFunc(_loading, loadingHintText)
+      }
       const iterable = []
       ajaxArr.forEach((p) => {
         const mode = p.mode || POST
@@ -352,14 +390,27 @@ const plugin = {
       if (showLoading) {
         this::callFunc(_loading, loadingHintText)
       }
-      resolve(axios.all(iterable))
+      axios.all(iterable)
+        .then(res => {
+          resolve(res)
+        })
+        .catch(err => {
+          reject(err)
+        })
+        .finally(() => {
+          // TODO 测试是否执行了隐藏loading
+          if (_debug) {
+            console.debug('all mixin stop loading')
+          }
+          this::_hLoading(showLoading)
+        })
     })
   },
   /**
    * ajaxMixin(url[, config])
    * 支持普通的Ajax GET/POST(默认)请求 和 客户端桥接访问
    * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE'】
+   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE', 'PUT'】
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
@@ -383,107 +434,88 @@ const plugin = {
       this::callFunc(_loading, loadingHintText)
     }
     info(`请求[${mode}]后台的url: ${url} params: ${JSON.stringify(params)}`)
-    if (mode === GET) {
+    if (mode === NATIVE) {
       return new Promise((resolve, reject) => {
+        if (_.isFunction(_onSendAjaxParamsHandle)) {
+          params = this::_onSendAjaxParamsHandle(url, params, mode)
+        }
+        const that = this
+        const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
+        window[listenerName] = function (data) {
+          that::_hLoading(showLoading)
+          try {
+            if (_.isFunction(_onSendAjaxRespHandle)) {
+              data = _onSendAjaxRespHandle(data)
+            }
+            const response = JSON.parse(data)
+            // 需要对是否为服务端业务状态进行判断
+            const isErr = _parseServerResp(response)
+            if (isErr) {
+              that::_handlerErr(needHandlerErr, response)
+              reject(response)
+            } else {
+              resolve(_getResData(response))
+            }
+          } catch (e) {
+            reject(new Error(`解析客户端返回的请求数据出错[${e.message}]`))
+          }
+        }
+        const command = {
+          event: _eventName,
+          action: _actionName,
+          listener: listenerName,
+          params: {
+            transcode: url,
+            timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
+            params,
+            axiosOptions
+          }
+        }
+        this.fireEvent(command).then(response => {
+          warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
+        }).catch(err => {
+          this::_hLoading(showLoading)
+          this::_handlerErr(needHandlerErr, err)
+          reject(err)
+        }).finally(this::_hLoading(showLoading))
+      })
+    } else {
+      // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
+      return new Promise((resolve, reject) => {
+        let reqP
         if (_.isFunction(_onSendAjaxParamsHandle)) {
           params = _onSendAjaxParamsHandle(url, params, mode)
-        }
-        const options = axiosOptions
-        _instance
-          .get(url, options)
-          .then((response) => {
-            resolve(_getResData(response))
-          })
-          .catch((response) => {
-            this::_handlerBusinessErrMsg(needHandlerErr, response)
-            reject(response)
-          })
-      })
-    } else if (mode === POST) {
-      return new Promise((resolve, reject) => {
-        let urlParams = null
-        if (_.isFunction(_onSendAjaxParamsHandle)) {
-          urlParams = _onSendAjaxParamsHandle(url, params, mode)
         } else {
-          urlParams = qs.stringify(params)
+          switch (mode) {
+            case POST:
+              params = qs.stringify(params)
+              reqP = _instance.post(url, params, axiosOptions)
+              break
+            case POST_JSON:
+              reqP = _instance.post(url, params, axiosOptions)
+              break
+            case PUT:
+              reqP = _instance.put(url, params, axiosOptions)
+              break
+            case DELETE:
+              // https://blog.csdn.net/qq383366204/article/details/80268007
+              // https://cloud.tencent.com/developer/article/1147735
+              reqP = _instance.delete(url, {data: params}, axiosOptions)
+              break
+            default:
+              reqP = _instance.get(url, params, axiosOptions)
+          }
         }
-        let options = axiosOptions
-        if (_.has(axiosOptions, 'headers')) {
-          options = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
-        }
-        _instance
-          .post(url, urlParams, options)
+        reqP
           .then((response) => {
             resolve(_getResData(response))
           })
           .catch((err) => {
-            this::_handlerBusinessErrMsg(needHandlerErr, err)
+            this::_handlerErr(needHandlerErr, err)
             reject(err)
           })
+          .finally(this::_hLoading(showLoading))
       })
-    } else if (mode === NATIVE) {
-      if (this.CAN_USE_JSBRIDGE_CONTEXT || this.CAN_USE_JSBRIDGE_PROTOCOL) {
-        return new Promise((resolve, reject) => {
-          if (_.isFunction(_onSendAjaxParamsHandle)) {
-            params = this::_onSendAjaxParamsHandle(url, params, mode)
-          }
-          const that = this
-          const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
-          window[listenerName] = function (data) {
-            this::_hLoading(showLoading)
-            try {
-              if (_.isFunction(_onSendAjaxRespHandle)) {
-                data = this::_onSendAjaxRespHandle(data)
-              }
-              const response = JSON.parse(data)
-              // 需要对是否为服务端业务状态进行判断
-              const isErr = _parseServerResp(response)
-              if (isErr) {
-                that::_handlerBusinessErrMsg(needHandlerErr, response)
-                reject(response)
-              } else {
-                resolve(_getResData(response))
-              }
-            } catch (e) {
-              reject(new Error(`解析客户端返回的请求数据出错[${e.message}]`))
-            }
-          }
-          const command = {
-            event: _eventName,
-            action: _actionName,
-            listener: listenerName,
-            params: {
-              transcode: url,
-              timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
-              params,
-              axiosOptions
-            }
-          }
-          if (this.CAN_USE_JSBRIDGE_CONTEXT) {
-            this.fireEvent(command).then(response => {
-              warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
-            }).catch(err => {
-              this::_hLoading(showLoading)
-              this::_handlerBusinessErrMsg(needHandlerErr, err)
-              reject(err)
-            })
-          } else if (_vp.CAN_USE_JSBRIDGE_PROTOCOL) {
-            this.cnReq(command).then(response => {
-              this::_hLoading(showLoading)
-              resolve(_getResData(response))
-            }).catch(err => {
-              this::_hLoading(showLoading)
-              this::_handlerBusinessErrMsg(needHandlerErr, err)
-              reject(err)
-            })
-          }
-        })
-      } else {
-        const temp = new JsBridgeError('桥接请求方式当前不支持，请确认当前运行环境和配置', 'NOT_SUPPORT_AJAX_JSBRIDGE')
-        emitErr(temp)
-        this::_hLoading(showLoading)
-        return Promise.reject(temp)
-      }
     }
   },
   /**
@@ -514,7 +546,7 @@ const plugin = {
    * 底层交由`$vp#ajaxMixin`处理
    *
    * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE'】
+   * @param {Object} [params={}] 请求参数
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
@@ -528,7 +560,69 @@ const plugin = {
     loadingHintText = '加载中...',
     needHandlerErr = true
   } = {}) {
+    axiosOptions = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
     return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST})
+  },
+  /**
+   * 发送POST请求
+   * <p>
+   * 参数为json对象
+   *
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxPostJson(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  } = {}) {
+    axiosOptions = {...{headers: {'Content-Type': 'application/json'}}, ...axiosOptions}
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST_JSON})
+  },
+  /**
+   * 发送`PUT`请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxPut(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  } = {}) {
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: PUT})
+  },
+  /**
+   * 发送`DELETE`请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxDel(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needHandlerErr = true
+  } = {}) {
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: DELETE})
   },
   /**
    * 通过`window.location.href`进行页面跳转
@@ -628,6 +722,7 @@ const plugin = {
 export default plugin
 
 export const install = function (Vue, {
+  debug = false,
   router,
   utilHttp: {
     /**
@@ -753,7 +848,7 @@ export const install = function (Vue, {
      * <p>
      * 如服务端返回：{code:[1|0], errmsg:'您无权访问该接口'}，用errmsg返回实际的交易数据中错误消息，这里就配置为`errmsg`,否则不用配置，**插件会试图查找`UtilHttp#msgKey`**
      */
-    errMsgKey = 'errmsg',
+    errMsgKey = '',
     /**
      * `UtilHttp#errDialog(errMsg)`
      * 当发[请求出错|生业务级]错误时候被调用，这样就方便应用适配符合自己的UI组件
@@ -768,20 +863,25 @@ export const install = function (Vue, {
      */
     errInfoOutDataObj = false,
     /**
-     * 【可选】`UtilHttp#onReqErrPaserMsg(response)=>{string}`
+     * 【可选】`UtilHttp#onReqErrParseMsg(response)=>{string}`
      * 当发生业务级错误时候被调用，用于给应用提供转意或者解析错误消息的机会，如果返回的字符串为空，否显示默认解析到的错误结果。
      * <p>
      * 回调返回非空字符，视为应用处理了本次错误消息，否显示默认解析到的错误结果。
      */
-    onReqErrPaserMsg = null,
+    onReqErrParseMsg = null,
+    /**
+     * 【可选】`UtilHttp#onReqErrParseHttpStatus(status, response)`
+     * 当解析到请求出错，如（401...），该函数将会被回调，用于给应用提供处理特殊`http status code`的机会
+     */
+    onReqErrParseHttpStatusCode = null,
     /**
      * 【可选】配置是否在发送请求的时候显示loading
      *  <p>
-     *  建议修改为true，ajax的loading ui需要在配置的时候自行实现`utilHttpInstall#loading和utilHttp#hideLoading`两个接口，这样就方便应用适配符合自己的UI组件
+     *  建议修改为true，ajax的loading ui需要在配置的时候自行实现`utilHttpInstall#loading和UtilHttp#hideLoading`两个接口，这样就方便应用适配符合自己的UI组件
      */
     defShowLoading = false,
     /**
-     *【可选】$vp#loading(hintText)
+     *【可选】UtilHttp#loading(hintText)
      * <p>
      * 当发送请求的时候，会被调用，并传递发送请求时候传递的[@param loadingHintText 当需要显示loading时候，需要显示在loading上面的文字]，用于应用自己实现loading ui，这样就方便应用适配符合自己的UI组件
      */
@@ -848,7 +948,7 @@ export const install = function (Vue, {
     warn(new Error(`${modelName}模块：建议配置loading和hideLoading，在发送请求的时候统一弹出和取消loading UI组件`), null, true)
   }
   if (pluginCanUse) {
-    _Vue = Vue
+    _debug = debug
     _router = router
     _errDialog = errDialog
     _loading = loading
@@ -865,7 +965,8 @@ export const install = function (Vue, {
     _onSendAjaxRespErr = onSendAjaxRespErr
     _onSendAjaxParamsHandle = onSendAjaxParamsHandle
     _onSendAjaxRespHandle = onSendAjaxRespHandle
-    _onReqErrPaserMsg = onReqErrPaserMsg
+    _onReqErrParseMsg = onReqErrParseMsg
+    _onReqErrParseHttpStatusCode = onReqErrParseHttpStatusCode
     _sessionTimeOut = sessionTimeOut
     _onSessionTimeOut = onSessionTimeOut
     _noNeedDialogHandlerErr = noNeedDialogHandlerErr

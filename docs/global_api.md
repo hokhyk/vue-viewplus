@@ -44,6 +44,21 @@
       }
 ```
 
+**注意**：如果需要在插件默认模块中，使用自定义模块的接口，必须在初始化本插件时候先混合自定义插件，比如:
+
+```js
+utilHttp: {
+    loading(loadingHintText) {
+      this.uiLoading(loadingHintText)
+    },
+    hideLoading() {
+      this.uiHideLoading()
+    },
+```
+
+如我们需要在默认的`util-http.js`模块回调接口中使用`this`调用自定义模块，就必须确保自定义接口优先被混合了，不然找不到对应接口。
+如果不用`this`，也可以直接通过`import`方式导入接口使用即可；
+
 ### bus
 
 插件将会向`Vue.prototype.$vp`下面挂一个`$bus`实例，用来提供一个**集中式的事件中间件**参考：[Vue 组件通信之 Bus](https://juejin.im/post/5a4353766fb9a044fb080927)
