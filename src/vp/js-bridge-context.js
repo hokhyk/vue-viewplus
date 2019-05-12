@@ -122,6 +122,15 @@ const plugin = {
             }
             // postMessage 是硬编码
             _jsContext.postMessage(JSON.stringify(p))
+          } else if (typeof process !== 'undefined') {
+            // For node todo something
+            this.sendingService(command).then((res) => {
+              console.log('sendingServiceRps===', res)
+              resolve(res)
+            }).catch(error => {
+              console.log('sendingServiceError', error)
+              reject(error)
+            })
           } else {
             emitErr(new JsBridgeError('不支持当前运行环境', 'RUN_EVN_NOT_SUPPORT'), reject, true)
           }
