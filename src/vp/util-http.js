@@ -33,6 +33,7 @@ let _debug,
   _onPageHref,
   _onSendAjaxRespErr,
   _onSendAjaxParamsHandle,
+  _onSendAjaxReqHandle,
   _onSendAjaxRespHandle,
   _onReqErrParseMsg,
   _onReqErrParseHttpStatusCode,
@@ -245,6 +246,7 @@ const _p = function (obj, key, val) {
 
 const _createAxiosInstance = function ({
   utilHttp: {
+    axiosExtensionConfig = {},
     baseURL = null,
     timeout = _timeout,
     /**
@@ -258,7 +260,7 @@ const _createAxiosInstance = function ({
     withCredentials = _withCredentials
   } = {}
 } = {}) {
-  const options = {}
+  const options = axiosExtensionConfig
   _p(options, 'baseURL', baseURL)
   _p(options, 'timeout', timeout)
   _p(options, 'headers', headers)
@@ -268,6 +270,9 @@ const _createAxiosInstance = function ({
 
   _instance.interceptors.request.use(
     config => {
+      if (_.isFunction(_onSendAjaxReqHandle)) {
+        config = _onSendAjaxReqHandle(config)
+      }
       return config
     },
     error => {
@@ -730,6 +735,10 @@ export const install = function (Vue, {
      */
     installed = null,
     /**
+     * 【可选】`axiosExtensionConfig` axios通用参数设置，其优先级会低于显示声明的`timeout`这类配置
+     */
+    axiosExtensionConfig = {},
+    /**
      * 【可选】`timeout` 指定请求超时的毫秒数(0 表示无超时时间), 如果请求话费了超过 `timeout` 的时间，请求将被中断
      * <p>
      * [axios#config.timeout](https://github.com/axios/axios#request-config)
@@ -769,6 +778,13 @@ export const install = function (Vue, {
      * 如服务端返回：{code:[1|0]}，用code返回业务状态，其中1标识为**成功**，这里就配置为`1`
      */
     statusCode = '1',
+    /**
+     * 【可选】`onSendAjaxReqHandle(config)=>{}`映射到`axios.interceptors.request.use`拦截器，可以让应用进行自定义配置
+     * <p>
+     * 传入参数为`axios.interceptors.request.use`拦截器的`config`参数
+     * 返回的**配置对象**将会作为`axios.interceptors.request.use`的返回值
+     */
+    onSendAjaxReqHandle = null,
     /**
      * 【可选】`$vp#onSendAjaxRespHandle(response)=>{}`服务器返回的数据处理，如果配置该函数，则会第一时间将后台返回数据先交给该函数进行预处理
      * <p>
@@ -964,6 +980,7 @@ export const install = function (Vue, {
     _onPageHref = onPageHref
     _onSendAjaxRespErr = onSendAjaxRespErr
     _onSendAjaxParamsHandle = onSendAjaxParamsHandle
+    _onSendAjaxReqHandle = onSendAjaxReqHandle
     _onSendAjaxRespHandle = onSendAjaxRespHandle
     _onReqErrParseMsg = onReqErrParseMsg
     _onReqErrParseHttpStatusCode = onReqErrParseHttpStatusCode
