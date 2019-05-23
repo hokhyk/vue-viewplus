@@ -16,6 +16,7 @@ export const modelName = 'util-http'
 export const GET = 'GET'
 export const POST = 'POST'
 export const POST_JSON = 'POST_JSON'
+export const POST_UPLOAD = 'UPLOAD'
 export const PUT = 'PUT'
 export const DELETE = 'DELETE'
 export const NATIVE = 'NATIVE'
@@ -115,7 +116,7 @@ const _getErrMsg = function (data) {
   return errmsg
 }
 
-const _handlerBusinessErrMsg = function (response) {
+const _handlerBusinessErrMsg = function (needErrDialog, response) {
   // 有些后端返回的消息状态【如statu和错误标识码errcode】是需要分离的
   const errCode = _.isEmpty(_errCodeKey) ? response[_statusCodeKey] : response[_errCodeKey]
   // 需要进行而外处理的错误
@@ -138,7 +139,7 @@ const _handlerBusinessErrMsg = function (response) {
           errMsg = tempErrMsg
         }
       }
-      this::_errDialog(errMsg)
+      needErrDialog && this::_errDialog(errMsg)
     }
   }
 }
@@ -150,7 +151,7 @@ const _handlerBusinessErrMsg = function (response) {
  * @param response 这个值可能是服务端响应的结果&异常对象
  * @private
  */
-const _handlerErr = function (needHandlerErr, response) {
+const _handlerErr = function (needHandlerErr, needErrDialog, response) {
   if (_debug) {
     console.log(`${PLUGIN_CONSOLE_LOG_FLAG} handler err: `, response)
   }
@@ -161,78 +162,78 @@ const _handlerErr = function (needHandlerErr, response) {
     }
     if (!selfHandlerErr && needHandlerErr) {
       if (_.isError(response) && response instanceof JsBridgeError) {
-        this::_errDialog(`${response.message} [${response.code}]`)
+        needErrDialog && this::_errDialog(`${response.message} [${response.code}]`)
       } else if (_.isError(response)) {
-        if (_.has(response, 'data') && (_.has(response.data, `${_statusCodeKey}`) || (_.has(response.data, `${_errCodeKey}`)))) {
+        if (_.has(response, 'response.data') && (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`)))) {
           // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
-          this::_handlerBusinessErrMsg(response.data)
+          this::_handlerBusinessErrMsg(needErrDialog, response.response.data)
         } else {
           // 细化错误消息
           const errMsg = response.message
           if (/Network Error/.test(errMsg)) {
-            this::_errDialog('网络异常，请稍后尝试')
+            needErrDialog && this::_errDialog('网络异常，请稍后尝试')
           } else if (/timeout/.test(errMsg)) {
-            this::_errDialog('请求超时，请稍后尝试')
+            needErrDialog && this::_errDialog('请求超时，请稍后尝试')
           } else {
             let errmsg
             // 检测`http`响应状态码属性
-            if (_.has(response, 'status')) {
+            if (_.has(response.response, 'status')) {
               // 按响应状态码解析错误
-              const statusFlag = response.status
+              const statusFlag = response.response.status
               const handled = this::callFunc(_onReqErrParseHttpStatusCode, statusFlag, response)
               if (!handled) {
                 switch (statusFlag) {
                   case 400:
-                    errmsg = '请求错误'
+                    errmsg = '400 请求错误'
                     break
                   case 401:
-                    errmsg = '未授权，请登录'
+                    errmsg = '401 未授权，请登录'
                     break
                   case 403:
-                    errmsg = '拒绝访问'
+                    errmsg = '403 拒绝访问'
                     break
                   case 404:
-                    errmsg = `404 找不到待请求的资源: ${response.config.url}`
+                    errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
                     break
                   case 408:
-                    errmsg = '请求超时'
+                    errmsg = '408 请求超时'
                     break
                   case 500:
                     errmsg = `500 服务器内部错误 [${errMsg}]`
                     break
                   case 501:
-                    errmsg = '服务未实现'
+                    errmsg = '501 服务未实现'
                     break
                   case 502:
-                    errmsg = '网关错误'
+                    errmsg = '502 网关错误'
                     break
                   case 503:
-                    errmsg = '服务不可用'
+                    errmsg = '503 服务不可用'
                     break
                   case 504:
-                    errmsg = '网关超时'
+                    errmsg = '504 网关超时'
                     break
                   case 505:
-                    errmsg = 'HTTP版本不受支持'
+                    errmsg = '505 HTTP版本不受支持'
                     break
                   default:
                     errmsg = `请求出错 [${errMsg}]`
                     break
                 }
-                this::_errDialog(errmsg)
+                needErrDialog && this::_errDialog(errmsg)
               }
             }
           }
         }
       } else {
-        this::_handlerBusinessErrMsg(response)
+        this::_handlerBusinessErrMsg(needErrDialog, response)
       }
     } else {
       warn(`不处理默认错误消息，因为请求needHandlerErr设置为true或者onSendAjaxRespErr已经自行处理了本次错误`)
     }
   } catch (e) {
     warn(`处理业务逻辑错误返回数据出错 ${e}`)
-    if (needHandlerErr) {
+    if (needHandlerErr && needErrDialog) {
       this::_errDialog(`${ERR_DEFAULT} [${e.message}]`)
     }
   }
@@ -314,6 +315,14 @@ const _post = function ({url, axiosOptions = {}, params = {}}) {
   return _instance.post(url, urlParams, axiosOptions)
 }
 
+const _upload = function ({url, axiosOptions = {}, params = {}}) {
+  let formData = new FormData()
+  for (const key in params) {
+    formData.append(key, params[key])
+  }
+  return _instance.post(url, formData, axiosOptions)
+}
+
 const _hLoading = function (showLoading) {
   if (showLoading) {
     this::callFunc2(_hideLoading)
@@ -387,6 +396,8 @@ const plugin = {
           iterable.push(_post(p))
         } else if (mode === GET) {
           iterable.push(_get(p))
+        } else if (mode === POST_UPLOAD) {
+          iterable.push(_upload(p))
         }
       })
       if (iterable.length <= 0) {
@@ -424,17 +435,18 @@ const plugin = {
    * @returns {Promise}
    */
   ajaxMixin(url, {
-    params = {},
+    params = null,
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
     needHandlerErr = true,
+    needErrDialog = true,
     mode = _defMode
   } = {}) {
     if (!url) {
       return Promise.reject(new Error(`${PLUGIN_CONSOLE_LOG_FLAG} 请求url链接不正确! `))
     }
-    this::_hLoading(showLoading)
+    this::callFunc(_hLoading)
     if (showLoading) {
       this::callFunc(_loading, loadingHintText)
     }
@@ -447,7 +459,7 @@ const plugin = {
         const that = this
         const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
         window[listenerName] = function (data) {
-          that::_hLoading(showLoading)
+          that::callFunc(_hLoading)
           try {
             if (_.isFunction(_onSendAjaxRespHandle)) {
               data = _onSendAjaxRespHandle(data)
@@ -456,7 +468,7 @@ const plugin = {
             // 需要对是否为服务端业务状态进行判断
             const isErr = _parseServerResp(response)
             if (isErr) {
-              that::_handlerErr(needHandlerErr, response)
+              that::_handlerErr(needHandlerErr, needErrDialog, response)
               reject(response)
             } else {
               resolve(_getResData(response))
@@ -479,10 +491,10 @@ const plugin = {
         this.fireEvent(command).then(response => {
           warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
         }).catch(err => {
-          this::_hLoading(showLoading)
-          this::_handlerErr(needHandlerErr, err)
+          this::callFunc(_hLoading)
+          this::_handlerErr(needHandlerErr, needErrDialog, err)
           reject(err)
-        }).finally(() => this::_hLoading(showLoading))
+        }).finally(() => this::callFunc(_hLoading))
       })
     } else {
       // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
@@ -493,6 +505,7 @@ const plugin = {
         } else {
           switch (mode) {
             case POST:
+              axiosOptions = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
               params = qs.stringify(params)
               reqP = _instance.post(url, params, axiosOptions)
               break
@@ -507,6 +520,13 @@ const plugin = {
               // https://cloud.tencent.com/developer/article/1147735
               reqP = _instance.delete(url, {data: params}, axiosOptions)
               break
+            case POST_UPLOAD:
+              let formData = new FormData()
+              for (const key in params) {
+                formData.append(key, params[key])
+              }
+              reqP = _instance.post(url, formData, axiosOptions)
+              break
             default:
               reqP = _instance.get(url, params, axiosOptions)
           }
@@ -516,7 +536,7 @@ const plugin = {
             resolve(_getResData(response))
           })
           .catch((err) => {
-            this::_handlerErr(needHandlerErr, err)
+            this::_handlerErr(needHandlerErr, needErrDialog, err)
             reject(err)
           })
           .finally(() => this::_hLoading(showLoading)
