@@ -263,6 +263,14 @@ Vue.use(ViewPlus, {
     withCredentials = false
 ```
 
+### axiosExtensionConfig[0.9.12新增]
+```js
+/**
+     * 【可选】`axiosExtensionConfig` axios通用参数设置，其优先级会低于显示声明的`timeout`这类配置
+     */
+    axiosExtensionConfig = {},
+```
+
 ### mode
 
 ```js
@@ -309,6 +317,18 @@ Vue.use(ViewPlus, {
      * 如服务端返回：{code:[1|0]}，用code返回业务状态，其中1标识为**成功**，这里就配置为`1`
      */
     statusCode = '1'
+```
+
+### onSendAjaxReqHandle[0.9.12新增]
+
+```js
+    /**
+     * 【可选】`onSendAjaxReqHandle(config)=>{}`映射到`axios.interceptors.request.use`拦截器，可以让应用进行自定义配置
+     * <p>
+     * 传入参数为`axios.interceptors.request.use`拦截器的`config`参数
+     * 返回的**配置对象**将会作为`axios.interceptors.request.use`的返回值
+     */
+    onSendAjaxReqHandle = null
 ```
 
 ### onSendAjaxRespHandle

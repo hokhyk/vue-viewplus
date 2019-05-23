@@ -4,14 +4,14 @@
 
 > [Vue 前端应用实现RBAC权限控制的一种方式](https://juejin.im/post/5c19a282f265da61137f372c)
 
-rabc.js 自定义RBAC权限控制模块，为前端应用提供rbac权限控制帮助。
+rbac.js 自定义RBAC权限控制模块，为前端应用提供rbac权限控制帮助。
 
 [RBAC](https://zh.wikipedia.org/zh/以角色為基礎的存取控制)基于角色的访问控制，一般只会在管理端应用使用，故这个模块不作为默认模块，[点击下载](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js)。
 
-其和[login-state-check.js 身份认证权限控制模块](http://jiiiiiin.cn/vue-viewplus/#/login-state-check)不同之处在于，该模块提供了一下两种权限控制手段：
+其和[login-state-check.js 身份认证权限控制模块](http://jiiiiiin.cn/vue-viewplus/#/login-state-check)不同之处在于，该模块提供了以下两种权限控制手段：
 
 + 实现前端页面可访问性控制，即通过路由拦截，判断用户待访问页面是否已经授权
-+ 实现可见页面的局部UI组件的**可使用性或可见性**控制，即基于自定义`v-access`指令，对比声明的接口或资源别是否已经授权
++ 实现可见页面的局部UI组件的**可使用性或可见性**控制，即基于自定义`v-access`指令，对比声明的接口或资源别名是否已经授权
 
 而login-state-check.js 身份认证权限控制模块，则提供的是对**非公共页面**的身份认证校验检查，其中维护了用户的身份认证即登录状态，这种权限控制，更适合大多数应用，即给**用户使用**的客户端应用。
 
