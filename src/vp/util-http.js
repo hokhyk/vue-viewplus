@@ -424,7 +424,8 @@ const plugin = {
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
     needHandlerErr = true,
-    mode = _defMode
+    mode = _defMode,
+    method = 'POST'
   } = {}) {
     if (!url) {
       return Promise.reject(new Error(`${PLUGIN_CONSOLE_LOG_FLAG} 请求url链接不正确! `))
@@ -440,65 +441,83 @@ const plugin = {
           params = this::_onSendAjaxParamsHandle(url, params, mode)
         }
         const that = this
-        if (typeof XMLHttpRequest !== 'undefined') {
-          // For browsers todo something
-          const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
-          window[listenerName] = function (data) {
-            this::_hLoading(showLoading)
-            try {
-              if (_.isFunction(_onSendAjaxRespHandle)) {
-                data = _onSendAjaxRespHandle(data)
-              }
-              const response = JSON.parse(data)
-              // 需要对是否为服务端业务状态进行判断
-              const isErr = _parseServerResp(response)
-              if (isErr) {
-                that::_handlerErr(needHandlerErr, response)
-                reject(response)
-              } else {
-                resolve(_getResData(response))
-              }
-            } catch (e) {
-              reject(new Error(`解析客户端返回的请求数据出错[${e.message}]`))
+        const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
+        window[listenerName] = function (data) {
+          this::_hLoading(showLoading)
+          try {
+            if (_.isFunction(_onSendAjaxRespHandle)) {
+              data = _onSendAjaxRespHandle(data)
             }
-          }
-          const command = {
-            event: _eventName,
-            action: _actionName,
-            listener: listenerName,
-            params: {
-              transcode: url,
-              timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
-              params,
-              axiosOptions
+            const response = JSON.parse(data)
+            // 需要对是否为服务端业务状态进行判断
+            const isErr = _parseServerResp(response)
+            if (isErr) {
+              that::_handlerErr(needHandlerErr, response)
+              reject(response)
+            } else {
+              resolve(_getResData(response))
             }
+          } catch (e) {
+            reject(new Error(`解析客户端返回的请求数据出错[${e.message}]`))
           }
-          this.fireEvent(command).then(response => {
-            warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
-          }).catch(err => {
-            this::_hLoading(showLoading)
-            this::_handlerErr(needHandlerErr, err)
-            reject(err)
-          }).finally(this::_hLoading(showLoading))
-        } else if (typeof process !== 'undefined') {
-          // For node todo something
-          const command = {
-            params: {
-              transcode: url,
-              mode: mode,
-              params,
-              axiosOptions
-            }
-          }
-          this.fireEvent(command).then((response) => {
-            warn(`发送[${url}]请求，服务端响应数据，[${JSON.stringify(response)}]`)
-            resolve(_getResData(response))
-          }).catch((err) => {
-            this::_hLoading(showLoading)
-            this::_handlerErr(needHandlerErr, err)
-            reject(err)
-          }).finally(this::_hLoading(showLoading))
         }
+        const command = {
+          event: _eventName,
+          action: _actionName,
+          listener: listenerName,
+          params: {
+            transcode: url,
+            timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
+            params,
+            axiosOptions
+          }
+        }
+        that.fireEvent(command).then(response => {
+          warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
+        }).catch(err => {
+          that::_hLoading(showLoading)
+          that::_handlerErr(needHandlerErr, err)
+          reject(err)
+        }).finally(that::_hLoading(showLoading))
+      })
+    } else if (mode === 'ELECTRON') {
+      return new Promise((resolve, reject) => {
+        if (_.isFunction(_onSendAjaxParamsHandle)) {
+          params = this::_onSendAjaxParamsHandle(url, params, mode)
+        }
+        let command = {
+          transcode: url,
+          mode: mode,
+          method: method,
+          timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
+          params: params,
+          axiosOptions: axiosOptions
+        }
+        this.fireEvent(command).then((respdata) => {
+          // warn(`发送[${url}]请求，服务端响应数据，[${JSON.stringify(response)}]`)
+          warn(`发送[${url}]请求，服务端响应数据`)
+          try {
+            if (_.isFunction(_onSendAjaxRespHandle)) {
+              respdata = _onSendAjaxRespHandle(respdata)
+            }
+            let errflag = _parseServerResp(respdata)
+            if (errflag) {
+              // 如果错误信息不是在{@link _dataKey}指向的对象中，而是在最外层，那么就不需要读取dataKey
+              this::_handlerErr(needHandlerErr, respdata.data)
+              reject(respdata)
+            } else {
+              resolve(_getResData(respdata))
+            }
+          } catch (e) {
+            reject(e)
+          }
+        }).catch((err) => {
+          this::_hLoading(showLoading)
+          this::_handlerErr(needHandlerErr, err)
+          reject(err)
+        }).finally(() => {
+          this::_hLoading(showLoading)
+        })
       })
     } else {
       // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
