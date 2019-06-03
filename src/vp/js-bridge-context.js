@@ -122,15 +122,21 @@ const plugin = {
             }
             // postMessage 是硬编码
             _jsContext.postMessage(JSON.stringify(p))
-          } else if (typeof process !== 'undefined') {
-            // For node todo something
-            this.sendingService(command).then((res) => {
-              console.log('sendingServiceRps===', res)
-              resolve(res)
-            }).catch(error => {
-              console.log('sendingServiceError', error)
-              reject(error)
-            })
+          } else if (command.mode === 'ELECTRON') {
+            // For node todo something  node-sending-service.js
+            if (!_.isNil(that.sendingService)) {
+              that.sendingService(command).then((res) => {
+                resolve(res)
+              }).catch(error => {
+                if (_.isNil(error) || JSON.stringify(error) === '{}') {
+                  emitErr(new JsBridgeError('ELECTRON客户端发送交易错误', 'ELECTRON_SERVICE_ERROR'), reject, true)
+                } else {
+                  emitErr(new JsBridgeError(error.message, error.code), reject, true)
+                }
+              })
+            } else {
+              emitErr(new JsBridgeError('没有找到ELECTRON环境下对应sendingService方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
+            }
           } else {
             emitErr(new JsBridgeError('不支持当前运行环境', 'RUN_EVN_NOT_SUPPORT'), reject, true)
           }
