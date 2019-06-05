@@ -116,7 +116,8 @@ const _getErrMsg = function (data) {
   return errmsg
 }
 
-const _handlerBusinessErrMsg = function (needErrDialog, response) {
+const _handlerBusinessErrMsg = function (response) {
+  let errMsg = ''
   // 有些后端返回的消息状态【如statu和错误标识码errcode】是需要分离的
   const errCode = _.isEmpty(_errCodeKey) ? response[_statusCodeKey] : response[_errCodeKey]
   // 需要进行而外处理的错误
@@ -126,10 +127,10 @@ const _handlerBusinessErrMsg = function (needErrDialog, response) {
   } else if (Array.isArray(_unauthorized) && _unauthorized.includes(errCode)) {
     this::callFunc2(_onUnauthorized, '用户无权访问该资源！onUnauthorized回调函数未定义', response)
   } else {
-    // 不需要进行而外处理的错误
+    // 不需要进行额外处理的错误码数组
     if (!Array.isArray(_noNeedDialogHandlerErr) || !_noNeedDialogHandlerErr.includes(errCode)) {
       // 错误标识符改成可配置
-      let errMsg = _getErrMsg(response)
+      errMsg = _getErrMsg(response)
       if (_.isFunction(_onReqErrParseMsg)) {
         // onReqErrParseMsg回调返回非空字符，视为应用自己来解析了本次错误消息，否则还是用插件解析的为准
         const tempErrMsg = this::_onReqErrParseMsg(response, errMsg)
@@ -139,15 +140,16 @@ const _handlerBusinessErrMsg = function (needErrDialog, response) {
           errMsg = tempErrMsg
         }
       }
-      needErrDialog && this::_errDialog(errMsg)
     }
+    return errMsg
   }
 }
 
 /**
  * 处理通用的和服务端交互的错误信息，直接将错误信息解析以dialog的方式弹出，给应用预留了一个钩子 onSendAjaxRespErr，如果该函数（onSendAjaxRespErr）返回true则表示应用已经处理了本次请求的错误，否则交给插件进行处理。
  * onSendAjaxRespErr钩子是针对于没有那么通用的，但是在某些应用看来又是他们的需要统一处理的错误，给应用一次自己消化的机会。
- * @param needHandlerErr 是否需要弹错误提示框
+ * @param needHandlerErr 是否需要错误处理
+ * @param needErrDialog 是否需要弹出错误提示框
  * @param response 这个值可能是服务端响应的结果&异常对象
  * @private
  */
@@ -160,73 +162,25 @@ const _handlerErr = function (needHandlerErr, needErrDialog, response) {
     if (_.isFunction(_onSendAjaxRespErr)) {
       selfHandlerErr = this::_onSendAjaxRespErr(response)
     }
+    let errMsg = ''
     if (!selfHandlerErr && needHandlerErr) {
-      if (_.isError(response) && response instanceof JsBridgeError) {
-        needErrDialog && this::_errDialog(`${response.message} [${response.code}]`)
-      } else if (_.isError(response)) {
-        if (_.has(response, 'response.data') && (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`)))) {
-          // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
-          this::_handlerBusinessErrMsg(needErrDialog, response.response.data)
+      if (_.isError(response)) {
+        if (response instanceof JsBridgeError) {
+          errMsg = `${response.message} [${response.code}]`
         } else {
-          // 细化错误消息
-          const errMsg = response.message
-          if (/Network Error/.test(errMsg)) {
-            needErrDialog && this::_errDialog('网络异常，请稍后尝试')
-          } else if (/timeout/.test(errMsg)) {
-            needErrDialog && this::_errDialog('请求超时，请稍后尝试')
+          // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
+          if (_.has(response, 'response.data') && (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`)))) {
+            errMsg = _handlerBusinessErrMsg(response.data)
           } else {
-            let errmsg
-            // 检测`http`响应状态码属性
-            if (_.has(response.response, 'status')) {
-              // 按响应状态码解析错误
-              const statusFlag = response.response.status
-              const handled = this::callFunc(_onReqErrParseHttpStatusCode, statusFlag, response)
-              if (!handled) {
-                switch (statusFlag) {
-                  case 400:
-                    errmsg = '400 请求错误'
-                    break
-                  case 401:
-                    errmsg = '401 未授权，请登录'
-                    break
-                  case 403:
-                    errmsg = '403 拒绝访问'
-                    break
-                  case 404:
-                    errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
-                    break
-                  case 408:
-                    errmsg = '408 请求超时'
-                    break
-                  case 500:
-                    errmsg = `500 服务器内部错误 [${errMsg}]`
-                    break
-                  case 501:
-                    errmsg = '501 服务未实现'
-                    break
-                  case 502:
-                    errmsg = '502 网关错误'
-                    break
-                  case 503:
-                    errmsg = '503 服务不可用'
-                    break
-                  case 504:
-                    errmsg = '504 网关超时'
-                    break
-                  case 505:
-                    errmsg = '505 HTTP版本不受支持'
-                    break
-                  default:
-                    errmsg = `请求出错 [${errMsg}]`
-                    break
-                }
-                needErrDialog && this::_errDialog(errmsg)
-              }
-            }
+            // 细化网络错误信息
+            errMsg = this::_handlerNetworkErr(response)
           }
         }
       } else {
-        this::_handlerBusinessErrMsg(needErrDialog, response)
+        errMsg = this::_handlerBusinessErrMsg(response)
+      }
+      if (!_.isEmpty(errMsg) && needErrDialog) {
+        this::_errDialog(errMsg)
       }
     } else {
       warn(`不处理默认错误消息，因为请求needHandlerErr设置为true或者onSendAjaxRespErr已经自行处理了本次错误`)
@@ -236,6 +190,71 @@ const _handlerErr = function (needHandlerErr, needErrDialog, response) {
     if (needHandlerErr && needErrDialog) {
       this::_errDialog(`${ERR_DEFAULT} [${e.message}]`)
     }
+  }
+}
+
+/**
+ * 处理服务端交互的网络错误信息，返回错误描述
+ * @param response 服务端响应的结果/异常对象
+ * @returns {*}
+ * @private
+ */
+const _handlerNetworkErr = function (response) {
+  // 细化错误消息
+  const errMsg = response.message
+  if (/Network Error/.test(errMsg)) {
+    return '网络异常，请稍后尝试'
+  } else if (/timeout/.test(errMsg)) {
+    return '请求超时，请稍后尝试'
+  } else {
+    let errmsg = errMsg
+    // 检测`http`响应状态码属性
+    if (_.has(response.response, 'status')) {
+      // 按响应状态码解析错误
+      const statusFlag = response.response.status
+      const handled = this::callFunc(_onReqErrParseHttpStatusCode, statusFlag, response)
+      if (!handled) {
+        switch (statusFlag) {
+          case 400:
+            errmsg = '400 请求错误'
+            break
+          case 401:
+            errmsg = '401 未授权，请登录'
+            break
+          case 403:
+            errmsg = '403 拒绝访问'
+            break
+          case 404:
+            errmsg = `404 找不到待请求的资源: ${response.response.config.url}`
+            break
+          case 408:
+            errmsg = '408 请求超时'
+            break
+          case 500:
+            errmsg = `500 服务器内部错误 [${errMsg}]`
+            break
+          case 501:
+            errmsg = '501 服务未实现'
+            break
+          case 502:
+            errmsg = '502 网关错误'
+            break
+          case 503:
+            errmsg = '503 服务不可用'
+            break
+          case 504:
+            errmsg = '504 网关超时'
+            break
+          case 505:
+            errmsg = '505 HTTP版本不受支持'
+            break
+          default:
+            errmsg = `请求出错 [${errMsg}]`
+            break
+        }
+      }
+    }
+    return errmsg
   }
 }
 
@@ -251,12 +270,12 @@ const _createAxiosInstance = function ({
     baseURL = null,
     timeout = _timeout,
     /**
-    * 【可选】`headers` 是即将被发送的自定义请求头
-    */
+     * 【可选】`headers` 是即将被发送的自定义请求头
+     */
     headers = null,
     /**
-    * 【可选】`params` 是即将与请求一起发送的 URL 参数必须是一个无格式对象(plain object)或 URLSearchParams 对象
-    */
+     * 【可选】`params` 是即将与请求一起发送的 URL 参数必须是一个无格式对象(plain object)或 URLSearchParams 对象
+     */
     params = null,
     withCredentials = _withCredentials
   } = {}
@@ -431,11 +450,12 @@ const plugin = {
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {String} [mode='POST'] 请求的method【'GET'| 'POST'| 'NATIVE'】，默认使用初始化配置时候传递的`utilHttpInstall#mode = POST`参数赋初值
    * @returns {Promise}
    */
   ajaxMixin(url, {
-    params = null,
+    params = {},
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
@@ -446,7 +466,7 @@ const plugin = {
     if (!url) {
       return Promise.reject(new Error(`${PLUGIN_CONSOLE_LOG_FLAG} 请求url链接不正确! `))
     }
-    this::callFunc(_hLoading)
+    this::_hLoading(showLoading)
     if (showLoading) {
       this::callFunc(_loading, loadingHintText)
     }
@@ -459,7 +479,7 @@ const plugin = {
         const that = this
         const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
         window[listenerName] = function (data) {
-          that::callFunc(_hLoading)
+          that::_hLoading(showLoading)
           try {
             if (_.isFunction(_onSendAjaxRespHandle)) {
               data = _onSendAjaxRespHandle(data)
@@ -491,10 +511,10 @@ const plugin = {
         this.fireEvent(command).then(response => {
           warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
         }).catch(err => {
-          this::callFunc(_hLoading)
+          this::_hLoading(showLoading)
           this::_handlerErr(needHandlerErr, needErrDialog, err)
           reject(err)
-        }).finally(() => this::callFunc(_hLoading))
+        }).finally(() => this::_hLoading(showLoading))
       })
     } else {
       // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
@@ -554,6 +574,7 @@ const plugin = {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {Promise}
    */
@@ -562,9 +583,10 @@ const plugin = {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
   } = {}) {
-    return this.ajaxMixin(url, {params, axiosOptions, showLoading, loadingHintText, needHandlerErr, mode: GET})
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, loadingHintText, needErrDialog, needHandlerErr, mode: GET})
   },
   /**
    * 发送POST请求
@@ -576,6 +598,7 @@ const plugin = {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {*|Promise}
    */
@@ -584,10 +607,11 @@ const plugin = {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
   } = {}) {
     axiosOptions = {...{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, ...axiosOptions}
-    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST})
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, loadingHintText, needErrDialog, needHandlerErr, mode: POST})
   },
   /**
    * 发送POST请求
@@ -599,6 +623,7 @@ const plugin = {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {*|Promise}
    */
@@ -607,10 +632,11 @@ const plugin = {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
   } = {}) {
     axiosOptions = {...{headers: {'Content-Type': 'application/json'}}, ...axiosOptions}
-    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: POST_JSON})
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, loadingHintText, needErrDialog, needHandlerErr, mode: POST_JSON})
   },
   /**
    * 发送`PUT`请求
@@ -619,6 +645,7 @@ const plugin = {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {*|Promise}
    */
@@ -627,9 +654,10 @@ const plugin = {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
   } = {}) {
-    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: PUT})
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, loadingHintText, needErrDialog, needHandlerErr, mode: PUT})
   },
   /**
    * 发送`DELETE`请求
@@ -638,6 +666,7 @@ const plugin = {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {*|Promise}
    */
@@ -646,9 +675,32 @@ const plugin = {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
   } = {}) {
-    return this.ajaxMixin(url, {params, axiosOptions, showLoading, needHandlerErr, mode: DELETE})
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, loadingHintText, needErrDialog, needHandlerErr, mode: DELETE})
+  },
+  /**
+   * 发送上传请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   * @returns {*|Promise}
+   */
+  ajaxUpload(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needErrDialog = true,
+    needHandlerErr = true
+  } = {}) {
+    return this.ajaxMixin(url, {params, axiosOptions, showLoading, loadingHintText, needErrDialog, needHandlerErr, mode: POST_UPLOAD})
   },
   /**
    * 通过`window.location.href`进行页面跳转

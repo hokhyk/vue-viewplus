@@ -275,7 +275,7 @@ Vue.use(ViewPlus, {
 
 ```js
     /**
-     * 【可选】默认请求的method【'GET'| 'POST'| 'NATIVE'】
+     * 【可选】默认请求的method【'GET'| 'POST'| ’POST_JSON’| 'NATIVE' | ’UPLOAD’| ’PUT’|‘DELETE’】
      *  <p>
      *  提示：如果整个应用的大部分交易都需要使用**客户端代理转发请求（涉及到前端和客户端的交互，也就是JSBridge交互，我们已经有了一套android-viewplus 一个安卓混合客户端开发库，来解决JSBridge客户端交互流程）**，
      *  那么这里需要配置为'NATIVE'，这样基本上所有交易（调用$vp#ajaxMixin）都会走代理，如果某一个交易需要使用**ajax**，则在调用的时候手动设置`$vp#ajaxMixin.mode`参数进行覆盖
@@ -712,7 +712,7 @@ Vue.use(ViewPlus, {
    * ajaxMixin(url[, config])
    * 支持普通的Ajax GET/POST(默认)请求 和 客户端桥接访问
    * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE'】
+   * @param {Object} [params={}] 请求参数
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
@@ -733,50 +733,54 @@ Vue.use(ViewPlus, {
 
 ### ajaxGet
 ```js
-/**
-   * 发送GET请求
-   * <p>
-   * 底层交由`$vp#ajaxMixin`处理
-   *
-   * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE'】
-   * @param {Object} [axiosOptions={}] axios options
-   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
-   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
-   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
-   * @returns {Promise}
-   */
-  ajaxGet(url, {
-    params = {},
-    axiosOptions = {},
-    showLoading = _defShowLoading,
-    loadingHintText = '加载中...',
-    needHandlerErr = true
-  } = {})
+   /**
+     * 发送GET请求
+     * <p>
+     * 底层交由`$vp#ajaxMixin`处理
+     *
+     * @param {String} [url=undefined] 交易码|完整请求url
+     * @param {Object} [params={}] 请求参数
+     * @param {Object} [axiosOptions={}] axios options
+     * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+     * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+     * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
+     * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+     * @returns {Promise}
+     */
+    ajaxGet(url, {
+      params = {},
+      axiosOptions = {},
+      showLoading = _defShowLoading,
+      loadingHintText = '加载中...',
+      needErrDialog = true,
+      needHandlerErr = true
+    } = {})
 ```
 
 ### ajaxPost
 ```js
   /**
-   * 发送POST请求
-   * <p>
-   * 底层交由`$vp#ajaxMixin`处理
-   *
-   * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE'】
-   * @param {Object} [axiosOptions={}] axios options
-   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
-   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
-   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
-   * @returns {*|Promise}
-   */
-  ajaxPost(url, {
-    params = {},
-    axiosOptions = {},
-    showLoading = _defShowLoading,
-    loadingHintText = '加载中...',
-    needHandlerErr = true
-  } = {})
+     * 发送POST请求
+     * <p>
+     * 底层交由`$vp#ajaxMixin`处理
+     *
+     * @param {String} [url=undefined] 交易码|完整请求url
+     * @param {Object} [params={}] 请求参数
+     * @param {Object} [axiosOptions={}] axios options
+     * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+     * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+     * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
+     * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+     * @returns {*|Promise}
+     */
+    ajaxPost(url, {
+      params = {},
+      axiosOptions = {},
+      showLoading = _defShowLoading,
+      loadingHintText = '加载中...',
+      needErrDialog = true,
+      needHandlerErr = true
+    } = {})
 ```
 
 ### ajaxPostJson
@@ -792,6 +796,7 @@ Vue.use(ViewPlus, {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {*|Promise}
    */
@@ -800,8 +805,9 @@ Vue.use(ViewPlus, {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
-  }
+  } = {})
 ```
 
 ### ajaxPut
@@ -814,6 +820,7 @@ Vue.use(ViewPlus, {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {*|Promise}
    */
@@ -822,8 +829,9 @@ Vue.use(ViewPlus, {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
-  }
+  } = {})
 ```
 
 ### ajaxDel
@@ -836,6 +844,7 @@ Vue.use(ViewPlus, {
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @returns {*|Promise}
    */
@@ -844,11 +853,34 @@ Vue.use(ViewPlus, {
     axiosOptions = {},
     showLoading = _defShowLoading,
     loadingHintText = '加载中...',
+    needErrDialog = true,
     needHandlerErr = true
   } = {})
 ```
 
+### ajaxUpload[0.9.13新增]
 
+```js
+/**
+   * 发送上传请求
+   * @param {String} [url=undefined] 交易码|完整请求url
+   * @param {Object} [params={}] 请求参数
+   * @param {Object} [axiosOptions={}] axios options
+   * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
+   * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
+   * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
+   * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+   * @returns {*|Promise}
+   */
+  ajaxUpload(url, {
+    params = {},
+    axiosOptions = {},
+    showLoading = _defShowLoading,
+    loadingHintText = '加载中...',
+    needErrDialog = true,
+    needHandlerErr = true
+  } = {})
+```
 
 ### pageHref
 
