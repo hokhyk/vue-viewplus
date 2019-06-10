@@ -129,7 +129,7 @@ const plugin = {
                 resolve(res)
               }).catch(error => {
                 if (_.isNil(error) || JSON.stringify(error) === '{}') {
-                  emitErr(new JsBridgeError('ELECTRON客户端发送交易错误', 'ELECTRON_SERVICE_ERROR'), reject, true)
+                  emitErr(new JsBridgeError('ELECTRON桌面端发送交易错误', 'ELECTRON_SERVICE_ERROR'), reject, true)
                 } else {
                   emitErr(new JsBridgeError(error.message, error.code), reject, true)
                 }
