@@ -72,6 +72,7 @@ export function ipcModSendingService(command) {
         const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
         command.listenerName = listenerName
         if (command.method === 'POST_UPLOAD') {
+        // 这里是针对上传文件做的特殊处理
           command.params.filePath = command.params.UploadFile.path
         }
         ipc.send('sending-service', command)
@@ -108,15 +109,12 @@ else if (mode === 'ELECTRON') {
           axiosOptions: axiosOptions
         }
         this.fireEvent(command).then((respdata) => {
-          // warn(`发送[${url}]请求，服务端响应数据，[${JSON.stringify(response)}]`)
-          warn(`发送[${url}]请求，服务端响应数据`)
           try {
             if (_.isFunction(_onSendAjaxRespHandle)) {
               respdata = _onSendAjaxRespHandle(respdata)
             }
             let errflag = _parseServerResp(respdata)
             if (errflag) {
-              // 如果错误信息不是在{@link _dataKey}指向的对象中，而是在最外层，那么就不需要读取dataKey
               this::_handlerErr(needHandlerErr, respdata.data)
               reject(respdata)
             } else {
