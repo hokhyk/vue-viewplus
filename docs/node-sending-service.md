@@ -1,11 +1,11 @@
 # node-sending-service.js
 
-node-sending-service.js 属于JSBridge桥接模块中的一个自定义模块，用于前端通过Electron桌面客户端发送后台交易。
+node-sending-service.js 是用于跟Electron通信的一个自定义桥接模块。
 
 为什么使用node-sending-service.js这个自定的模块
 
-+ 在Electron桌面客户端使用的node axios https发送交易
-+ 做为前端项目使用vue-viewplus与Electron桌面客户端进行交互的桥梁
++ 做为vue-viewplus与Electron进行通信的桥梁
++ 在Electron端使用的node axios https发送交易
 
 使用方法：
 
@@ -53,9 +53,9 @@ export default {
 }
 ```
 其实该自定义模块就做了以下一件事:
-+ 定义自定义方法sendingService做为链接和接收Electron桌面客户端通信结果（本质上还是前端跟Electron桌面客户端通过Electron的主进程跟渲染进程的通信来完成的）
++ 定义自定义方法sendingService做为连接和接收Electron通信结果（本质上还是前端跟Electron端通过Electron的主进程跟渲染进程的通信来完成的）
 
-3.ipc-renderer-api.js（前端与Electron桌面端进行通信的模块）
+3.ipc-renderer-api.js（前端与Electron端进行通信的模块）
 
 ```js
 
@@ -84,15 +84,19 @@ export function ipcModSendingService(command) {
             reject(data.res)
           }
         })
+      } else {
+        reject(new Error('Electron-ipcRenderer依赖模块未引入'))
       }
     } else {
-      reject(new Error('请确认应用运行在桌面客户端中,才能调用此方法'))
+      reject(new Error('未运行于node环境下'))
     }
   })
 }
 
 ```
-4.vue-viewplus中util-http.js关于Electron模块
+4.vue-viewplus中util-http.js关于Electron模块，详见[util-http.js](http://jiiiiiin.cn/vue-viewplus/#/util-http)
+
+ + 注：使用该模块 mode必须配置为ELECTRON
 
 ```js
 else if (mode === 'ELECTRON') {
@@ -134,7 +138,7 @@ else if (mode === 'ELECTRON') {
     }
 ```
 
-5.vue-viewplus中js-bridge-context.js关于Electron模块
+5.vue-viewplus中js-bridge-context.js关于Electron模块，详见[js-bridge-context.js](http://jiiiiiin.cn/vue-viewplus/#/js-bridge-context)
 
 ```js
 else if (command.mode === 'ELECTRON') {

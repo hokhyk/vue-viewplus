@@ -129,13 +129,13 @@ const plugin = {
                 resolve(res)
               }).catch(error => {
                 if (_.isNil(error) || JSON.stringify(error) === '{}') {
-                  emitErr(new JsBridgeError('ELECTRON桌面端发送交易错误', 'ELECTRON_SERVICE_ERROR'), reject, true)
+                  emitErr(new JsBridgeError('ELECTRON端发送交易错误', 'ELECTRON_SERVICE_ERROR'), reject, true)
                 } else {
                   emitErr(new JsBridgeError(error.message, error.code), reject, true)
                 }
               })
             } else {
-              emitErr(new JsBridgeError('没有找到ELECTRON环境下对应sendingService方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
+              emitErr(new JsBridgeError('没有找到自定义模块node-sending-service.js对应sendingService方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
             }
           } else {
             emitErr(new JsBridgeError('不支持当前运行环境', 'RUN_EVN_NOT_SUPPORT'), reject, true)
