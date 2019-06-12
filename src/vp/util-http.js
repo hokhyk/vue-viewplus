@@ -20,6 +20,7 @@ export const POST_UPLOAD = 'UPLOAD'
 export const PUT = 'PUT'
 export const DELETE = 'DELETE'
 export const NATIVE = 'NATIVE'
+export const ELECTRON = 'ELECTRON'
 
 let _debug,
   _router,
@@ -445,13 +446,16 @@ const plugin = {
    * ajaxMixin(url[, config])
    * 支持普通的Ajax GET/POST(默认)请求 和 客户端桥接访问
    * @param {String} [url=undefined] 交易码|完整请求url
-   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE', 'PUT'】
+   * @param {Object} [params={}] 请求参数，支持method【'GET'| 'POST'| 'NATIVE' | 'ElECTRON', 'PUT'】
    * @param {Object} [axiosOptions={}] axios options
    * @param {Boolean} [showLoading=false] 是否显示loading ui，将会调用`UtilHttp#loading(loadingHintText)`配置，默认为`UtilHttp#defShowLoading`配置（true）
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
+<<<<<<< d0397c45a7b6964bc276ce5f8da96f0e073e8754
    * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
    * @param {String} [mode='POST'] 请求的method【'GET'| 'POST'| 'NATIVE'】，默认使用初始化配置时候传递的`utilHttpInstall#mode = POST`参数赋初值
+=======
+>>>>>>> liuyi commit: electron自定义模块修改
    * @returns {Promise}
    */
   ajaxMixin(url, {
@@ -516,7 +520,7 @@ const plugin = {
           reject(err)
         }).finally(that::_hLoading(showLoading))
       })
-    } else if (mode === 'ELECTRON') {
+    } else if (mode === ELECTRON) {
       return new Promise((resolve, reject) => {
         if (_.isFunction(_onSendAjaxParamsHandle)) {
           params = this::_onSendAjaxParamsHandle(url, params, mode)
@@ -524,10 +528,9 @@ const plugin = {
         let command = {
           transcode: url,
           mode: mode,
-          method: method,
+          method: _.has(arguments[1], 'method') ? arguments[1].method : 'POST',
           timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
-          params: params,
-          axiosOptions: axiosOptions
+          params: params
         }
         this.fireEvent(command).then((respdata) => {
           // warn(`发送[${url}]请求，服务端响应数据，[${JSON.stringify(response)}]`)
@@ -866,7 +869,7 @@ export const install = function (Vue, {
      * 【可选】默认请求的method【'GET'| 'POST'| 'NATIVE'】
      *  <p>
      *  提示：如果整个应用的大部分交易都需要使用**客户端代理转发请求（涉及到前端和客户端的交互，也就是JSBridge交互，我们已经有了一套android-viewplus 一个安卓混合客户端开发库，来解决JSBridge客户端交互流程）**，
-     *  那么这里需要配置为'NATIVE'，这样基本上所有交易（调用$vp#ajaxMixin）都会走代理，如果某一个交易需要使用**ajax**，则在调用的时候手动设置`$vp#ajaxMixin.mode`参数进行覆盖
+     *  那么这里需要配置为'NATIVE'(如果需要使用ELECTRON端代理转发请求这里需要配置为'ELECTRON')，这样基本上所有交易（调用$vp#ajaxMixin）都会走代理，如果某一个交易需要使用**ajax**，则在调用的时候手动设置`$vp#ajaxMixin.mode`参数进行覆盖
      */
     mode = 'POST',
     /**
