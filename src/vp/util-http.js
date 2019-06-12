@@ -514,7 +514,7 @@ const plugin = {
           this::_hLoading(showLoading)
           this::_handlerErr(needHandlerErr, needErrDialog, err)
           reject(err)
-        }).finally(() => this::_hLoading(showLoading))
+        })
       })
     } else {
       // return _req(url, params, axiosOptions, showLoading, needHandlerErr, mode)
