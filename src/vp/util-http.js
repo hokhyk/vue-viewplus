@@ -1077,6 +1077,7 @@ export const install = function (Vue, {
   }
   if (pluginCanUse) {
     _debug = debug
+    _Vue = Vue
     _router = router
     _errDialog = errDialog
     _loading = loading
