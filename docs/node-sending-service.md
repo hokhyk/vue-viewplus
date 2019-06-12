@@ -9,7 +9,9 @@ node-sending-service.js 是用于跟Electron通信的一个自定义桥接模块
 使用方法：
 
 基于vue-viewplus，实现的一个自定义模块 ，非标准模块，需要手动配置：
+
 1.main.js入口文件：
+
 ```js
 import Vue from 'vue'
 import ViewPlus from 'vue-viewplus'
@@ -25,9 +27,11 @@ ViewPlus.mixin(Vue, nodeSendingService, {
   errorHandler,
   moduleName: '自定义nodeSendingService'
 })
-
 ```
 2.node-sending-service.js
+
+其实该自定义模块就做了以下一件事:
++ 定义自定义方法sendingService做为连接和接收Electron端通信结果（本质上还是前端跟Electron端通过Electron的主进程跟渲染进程的通信来完成的）
 
 ```js
 import {ipcModSendingService} from '@/api/ipc-renderer-api'
@@ -51,13 +55,10 @@ export default {
   }
 }
 ```
-其实该自定义模块就做了以下一件事:
-+ 定义自定义方法sendingService做为连接和接收Electron端通信结果（本质上还是前端跟Electron端通过Electron的主进程跟渲染进程的通信来完成的）
 
 3.ipc-renderer-api.js（前端与Electron端进行通信的模块）
 
 ```js
-
 let ipc = null
 if (window.require) {
   ipc = window.require('electron').ipcRenderer
@@ -91,7 +92,6 @@ export function ipcModSendingService(command) {
     }
   })
 }
-
 ```
 
 4.使用该自定义模块 util-http.js mode必须配置为ELECTRON，详见[util-http.js]mode配置(http://jiiiiiin.cn/vue-viewplus/#/util-http)
@@ -111,7 +111,8 @@ export function ipcModSendingService(command) {
      event.sender.send(command.listenerName, { resCode: '444444', res: { message: `${errorMsg}`, code: `${errCode}ELECTRON端` } })
    })
  })
-
+```
+```js
 /**
  * 发送交易
  * @param transcode
@@ -127,5 +128,5 @@ function sendingService ({ transcode = '', method = 'POST', timeout = 60000, par
   })
 }
 
- ```
+```
 
