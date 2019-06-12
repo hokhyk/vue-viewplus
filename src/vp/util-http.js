@@ -480,7 +480,7 @@ const plugin = {
         const that = this
         const listenerName = `__listener__${new Date().getTime() + (Math.random() * 10).toFixed(5).toString().replace('.', '')}`
         window[listenerName] = function (data) {
-          this::_hLoading(showLoading)
+          that::_hLoading(showLoading)
           try {
             if (_.isFunction(_onSendAjaxRespHandle)) {
               data = _onSendAjaxRespHandle(data)
@@ -489,7 +489,7 @@ const plugin = {
             // 需要对是否为服务端业务状态进行判断
             const isErr = _parseServerResp(response)
             if (isErr) {
-              that::_handlerErr(needHandlerErr, response)
+              that::_handlerErr(needHandlerErr, needErrDialog, response)
               reject(response)
             } else {
               resolve(_getResData(response))
@@ -513,9 +513,9 @@ const plugin = {
           warn(`发送[${url}]请求，客户端已经接收，[${JSON.stringify(response)}]`)
         }).catch(err => {
           that::_hLoading(showLoading)
-          that::_handlerErr(needHandlerErr, err)
+          that::_handlerErr(needHandlerErr, needErrDialog, err)
           reject(err)
-        }).finally(that::_hLoading(showLoading))
+        })
       })
     } else if (mode === ELECTRON) {
       return new Promise((resolve, reject) => {
@@ -539,7 +539,7 @@ const plugin = {
             let errflag = _parseServerResp(respdata)
             if (errflag) {
               // 如果错误信息不是在{@link _dataKey}指向的对象中，而是在最外层，那么就不需要读取dataKey
-              this::_handlerErr(needHandlerErr, respdata.data)
+              this::_handlerErr(needHandlerErr, needErrDialog, respdata.data)
               reject(respdata)
             } else {
               resolve(_getResData(respdata))
@@ -549,7 +549,7 @@ const plugin = {
           }
         }).catch((err) => {
           this::_hLoading(showLoading)
-          this::_handlerErr(needHandlerErr, err)
+          this::_handlerErr(needHandlerErr, needErrDialog, err)
           reject(err)
         }).finally(() => {
           this::_hLoading(showLoading)
@@ -1077,7 +1077,6 @@ export const install = function (Vue, {
   }
   if (pluginCanUse) {
     _debug = debug
-    _Vue = Vue
     _router = router
     _errDialog = errDialog
     _loading = loading
