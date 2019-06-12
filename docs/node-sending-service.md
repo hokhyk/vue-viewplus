@@ -4,7 +4,7 @@ node-sending-service.js 是用于跟Electron通信的一个自定义桥接模块
 
 为什么使用node-sending-service.js这个自定的模块
 
-+ 做为前端使用vue-viewplus通过Electron端代理请求的桥接
++ 使用该自定义模块，为前端使用vue-viewplus通过Electron端代理请求提供桥接
 
 使用方法：
 
