@@ -101,6 +101,7 @@ export function ipcModSendingService(command) {
  + 可能你的Electron端是这样的，具体根据你自己实际而定
 
  ```js
+
  // Electron 主进程收到前端发起的通讯（渲染进程发起的通讯）进行发送交易处理并反馈回去
  ipcMain.on('sending-service', (event, command) => {
    sendingService(command).then((response) => {
@@ -111,22 +112,21 @@ export function ipcModSendingService(command) {
      event.sender.send(command.listenerName, { resCode: '444444', res: { message: `${errorMsg}`, code: `${errCode}ELECTRON端` } })
    })
  })
-```
-```js
-/**
- * 发送交易
- * @param transcode
- * @params method
- * @params timeout
- * @param params
- */
-function sendingService ({ transcode = '', method = 'POST', timeout = 60000, params = {} } = {}) {
-  return new Promise((resolve, reject) => {
-  ...
-  // 这里是真正发送交易的一些业务代码，此处省略
-  ...
-  })
-}
 
-```
+  /**
+   * 发送交易
+   * @param transcode
+   * @params method
+   * @params timeout
+   * @param params
+   */
+  function sendingService ({ transcode = '', method = 'POST', timeout = 60000, params = {} } = {}) {
+    return new Promise((resolve, reject) => {
+    ...
+    // 这里是真正发送交易的一些业务代码，此处省略
+    ...
+    })
+  }
+
+  ```
 
