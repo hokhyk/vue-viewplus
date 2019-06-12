@@ -4,8 +4,7 @@ node-sending-service.js 是用于跟Electron通信的一个自定义桥接模块
 
 为什么使用node-sending-service.js这个自定的模块
 
-+ 做为vue-viewplus与Electron进行通信的桥梁
-+ 在Electron端使用的node axios https发送交易
++ 做为前端使用vue-viewplus通过Electron端代理请求的桥接
 
 使用方法：
 
@@ -34,12 +33,12 @@ ViewPlus.mixin(Vue, nodeSendingService, {
 import {ipcModSendingService} from '@/api/ipc-renderer-api'
 export default {
   /**
-   * 发送交易接口-这里是通过Electron的通信模块实现
-   * @param transcode
-   * @params method
-   * @params timeout
-   * @param params
-   * @params axiosOptions
+   * 通知Electron端统一发送请求接口-sendingService
+   * @param {String} [transcode=undefined] 交易码
+   * @params {String} [method='POST'] 请求方法
+   * @params {Number} timeout [timeout=6000]指定请求超时的毫秒数
+   * @param {Object} [params={}] 请求参数
+   * @returns {Promise}
    */
   sendingService(command = null) {
     return new Promise((resolve, reject) => {
@@ -53,7 +52,7 @@ export default {
 }
 ```
 其实该自定义模块就做了以下一件事:
-+ 定义自定义方法sendingService做为连接和接收Electron通信结果（本质上还是前端跟Electron端通过Electron的主进程跟渲染进程的通信来完成的）
++ 定义自定义方法sendingService做为连接和接收Electron端通信结果（本质上还是前端跟Electron端通过Electron的主进程跟渲染进程的通信来完成的）
 
 3.ipc-renderer-api.js（前端与Electron端进行通信的模块）
 
@@ -64,7 +63,7 @@ if (window.require) {
   ipc = window.require('electron').ipcRenderer
 }
 
-// 通知Electron 客戶端 发交易
+// 通知Electron端发交易
 export function ipcModSendingService(command) {
   return new Promise((resolve, reject) => {
     if (window.require) {
@@ -94,67 +93,39 @@ export function ipcModSendingService(command) {
 }
 
 ```
-4.vue-viewplus中util-http.js关于Electron模块，详见[util-http.js](http://jiiiiiin.cn/vue-viewplus/#/util-http)
 
- + 注：使用该模块 mode必须配置为ELECTRON
+4.使用该自定义模块 util-http.js mode必须配置为ELECTRON，详见[util-http.js]mode配置(http://jiiiiiin.cn/vue-viewplus/#/util-http)
 
-```js
-else if (mode === 'ELECTRON') {
-      return new Promise((resolve, reject) => {
-        if (_.isFunction(_onSendAjaxParamsHandle)) {
-          params = this::_onSendAjaxParamsHandle(url, params, mode)
-        }
-        let command = {
-          transcode: url,
-          mode: mode,
-          method: method,
-          timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
-          params: params,
-          axiosOptions: axiosOptions
-        }
-        this.fireEvent(command).then((respdata) => {
-          try {
-            if (_.isFunction(_onSendAjaxRespHandle)) {
-              respdata = _onSendAjaxRespHandle(respdata)
-            }
-            let errflag = _parseServerResp(respdata)
-            if (errflag) {
-              this::_handlerErr(needHandlerErr, respdata.data)
-              reject(respdata)
-            } else {
-              resolve(_getResData(respdata))
-            }
-          } catch (e) {
-            reject(e)
-          }
-        }).catch((err) => {
-          this::_hLoading(showLoading)
-          this::_handlerErr(needHandlerErr, err)
-          reject(err)
-        }).finally(() => {
-          this::_hLoading(showLoading)
-        })
-      })
-    }
-```
+5.Electron端主进程接收前端通讯进行代理转发请求
 
-5.vue-viewplus中js-bridge-context.js关于Electron模块，详见[js-bridge-context.js](http://jiiiiiin.cn/vue-viewplus/#/js-bridge-context)
+ + 可能你的Electron端是这样的，具体根据你自己实际而定
 
-```js
-else if (command.mode === 'ELECTRON') {
-            // For node todo something  node-sending-service.js
-            if (!_.isNil(that.sendingService)) {
-              that.sendingService(command).then((res) => {
-                resolve(res)
-              }).catch(error => {
-                if (_.isNil(error) || JSON.stringify(error) === '{}') {
-                  emitErr(new JsBridgeError('ELECTRON客户端发送交易错误', 'ELECTRON_SERVICE_ERROR'), reject, true)
-                } else {
-                  emitErr(new JsBridgeError(error.message, error.code), reject, true)
-                }
-              })
-            } else {
-              emitErr(new JsBridgeError('没有找到ELECTRON环境下对应sendingService方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
-            }
-          }
-```
+ ```js
+ // Electron 主进程收到前端发起的通讯（渲染进程发起的通讯）进行发送交易处理并反馈回去
+ ipcMain.on('sending-service', (event, command) => {
+   sendingService(command).then((response) => {
+     event.sender.send(command.listenerName, { resCode: '000000', res: response })
+   }).catch((err) => {
+     let errorMsg = checkErrpr(err)
+     let errCode = err.code ? `${err.code}_` : ''
+     event.sender.send(command.listenerName, { resCode: '444444', res: { message: `${errorMsg}`, code: `${errCode}ELECTRON端` } })
+   })
+ })
+
+/**
+ * 发送交易
+ * @param transcode
+ * @params method
+ * @params timeout
+ * @param params
+ */
+function sendingService ({ transcode = '', method = 'POST', timeout = 60000, params = {} } = {}) {
+  return new Promise((resolve, reject) => {
+  ...
+  // 这里是真正发送交易的一些业务代码，此处省略
+  ...
+  })
+}
+
+ ```
+

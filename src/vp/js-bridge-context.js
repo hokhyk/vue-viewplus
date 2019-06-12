@@ -25,7 +25,7 @@ let _jsContext,
 let _mixinPreCheck = true
 
 /**
- * js-bridge-context JSBridge桥接模块，用于简化前端和客户端（Android && IOS）直接的交互。
+ * js-bridge-context JSBridge桥接模块，用于简化前端和客户端（Android && IOS && ELECTRON）直接的交互。
  */
 const plugin = {
   installed() {
@@ -122,7 +122,7 @@ const plugin = {
             }
             // postMessage 是硬编码
             _jsContext.postMessage(JSON.stringify(p))
-          } else if (command.mode === 'ELECTRON') {
+          } else if (command.mode && command.mode === 'ELECTRON') {
             // For node todo something  node-sending-service.js
             if (!_.isNil(that.sendingService)) {
               that.sendingService(command).then((res) => {
