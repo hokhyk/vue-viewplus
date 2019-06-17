@@ -131,7 +131,7 @@ const plugin = {
             // postMessage 是硬编码
             _jsContext.postMessage(JSON.stringify(p))
           } else if (command.mode && command.mode === 'ELECTRON') {
-            // For node todo something  node-sending-service.js
+            // For node todo something client-about-electron.js
             if(!_.isNil(that.clientAboutElectron)){
               that.clientAboutElectron(command).then((res) => {
                 // resolve(res)

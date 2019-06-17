@@ -2,7 +2,7 @@
 
 client-about-electron.js 是用于跟Electron通信的一个自定义桥接模块。
 
-为什么使用node-sending-service.js这个自定的模块
+为什么使用client-about-electron.js这个自定的模块
 
 + 使用该自定义模块，为前端使用vue-viewplus与Electron端通讯提供桥接
 
@@ -123,17 +123,15 @@ ipcMain.on('sending-service', (event, command) => {
   ```js
 
   // $vp.fireEvent(command = null)方式获取Electrondaunt通讯—获取mac地址
-  export function ipcGetMACVP() {
-    let command = {
-      mode: 'ELECTRON',
-      mainProcessName: 'network-inteffaces'
-    }
-    this.$vp.fireEvent(command).then(res => {
-      console.log('res_mac===', res)
-    }).catch(err => {
-      console.log('err_mac===', err)
-    })
+  let command = {
+    mode: 'ELECTRON',
+    mainProcessName: 'network-inteffaces'
   }
+  this.$vp.fireEvent(command).then(res => {
+    console.log('res_mac===', res)
+  }).catch(err => {
+    console.log('err_mac===', err)
+  })
 
    ```
 
