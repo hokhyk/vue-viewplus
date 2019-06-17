@@ -55,6 +55,7 @@ let _debug,
   _onUnauthorized,
   _eventName,
   _actionName,
+  _mainProcessName,
   _errDialog,
   _loading,
   _hideLoading,
@@ -523,11 +524,14 @@ const plugin = {
           params = this::_onSendAjaxParamsHandle(url, params, mode)
         }
         let command = {
-          transcode: url,
           mode: mode,
-          method: _.has(arguments[1], 'method') ? arguments[1].method : 'POST',
-          timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
-          params: params
+          mainProcessName: _mainProcessName,
+          params:{
+            transcode: url,
+            method: _.has(arguments[1], 'method') ? arguments[1].method : 'POST',
+            timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
+            params
+          }
         }
         this.fireEvent(command).then((respdata) => {
           // warn(`发送[${url}]请求，服务端响应数据，[${JSON.stringify(response)}]`)
@@ -1031,7 +1035,11 @@ export const install = function (Vue, {
       /**
        * 发送JSBridge请求时候`command`的活动名称，参考`js-bridge-context.js`模块关于和客户端交互的command配置
        */
-      actionName = 'sendOriginalRequest'
+      actionName = 'sendOriginalRequest',
+      /**
+       * 发送JSBridge请求时候针对于Electron端`command`的主进程定义的方法名称，参考`js-bridge-context.js`模块关于和客户端交互的command配置
+       */
+      mainProcessName = 'sending-service'
     } = {},
     /**
      * 【可选】调用`$vp#pageTo(n)`时，跳转前会通知当前钩子函数，如果配置
@@ -1110,6 +1118,7 @@ export const install = function (Vue, {
     _errCodeKey = errCodeKey
     _eventName = eventName
     _actionName = actionName
+    _mainProcessName = mainProcessName
     _onParseServerResp = onParseServerResp
     // axios需要的参数给方法自身去解析
     _createAxiosInstance(arguments[1])

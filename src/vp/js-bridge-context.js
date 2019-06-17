@@ -57,6 +57,14 @@ const plugin = {
    *  // action标识请求对应模块的那个方法或者说交易，客户端据此去调用该方法
    *  action: 'toast',
    *  // 【可选】params用来传递对应action需要的参数
+   *
+   *   *  // 若是调用该方法和Electron端进行交互-使用可参见说明文档自定义client-about-electron.js模块下的调用案例
+   *  [*] mode用来标识当前运行模式
+   *  mode: 'ELECTRON'
+   *  [*] mainProcessName用来标识请求Electron端的那个主进程方法
+   *  mainProcessName: 'sending-service'
+   *
+   *  // 【可选】params用来传递对应action需要的参数（若是Electron模式，为Electron端定义对应主进程方法需要的参数）
    *  params: {
    *      // 自定义参数
    *      msg: 'hello world'
@@ -124,18 +132,35 @@ const plugin = {
             _jsContext.postMessage(JSON.stringify(p))
           } else if (command.mode && command.mode === 'ELECTRON') {
             // For node todo something  node-sending-service.js
-            if (!_.isNil(that.sendingService)) {
-              that.sendingService(command).then((res) => {
-                resolve(res)
+            if(!_.isNil(that.clientAboutElectron)){
+              that.clientAboutElectron(command).then((res) => {
+                // resolve(res)
+                try {
+                  if(!_.isObject(res)){
+                    res = JSON.parse(res)
+                  }
+                  if (_.isFunction(_onParseClientResp)) {
+                    const busiErrFlag = that::_onParseClientResp(res)
+                    if (busiErrFlag) {
+                      reject(res)
+                    } else {
+                      resolve(res)
+                    }
+                  } else {
+                    resolve(res)
+                  }
+                } catch (e) {
+                  emitErr(new JsBridgeError(`解析ELECTRON端返回的结果出错[${e.message}]`, 'PARSE_ELECTRON_RES_ERR'), reject, true)
+                }
               }).catch(error => {
-                if (_.isNil(error) || JSON.stringify(error) === '{}') {
-                  emitErr(new JsBridgeError('ELECTRON端发送交易错误', 'ELECTRON_SERVICE_ERROR'), reject, true)
+                if(_.isNil(error) || JSON.stringify(error) === '{}'){
+                  emitErr(new JsBridgeError('通讯ELECTRON端发生未知错误', 'ELECTRON_SERVICE_ERROR_UNDEFINED'), reject, true)
                 } else {
                   emitErr(new JsBridgeError(error.message, error.code), reject, true)
                 }
               })
             } else {
-              emitErr(new JsBridgeError('没有找到自定义模块node-sending-service.js对应sendingService方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
+              emitErr(new JsBridgeError('没有找到自定义模块client-about-electron.js对应clientAboutElectron方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
             }
           } else {
             emitErr(new JsBridgeError('不支持当前运行环境', 'RUN_EVN_NOT_SUPPORT'), reject, true)
