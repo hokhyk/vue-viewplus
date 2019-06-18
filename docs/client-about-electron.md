@@ -117,7 +117,7 @@ ipcMain.on('sending-service', (event, command) => {
 
   ```
 
- 4.通过$vp.fireEvent调用方式与Electron端进行通信-案例
+ 4.前端应用通过$vp.fireEvent调用方式与Electron端进行通信-案例
 
   ```js
 
@@ -133,5 +133,9 @@ ipcMain.on('sending-service', (event, command) => {
     console.log('err_mac===', err)
   })
 
+//Electron端主进程-获取设备Mac地址
+ipcMain.on('network-inteffaces', (event, command) => {
+  event.sender.send(command.listenerName, { ReturnCode: returnCode, ReturnMessage: returnMessage, data: { MacAddress: macAddress } })
+})
    ```
 
