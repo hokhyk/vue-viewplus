@@ -40,11 +40,6 @@ import _ from 'lodash'
 let ipc = null
 if (window.require) {
   ipc = window.require('electron').ipcRenderer
-  if (!_.isNull(ipc)) {
-    throw new Error('Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端')
-  }
-} else {
-  throw new Error('Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端')
 }
 
 export default {
