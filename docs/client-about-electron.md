@@ -121,7 +121,7 @@ ipcMain.on('sending-service', (event, command) => {
 
 ```js
 
-  // $vp.fireEvent(command = null)方式获取Electrondaunt通讯—获取mac地址
+  // $vp.fireEvent(command = null)方式获取Electron端通讯—获取mac地址
   let command = {
    // 这里的mode必须配置为'ELECTRON'
     mode: 'ELECTRON',
