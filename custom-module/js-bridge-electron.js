@@ -3,13 +3,15 @@ import _ from 'lodash'
 let ipc = null
 if (window.require) {
   ipc = window.require('electron').ipcRenderer
+} else {
+  throw new Error('Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端')
 }
 
-/**
- * 与Electron端进行通讯的统一接口clientAboutElectron
- *  @param  {Object} [command=null] Electron端所需的调用消息
- * command的格式：
- *  const command = {
+export default {
+  /**
+   * 桥接函数
+   * @param command
+   * const command = {
    *  [*] mainProcessName用来标识请求Electron端的那个主进程方法
    *  mainProcessName: 'sending-service'
    *  // 【可选】params用来传递对应主进程方法需要的参数）
@@ -18,10 +20,9 @@ if (window.require) {
    *      msg: 'hello world'
    *    }
    * }
- * @returns {Promise}
- */
-export default {
-  clientAboutElectron(command = null) {
+   * @returns {Promise<any>}
+   */
+  fireEventElectron(command = null) {
     return new Promise((resolve, reject) => {
       if (window.require) {
         if (!_.isNull(ipc)) {
@@ -33,7 +34,7 @@ export default {
             resolve(data)
           })
         } else {
-          let err = {message: `Electron-ipcRenderer依赖模块未引入`, code: `NOT_FIND_ELECTRON_IPCRENDERER[前端]`}
+          let err = {message: `Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端`, code: `NOT_FIND_ELECTRON_IPCRENDERER[前端]`}
           reject(err)
         }
       } else {

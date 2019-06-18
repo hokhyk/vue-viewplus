@@ -58,7 +58,7 @@ const plugin = {
    *  action: 'toast',
    *  // 【可选】params用来传递对应action需要的参数
    *
-   *   *  // 若是调用该方法和Electron端进行交互-使用可参见说明文档自定义client-about-electron.js模块下的调用案例
+   *   *  // 若是调用该方法和Electron端进行交互-使用可参见说明文档自定义js-bridge-electron.js模块下的调用案例
    *  [*] mode用来标识当前运行模式
    *  mode: 'ELECTRON'
    *  [*] mainProcessName用来标识通讯Electron端的那个主进程方法
@@ -131,11 +131,11 @@ const plugin = {
             // postMessage 是硬编码
             _jsContext.postMessage(JSON.stringify(p))
           } else if (command.mode && command.mode === 'ELECTRON') {
-            // For node todo something client-about-electron.js
-            if(!_.isNil(that.clientAboutElectron)){
-              that.clientAboutElectron(command).then((res) => {
+            // For node todo something js-bridge-electron.js
+            if (!_.isNil(that.fireEventElectron)) {
+              that.fireEventElectron(command).then((res) => {
                 try {
-                  if(!_.isObject(res)){
+                  if (!_.isObject(res)) {
                     res = JSON.parse(res)
                   }
                   if (_.isFunction(_onParseClientResp)) {
@@ -152,14 +152,14 @@ const plugin = {
                   emitErr(new JsBridgeError(`解析ELECTRON端返回的结果出错[${e.message}]`, 'PARSE_ELECTRON_RES_ERR'), reject, true)
                 }
               }).catch(error => {
-                if(_.isNil(error) || JSON.stringify(error) === '{}'){
+                if (_.isNil(error) || JSON.stringify(error) === '{}') {
                   emitErr(new JsBridgeError('通讯ELECTRON端发生未知错误', 'ELECTRON_SERVICE_ERROR_UNDEFINED'), reject, true)
                 } else {
                   emitErr(new JsBridgeError(error.message, error.code), reject, true)
                 }
               })
             } else {
-              emitErr(new JsBridgeError('没有找到自定义模块client-about-electron.js对应clientAboutElectron方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
+              emitErr(new JsBridgeError('没有找到自定义electron桥接模块，对应fireEventElectron方法', 'ELECTRON_ERROR_SERVICE_UNDEFINED'), reject, true)
             }
           } else {
             emitErr(new JsBridgeError('不支持当前运行环境', 'RUN_EVN_NOT_SUPPORT'), reject, true)

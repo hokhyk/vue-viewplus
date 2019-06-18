@@ -1,4 +1,4 @@
-# rbac.js
+# rbac.js 【自定义模块】
 
 > [前端如何配合后端完成RBAC权限控制](https://juejin.im/post/5c1f8d6c6fb9a049e06353aa)
 

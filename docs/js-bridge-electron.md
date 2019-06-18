@@ -1,37 +1,38 @@
-# client-about-electron.js
+# js-bridge-electron.js 【自定义模块】
 
-client-about-electron.js 是用于跟Electron通信的一个自定义桥接模块。
+js-bridge-electron.js 是用于跟Electron通信的一个自定义桥接模块。
 
-为什么使用client-about-electron.js这个自定的模块
+为什么使用js-bridge-electron.js这个自定的模块
 
 + 使用该自定义模块，为前端使用vue-viewplus与Electron端通讯提供桥接
 
-使用方法：
+## 示例：
 
 基于vue-viewplus，实现的一个自定义模块 ，非标准模块，需要手动配置：
 
-1.main.js入口文件：
+1.安装自定义模块，配置插件，main.js入口文件示例：
 
 ```js
 import Vue from 'vue'
 import ViewPlus from 'vue-viewplus'
 import viewPlusOptions from '@/plugin/vue-viewplus'
-import clientAboutElectron from '@/plugin/vue-viewplus/client-about-electron.js'
+import fireEventElectron from '@/plugin/vue-viewplus/js-bridge-electron.js'
 
 const {debug, errorHandler} = viewPlusOptions
 
 Vue.use(ViewPlus, viewPlusOptions)
 
-ViewPlus.mixin(Vue, clientAboutElectron, {
+ViewPlus.mixin(Vue, fireEventElectron, {
   debug,
   errorHandler,
-  moduleName: '自定义clientAboutElectron'
+  moduleName: '自定义fireEventElectron'
 })
 ```
-2.client-about-electron.js
+
+2.js-bridge-electron.js如何和electron进行桥接
 
 其实该自定义模块就做了以下一件事:
-+ 定义自定义方法clientAboutElectron做为通讯和接收Electron端反馈结果（本质上就是前端跟Electron端通过Electron的主进程跟渲染进程的通信来完成的）
++ 定义自定义方法fireEventElectron做为通讯和接收Electron端反馈结果（本质上就是前端跟Electron端通过Electron的主进程跟渲染进程的通信来完成的）
 
 ```js
 import _ from 'lodash'
@@ -39,13 +40,18 @@ import _ from 'lodash'
 let ipc = null
 if (window.require) {
   ipc = window.require('electron').ipcRenderer
+  if (!_.isNull(ipc)) {
+    throw new Error('Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端')
+  }
+} else {
+  throw new Error('Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端')
 }
 
-/**
- * 与Electron端进行通讯的统一接口clientAboutElectron
- *  @param  {Object} [command=null] Electron端所需的调用消息
- * command的格式：
- *  const command = {
+export default {
+  /**
+   * 桥接函数
+   * @param command
+   * const command = {
    *  [*] mainProcessName用来标识请求Electron端的那个主进程方法
    *  mainProcessName: 'sending-service'
    *  // 【可选】params用来传递对应主进程方法需要的参数）
@@ -54,10 +60,9 @@ if (window.require) {
    *      msg: 'hello world'
    *    }
    * }
- * @returns {Promise}
- */
-export default {
-  clientAboutElectron(command = null) {
+   * @returns {Promise<any>}
+   */
+  fireEventElectron(command = null) {
     return new Promise((resolve, reject) => {
       if (window.require) {
         if (!_.isNull(ipc)) {
@@ -69,7 +74,7 @@ export default {
             resolve(data)
           })
         } else {
-          let err = {message: `Electron-ipcRenderer依赖模块未引入`, code: `NOT_FIND_ELECTRON_IPCRENDERER[前端]`}
+          let err = {message: `Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端`, code: `NOT_FIND_ELECTRON_IPCRENDERER[前端]`}
           reject(err)
         }
       } else {
@@ -82,10 +87,10 @@ export default {
 
 ```
 
-3.前端应用请求交易通过Electron端主进行代理转发请求
+3.Electron端主如何来接收桥接请求：
 
+ + 可能你的Electron端是这样的，具体根据你自己实际而定，注意`'sending-service'`这个函数在electron端只有一个，通过一个函数完成监听和请求分发
  + 若使用该自定义模块通过Electron端代理转发请求，那么util-http.js mode必须配置为ELECTRON，详见[util-http.js]mode配置(http://jiiiiiin.cn/vue-viewplus/#/util-http)
- + 可能你的Electron端是这样的，具体根据你自己实际而定
 
  ```js
 
@@ -94,9 +99,9 @@ ipcMain.on('sending-service', (event, command) => {
   sendingService(command.params).then((response) => {
     event.sender.send(command.listenerName, response)
   }).catch((err) => {
-    let errorMsg = Base64.encode(checkErrpr(err) + '[ELECTRON]')
-    let errCode = err.code ? `${err.code}_` : ''
-    event.sender.send(command.listenerName, { ReturnMessage: `${errorMsg}`, ReturnCode: `${errCode}ELECTRON`, data: { ReturnMessage: `${errorMsg}`, ReturnCode: `${errCode}ELECTRON` } })
+    let errorMsg = ...
+    let errCode = ...
+    event.sender.send(command.listenerName, {ReturnMessage: `${errorMsg}`, ReturnCode: `${errCode}ELECTRON`})
   })
 })
 

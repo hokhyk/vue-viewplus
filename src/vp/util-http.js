@@ -526,7 +526,7 @@ const plugin = {
         let command = {
           mode: mode,
           mainProcessName: _mainProcessName,
-          params:{
+          params: {
             transcode: url,
             method: _.has(arguments[1], 'method') ? arguments[1].method : 'POST',
             timeout: _.has(axiosOptions, 'timeout') ? axiosOptions.timeout : _timeout,
