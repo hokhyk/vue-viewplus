@@ -82,10 +82,9 @@ export default {
 
 ```
 
-3.使用该自定义模块 util-http.js mode必须配置为ELECTRON，详见[util-http.js]mode配置(http://jiiiiiin.cn/vue-viewplus/#/util-http)
+3.前端应用请求交易通过Electron端主进行代理转发请求
 
-4.前端请求-Electron端主进程接收前端通讯进行代理转发请求
-
+ + 若使用该自定义模块通过Electron端代理转发请求，那么util-http.js mode必须配置为ELECTRON，详见[util-http.js]mode配置(http://jiiiiiin.cn/vue-viewplus/#/util-http)
  + 可能你的Electron端是这样的，具体根据你自己实际而定
 
  ```js
@@ -118,12 +117,13 @@ ipcMain.on('sending-service', (event, command) => {
 
   ```
 
- 5.mode='ELECTRON'模式下通过$vp.fireEvent调用方式与Electron端进行通信-案例
+ 4.通过$vp.fireEvent调用方式与Electron端进行通信-案例
 
   ```js
 
   // $vp.fireEvent(command = null)方式获取Electrondaunt通讯—获取mac地址
   let command = {
+   // 这里的mode必须配置为'ELECTRON'
     mode: 'ELECTRON',
     mainProcessName: 'network-inteffaces'
   }

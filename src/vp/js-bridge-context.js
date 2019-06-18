@@ -61,7 +61,7 @@ const plugin = {
    *   *  // 若是调用该方法和Electron端进行交互-使用可参见说明文档自定义client-about-electron.js模块下的调用案例
    *  [*] mode用来标识当前运行模式
    *  mode: 'ELECTRON'
-   *  [*] mainProcessName用来标识请求Electron端的那个主进程方法
+   *  [*] mainProcessName用来标识通讯Electron端的那个主进程方法
    *  mainProcessName: 'sending-service'
    *
    *  // 【可选】params用来传递对应action需要的参数（若是Electron模式，为Electron端定义对应主进程方法需要的参数）
@@ -134,7 +134,6 @@ const plugin = {
             // For node todo something client-about-electron.js
             if(!_.isNil(that.clientAboutElectron)){
               that.clientAboutElectron(command).then((res) => {
-                // resolve(res)
                 try {
                   if(!_.isObject(res)){
                     res = JSON.parse(res)

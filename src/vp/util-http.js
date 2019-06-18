@@ -1037,7 +1037,7 @@ export const install = function (Vue, {
        */
       actionName = 'sendOriginalRequest',
       /**
-       * 发送JSBridge请求时候针对于Electron端`command`的主进程定义的方法名称，参考`js-bridge-context.js`模块关于和客户端交互的command配置
+       * 发送JSBridge请求时候针对于Electron端`command`的主进程定义的方法名称，参考`js-bridge-context.js`模块关于和Electron端交互的command配置
        */
       mainProcessName = 'sending-service'
     } = {},
