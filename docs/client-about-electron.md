@@ -119,7 +119,7 @@ ipcMain.on('sending-service', (event, command) => {
 
  4.前端应用通过$vp.fireEvent调用方式与Electron端进行通信-案例
 
-  ```js
+```js
 
   // $vp.fireEvent(command = null)方式获取Electrondaunt通讯—获取mac地址
   let command = {
@@ -137,5 +137,5 @@ ipcMain.on('sending-service', (event, command) => {
 ipcMain.on('network-inteffaces', (event, command) => {
   event.sender.send(command.listenerName, { ReturnCode: returnCode, ReturnMessage: returnMessage, data: { MacAddress: macAddress } })
 })
-   ```
+```
 
