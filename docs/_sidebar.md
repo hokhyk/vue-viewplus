@@ -18,3 +18,4 @@
   * [util-cache.js](util-cache.md)
   * [cache-userinfo.js](cache-userinfo.md)
   * [rbac.js](rbac.md)
+  * [js-bridge-electron.js](js-bridge-electron.md)
