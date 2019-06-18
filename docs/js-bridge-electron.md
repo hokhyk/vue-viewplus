@@ -101,7 +101,7 @@ ipcMain.on('sending-service', (event, command) => {
   }).catch((err) => {
     let errorMsg = ...
     let errCode = ...
-    event.sender.send(command.listenerName, {ReturnMessage: `${errorMsg}`, ReturnCode: `${errCode}ELECTRON`})
+    event.sender.send(command.listenerName, { data: { ReturnMessage: `${errorMsg}`, ReturnCode: `${errCode}ELECTRON` } })
   })
 })
 
