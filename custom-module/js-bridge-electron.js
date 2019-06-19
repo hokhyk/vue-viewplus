@@ -3,8 +3,12 @@ import _ from 'lodash'
 let ipc = null
 if (window.require) {
   ipc = window.require('electron').ipcRenderer
+  if (_.isNull(ipc)) {
+    console.warn('Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端')
+  }
+} else {
+  console.warn(`未运行于node环境下，请检查是否运行在electron客户端`)
 }
-
 export default {
   /**
    * 桥接函数

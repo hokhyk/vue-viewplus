@@ -6,9 +6,9 @@ js-bridge-electron.js 是用于跟Electron通信的一个自定义桥接模块�
 
 + 使用该自定义模块，为前端使用vue-viewplus与Electron端通讯提供桥接
 
-## 示例：
+使用示例：
 
-基于vue-viewplus，实现的一个自定义模块 ，非标准模块，需要手动配置：
+[基于vue-viewplus，实现的一个自定义模块](http://jiiiiiin.cn/vue-viewplus/#/global_api?id=mixin-)，非标准模块，需要手动配置：
 
 1.安装自定义模块，配置插件，main.js入口文件示例：
 
@@ -40,6 +40,11 @@ import _ from 'lodash'
 let ipc = null
 if (window.require) {
   ipc = window.require('electron').ipcRenderer
+  if (_.isNull(ipc)) {
+    console.warn('Electron#ipcRenderer依赖模块未定义，请检查是否运行在electron客户端')
+  }
+} else {
+  console.warn(`未运行于node环境下，请检查是否运行在electron客户端`)
 }
 
 export default {
@@ -139,3 +144,35 @@ ipcMain.on('network-inteffaces', (event, command) => {
 })
 ```
 
+## 计划
+
+对`js-bridge-context.js`增强-增加对electron客户端的桥接方案
+
+## [模块源代码](https://github.com/Jiiiiiin/vue-viewplus/blob/master/custom-module/js-bridge-electron.js)
+
+
+## 配置
+
+`debug|errorHandler`配置，可以查看全局通用配置
+
+## API接口
+
+### fireEventElectron
+
+```js
+ /**
+   * 桥接函数
+   * @param command
+   * const command = {
+   *  [*] mainProcessName用来标识请求Electron端的那个主进程方法
+   *  mainProcessName: 'sending-service'
+   *  // 【可选】params用来传递对应主进程方法需要的参数）
+   *  params: {
+   *      // 自定义需要传入到Electron端参数
+   *      msg: 'hello world'
+   *    }
+   * }
+   * @returns {Promise<any>}
+   */
+  fireEventElectron(command = null)
+```
