@@ -73,7 +73,7 @@ export default {
           reject(err)
         }
       } else {
-        let err = {message: `未运行于node环境下`, code: `NOT_RUN_NODE[前端]`}
+        let err = {message: `未运行于node环境下,请检查是否运行在electron客户端`, code: `NOT_RUN_NODE[前端]`}
         reject(err)
       }
     })
