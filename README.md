@@ -28,6 +28,7 @@
 | 自定义模块                                        | 作用                                                     |
 | ------------------------------------------------- | -------------------------------------------------------- |
 | [rbac.js](http://jiiiiiin.cn/vue-viewplus/#/rbac) | 自定义RBAC权限控制模块，为前端应用提供rbac权限控制帮助。 |
+| [js-bridge-electron.js](http://jiiiiiin.cn/vue-viewplus/#/js-bridge-electron) | 使用该自定义模块，为前端使用vue-viewplus与Electron端通讯提供桥接。 |
 
 
 
