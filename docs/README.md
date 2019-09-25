@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/Jiiiiiin/vue-viewplus">
-   <img src="http://qiniu.jiiiiiin.cn/68747470733a2f2f7773332e73696e61696d672e636e2f6c617267652f303036744e62527767793166777138786b396e68396a3330356b30356b6466732e6a7067.jpeg" width="175">
+    <img src="http://qiniu.jiiiiiin.cn/68747470733a2f2f7773332e73696e61696d672e636e2f6c617267652f303036744e62527767793166777138786b396e68396a3330356b30356b6466732e6a7067.jpeg" width="175">
   </a>
 </p>
 <h4 align="center">vue-viewplus <br> <br> <img src="https://img.shields.io/badge/npm-0.9.14-orange.svg"/></h4>
