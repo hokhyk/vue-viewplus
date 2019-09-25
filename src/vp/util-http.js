@@ -171,8 +171,8 @@ const _handlerErr = function (needHandlerErr, needErrDialog, response) {
           errMsg = `${response.message} [${response.code}]`
         } else {
           // 某些返回状态码是`500`，但是业务数据还是在`response.data`中
-          if (_.has(response, 'response.data') && (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`)))) {
-            errMsg = _handlerBusinessErrMsg(response.data)
+          if (_.has(response.response, 'data') && (_.has(response.response.data, `${_statusCodeKey}`) || (_.has(response.response.data, `${_errCodeKey}`)))) {
+            errMsg = _handlerBusinessErrMsg(response.response.data)
           } else {
             // 细化网络错误信息
             errMsg = this::_handlerNetworkErr(response)

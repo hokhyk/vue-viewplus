@@ -3,7 +3,7 @@
    <img src="http://qiniu.jiiiiiin.cn/68747470733a2f2f7773332e73696e61696d672e636e2f6c617267652f303036744e62527767793166777138786b396e68396a3330356b30356b6466732e6a7067.jpeg" width="175">
   </a>
 </p>
-<h4 align="center">vue-viewplus <br> <br> <img src="https://img.shields.io/badge/npm-0.9.12-orange.svg"/></h4>
+<h4 align="center">vue-viewplus <br> <br> <img src="https://img.shields.io/badge/npm-0.9.14-orange.svg"/></h4>
 <p align="center">一个简化Vue应用开发的工具库</p>
 
 做这个插件的目的是为了：
@@ -72,7 +72,7 @@ npm run dev
 | 变打包插件方式为rollup | 0% | |
 | 前端RBAC权限控制 | 100% | [自定义RBAC前端权限控制模块](https://github.com/Jiiiiiin/jiiiiiin-security/blob/master/jiiiiiin-client-manager/src/plugin/vue-viewplus/rbac.js#L124) |
 | [jiiiiiin权限系统](https://github.com/Jiiiiiin/jiiiiiin-security) | 100% | 结合[d2-admin](https://gi]thub.com/d2-projects/d2-admin)做一个[一个前后端分离的内管基础项目](https://github.com/Jiiiiiin/jiiiiiin-security) |
-| 对`js-bridge-context.js`增强 | 50% | 增加对electron客户端的桥接方案 |
+| 桥接electron | 100% | [js-bridge-electron.js 【自定义模块】](https://github.com/Jiiiiiin/vue-viewplus/blob/master/custom-module/js-bridge-electron.js) |
 
 
 
