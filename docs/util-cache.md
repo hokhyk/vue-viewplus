@@ -4,7 +4,7 @@ util-cache.js 缓存模块，为插件的其他模块提供缓存支持。
 
 如防止页面在刷新之后vuex数据状态不能保持，有了缓存模块：
 + 插件就可以从缓存中恢复自身维护的vuex state中的需要的值。
-+ 开发人员就可以使用同一的`$vp#cacheXXX`系列接口完成缓存操作，统一的大家的使用习惯和编码风格
++ 开发人员就可以使用统一的`$vp#cacheXXX`系列接口完成缓存操作，统一大家的使用习惯和编码风格
 
 使用[web-storage-cache](https://github.com/WQTeam/web-storage-cache)做底层支持，从而支持在缓存的时候设置被缓存对象的超时时间。
 
