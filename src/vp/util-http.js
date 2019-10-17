@@ -453,7 +453,7 @@ const plugin = {
    * @param {String} [loadingHintText='加载中...'] 当需要显示loading时候，需要显示在loading上面的文字
    * @param {Boolean} [needHandlerErr=true] 是否需要进行默认的错误处理，方便某些**零星交易**不需要进行统一业务逻辑处理的时候，绕过插件提供的业务处理逻辑，此外也可以通过配置`$vp#onSendAjaxRespErr`来进行统一业务处理的**应用统一前置处理**
    * @param {Boolean} [needErrDialog=true] 在默认处理机制中，是否需要弹框提示
-   * @param {String} [mode='POST'] 请求的method【'GET'| 'POST'| 'NATIVE'】，默认使用初始化配置时候传递的`utilHttpInstall#mode = POST`参数赋初值
+   * @param {String} [mode='POST'] 请求的method【'GET'| 'POST'| ’POST_JSON’| 'NATIVE' | 'ELECTRON' | ’UPLOAD’| ’PUT’|‘DELETE’】，默认使用初始化配置时候传递的`utilHttpInstall#mode = POST`参数赋初值
    * @returns {Promise}
    */
   ajaxMixin(url, {
